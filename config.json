@@ -1,0 +1,1283 @@
+{
+  "schema": {
+    "condition_key": "<tense>_<negation>_<matrix_subj>_<matrix_type>",
+    "tense": {
+      "pres": "present",
+      "past": "past"
+    },
+    "negation": {
+      "aff": "no",
+      "neg": "yes"
+    },
+    "matrix_subj": {
+      "1p": "first_person",
+      "2p": "second_person",
+      "3p": "third_person"
+    },
+    "matrix_type": {
+      "decl": "declarative",
+      "polar": "polar_question",
+      "na": "not_applicable"
+    },
+    "predictions": "prediction_type -> list of assertions; ALL must hold for the condition to pass",
+    "assertion_difference": "[a,b,c,d] means logP(a) - logP(b) > logP(c) - logP(d)",
+    "assertion_direct": "[a,b] means logP(a) > logP(b)"
+  },
+  "sentences_file": "sentences.csv",
+  "phenomena": [
+    {
+      "phenomenon": "cp_q",
+      "category": "syntax",
+      "comparison_type": "difference",
+      "conditions": {
+        "pres_aff_3p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S001",
+                "S002",
+                "S003",
+                "S004"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S004",
+                "S002",
+                "S003",
+                "S001"
+              ]
+            ],
+            "control": [
+              [
+                "S006",
+                "S004",
+                "S005",
+                "S003"
+              ],
+              [
+                "S006",
+                "S005",
+                "S003",
+                "S004"
+              ]
+            ]
+          }
+        },
+        "past_aff_3p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S007",
+                "S008",
+                "S009",
+                "S010"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S010",
+                "S008",
+                "S009",
+                "S007"
+              ]
+            ],
+            "control": [
+              [
+                "S012",
+                "S010",
+                "S011",
+                "S009"
+              ],
+              [
+                "S012",
+                "S011",
+                "S009",
+                "S010"
+              ]
+            ]
+          }
+        },
+        "pres_neg_3p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S013",
+                "S014",
+                "S015",
+                "S016"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S016",
+                "S014",
+                "S015",
+                "S013"
+              ]
+            ],
+            "control": [
+              [
+                "S018",
+                "S016",
+                "S017",
+                "S015"
+              ],
+              [
+                "S018",
+                "S017",
+                "S015",
+                "S016"
+              ]
+            ]
+          }
+        },
+        "past_neg_3p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S019",
+                "S020",
+                "S021",
+                "S022"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S022",
+                "S020",
+                "S021",
+                "S019"
+              ]
+            ],
+            "control": [
+              [
+                "S024",
+                "S022",
+                "S023",
+                "S021"
+              ],
+              [
+                "S024",
+                "S023",
+                "S021",
+                "S022"
+              ]
+            ]
+          }
+        },
+        "pres_aff_1p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S025",
+                "S026",
+                "S027",
+                "S028"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S028",
+                "S026",
+                "S027",
+                "S025"
+              ]
+            ],
+            "control": [
+              [
+                "S030",
+                "S028",
+                "S029",
+                "S027"
+              ],
+              [
+                "S030",
+                "S029",
+                "S027",
+                "S028"
+              ]
+            ]
+          }
+        },
+        "past_aff_1p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S031",
+                "S032",
+                "S033",
+                "S034"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S034",
+                "S032",
+                "S033",
+                "S031"
+              ]
+            ],
+            "control": [
+              [
+                "S036",
+                "S034",
+                "S035",
+                "S033"
+              ],
+              [
+                "S036",
+                "S035",
+                "S033",
+                "S034"
+              ]
+            ]
+          }
+        },
+        "pres_neg_1p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S037",
+                "S038",
+                "S039",
+                "S040"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S040",
+                "S038",
+                "S039",
+                "S037"
+              ]
+            ],
+            "control": [
+              [
+                "S042",
+                "S040",
+                "S041",
+                "S039"
+              ],
+              [
+                "S042",
+                "S041",
+                "S039",
+                "S040"
+              ]
+            ]
+          }
+        },
+        "past_neg_1p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S043",
+                "S044",
+                "S045",
+                "S046"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S046",
+                "S044",
+                "S045",
+                "S043"
+              ]
+            ],
+            "control": [
+              [
+                "S048",
+                "S046",
+                "S047",
+                "S045"
+              ],
+              [
+                "S048",
+                "S047",
+                "S045",
+                "S046"
+              ]
+            ]
+          }
+        },
+        "pres_aff_3p_polar": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S049",
+                "S050",
+                "S051",
+                "S052"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S052",
+                "S050",
+                "S051",
+                "S049"
+              ]
+            ],
+            "control": [
+              [
+                "S054",
+                "S052",
+                "S053",
+                "S051"
+              ],
+              [
+                "S054",
+                "S053",
+                "S051",
+                "S052"
+              ]
+            ]
+          }
+        },
+        "past_aff_3p_polar": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S055",
+                "S056",
+                "S057",
+                "S058"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S058",
+                "S056",
+                "S057",
+                "S055"
+              ]
+            ],
+            "control": [
+              [
+                "S060",
+                "S058",
+                "S059",
+                "S057"
+              ],
+              [
+                "S060",
+                "S059",
+                "S057",
+                "S058"
+              ]
+            ]
+          }
+        },
+        "pres_neg_3p_polar": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S061",
+                "S062",
+                "S063",
+                "S064"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S064",
+                "S062",
+                "S063",
+                "S061"
+              ]
+            ],
+            "control": [
+              [
+                "S066",
+                "S064",
+                "S065",
+                "S063"
+              ],
+              [
+                "S066",
+                "S065",
+                "S063",
+                "S064"
+              ]
+            ]
+          }
+        },
+        "past_neg_3p_polar": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S067",
+                "S068",
+                "S069",
+                "S070"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S070",
+                "S068",
+                "S069",
+                "S067"
+              ]
+            ],
+            "control": [
+              [
+                "S072",
+                "S070",
+                "S071",
+                "S069"
+              ],
+              [
+                "S072",
+                "S071",
+                "S069",
+                "S070"
+              ]
+            ]
+          }
+        },
+        "pres_aff_2p_polar": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S073",
+                "S074",
+                "S075",
+                "S076"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S076",
+                "S074",
+                "S075",
+                "S073"
+              ]
+            ],
+            "control": [
+              [
+                "S078",
+                "S076",
+                "S077",
+                "S075"
+              ],
+              [
+                "S078",
+                "S077",
+                "S075",
+                "S076"
+              ]
+            ]
+          }
+        },
+        "past_aff_2p_polar": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S079",
+                "S080",
+                "S081",
+                "S082"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S082",
+                "S080",
+                "S081",
+                "S079"
+              ]
+            ],
+            "control": [
+              [
+                "S084",
+                "S082",
+                "S083",
+                "S081"
+              ],
+              [
+                "S084",
+                "S083",
+                "S081",
+                "S082"
+              ]
+            ]
+          }
+        },
+        "pres_neg_2p_polar": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S085",
+                "S086",
+                "S087",
+                "S088"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S088",
+                "S086",
+                "S087",
+                "S085"
+              ]
+            ],
+            "control": [
+              [
+                "S090",
+                "S088",
+                "S089",
+                "S087"
+              ],
+              [
+                "S090",
+                "S089",
+                "S087",
+                "S088"
+              ]
+            ]
+          }
+        },
+        "past_neg_2p_polar": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S091",
+                "S092",
+                "S093",
+                "S094"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S094",
+                "S092",
+                "S093",
+                "S091"
+              ]
+            ],
+            "control": [
+              [
+                "S096",
+                "S094",
+                "S095",
+                "S093"
+              ],
+              [
+                "S096",
+                "S095",
+                "S093",
+                "S094"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    {
+      "phenomenon": "np_complement",
+      "category": "syntax",
+      "subtype": "np_cp_copula",
+      "comparison_type": "difference",
+      "conditions": {
+        "pres_aff_3p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S097",
+                "S098",
+                "S099",
+                "S100"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S100",
+                "S098",
+                "S099",
+                "S097"
+              ]
+            ]
+          }
+        },
+        "past_aff_3p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S103",
+                "S104",
+                "S105",
+                "S106"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S106",
+                "S104",
+                "S105",
+                "S103"
+              ]
+            ]
+          }
+        },
+        "pres_neg_3p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S109",
+                "S110",
+                "S111",
+                "S112"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S112",
+                "S110",
+                "S111",
+                "S109"
+              ]
+            ]
+          }
+        },
+        "past_neg_3p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S115",
+                "S116",
+                "S117",
+                "S118"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S118",
+                "S116",
+                "S117",
+                "S115"
+              ]
+            ]
+          }
+        },
+        "pres_aff_1p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S121",
+                "S122",
+                "S123",
+                "S124"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S124",
+                "S122",
+                "S123",
+                "S121"
+              ]
+            ]
+          }
+        },
+        "past_aff_1p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S127",
+                "S128",
+                "S129",
+                "S130"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S130",
+                "S128",
+                "S129",
+                "S127"
+              ]
+            ]
+          }
+        },
+        "pres_neg_1p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S133",
+                "S134",
+                "S135",
+                "S136"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S136",
+                "S134",
+                "S135",
+                "S133"
+              ]
+            ]
+          }
+        },
+        "past_neg_1p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S139",
+                "S140",
+                "S141",
+                "S142"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S142",
+                "S140",
+                "S141",
+                "S139"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    {
+      "phenomenon": "np_complement",
+      "category": "syntax",
+      "subtype": "np_pp_new_sentence",
+      "comparison_type": "difference",
+      "conditions": {
+        "pres_aff_3p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S145",
+                "S146",
+                "S147",
+                "S148"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S148",
+                "S146",
+                "S147",
+                "S145"
+              ]
+            ],
+            "control": [
+              [
+                "S149",
+                "S147",
+                "S150",
+                "S148"
+              ],
+              [
+                "S149",
+                "S150",
+                "S147",
+                "S148"
+              ]
+            ]
+          }
+        },
+        "past_aff_3p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S151",
+                "S152",
+                "S153",
+                "S154"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S154",
+                "S152",
+                "S153",
+                "S151"
+              ]
+            ],
+            "control": [
+              [
+                "S155",
+                "S153",
+                "S156",
+                "S154"
+              ],
+              [
+                "S155",
+                "S156",
+                "S153",
+                "S154"
+              ]
+            ]
+          }
+        },
+        "pres_neg_3p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S157",
+                "S158",
+                "S159",
+                "S160"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S160",
+                "S158",
+                "S159",
+                "S157"
+              ]
+            ],
+            "control": [
+              [
+                "S161",
+                "S159",
+                "S162",
+                "S160"
+              ],
+              [
+                "S161",
+                "S162",
+                "S159",
+                "S160"
+              ]
+            ]
+          }
+        },
+        "past_neg_3p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S163",
+                "S164",
+                "S165",
+                "S166"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S166",
+                "S164",
+                "S165",
+                "S163"
+              ]
+            ],
+            "control": [
+              [
+                "S167",
+                "S165",
+                "S168",
+                "S166"
+              ],
+              [
+                "S167",
+                "S168",
+                "S165",
+                "S166"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    {
+      "phenomenon": "np_complement",
+      "category": "syntax",
+      "subtype": "np_pp",
+      "comparison_type": "difference",
+      "conditions": {
+        "pres_aff_3p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S169",
+                "S170",
+                "S171",
+                "S172"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S172",
+                "S170",
+                "S171",
+                "S169"
+              ]
+            ],
+            "control": [
+              [
+                "S173",
+                "S171",
+                "S174",
+                "S172"
+              ],
+              [
+                "S173",
+                "S174",
+                "S171",
+                "S172"
+              ]
+            ]
+          }
+        },
+        "past_aff_3p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S175",
+                "S176",
+                "S177",
+                "S178"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S178",
+                "S176",
+                "S177",
+                "S175"
+              ]
+            ],
+            "control": [
+              [
+                "S179",
+                "S177",
+                "S180",
+                "S178"
+              ],
+              [
+                "S179",
+                "S180",
+                "S177",
+                "S178"
+              ]
+            ]
+          }
+        },
+        "pres_neg_3p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S181",
+                "S182",
+                "S183",
+                "S184"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S184",
+                "S182",
+                "S183",
+                "S181"
+              ]
+            ],
+            "control": [
+              [
+                "S185",
+                "S183",
+                "S186",
+                "S184"
+              ],
+              [
+                "S185",
+                "S186",
+                "S183",
+                "S184"
+              ]
+            ]
+          }
+        },
+        "past_neg_3p_decl": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S187",
+                "S188",
+                "S189",
+                "S190"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S190",
+                "S188",
+                "S189",
+                "S187"
+              ]
+            ],
+            "control": [
+              [
+                "S191",
+                "S189",
+                "S192",
+                "S190"
+              ],
+              [
+                "S191",
+                "S192",
+                "S189",
+                "S190"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    {
+      "phenomenon": "factive_island",
+      "category": "syntax",
+      "comparison_type": "direct",
+      "conditions": {
+        "pres_aff_3p_na": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S195",
+                "S193"
+              ],
+              [
+                "S194",
+                "S196"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S194",
+                "S193"
+              ],
+              [
+                "S195",
+                "S196"
+              ]
+            ],
+            "control": [
+              [
+                "S198",
+                "S197"
+              ]
+            ]
+          }
+        },
+        "past_aff_3p_na": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S201",
+                "S199"
+              ],
+              [
+                "S200",
+                "S202"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S200",
+                "S199"
+              ],
+              [
+                "S201",
+                "S202"
+              ]
+            ],
+            "control": [
+              [
+                "S204",
+                "S203"
+              ]
+            ]
+          }
+        },
+        "pres_neg_3p_na": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S207",
+                "S205"
+              ],
+              [
+                "S206",
+                "S208"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S206",
+                "S205"
+              ],
+              [
+                "S207",
+                "S208"
+              ]
+            ],
+            "control": [
+              [
+                "S210",
+                "S209"
+              ]
+            ]
+          }
+        },
+        "past_neg_3p_na": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S213",
+                "S211"
+              ],
+              [
+                "S212",
+                "S214"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S212",
+                "S211"
+              ],
+              [
+                "S213",
+                "S214"
+              ]
+            ],
+            "control": [
+              [
+                "S216",
+                "S215"
+              ]
+            ]
+          }
+        },
+        "pres_aff_2p_na": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S219",
+                "S217"
+              ],
+              [
+                "S218",
+                "S220"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S218",
+                "S217"
+              ],
+              [
+                "S219",
+                "S220"
+              ]
+            ],
+            "control": [
+              [
+                "S222",
+                "S221"
+              ]
+            ]
+          }
+        },
+        "past_aff_2p_na": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S225",
+                "S223"
+              ],
+              [
+                "S224",
+                "S226"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S224",
+                "S223"
+              ],
+              [
+                "S225",
+                "S226"
+              ]
+            ],
+            "control": [
+              [
+                "S228",
+                "S227"
+              ]
+            ]
+          }
+        },
+        "pres_neg_2p_na": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S231",
+                "S229"
+              ],
+              [
+                "S230",
+                "S232"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S230",
+                "S229"
+              ],
+              [
+                "S231",
+                "S232"
+              ]
+            ],
+            "control": [
+              [
+                "S234",
+                "S233"
+              ]
+            ]
+          }
+        },
+        "past_neg_2p_na": {
+          "predictions": {
+            "verb_contrast": [
+              [
+                "S237",
+                "S235"
+              ],
+              [
+                "S236",
+                "S238"
+              ]
+            ],
+            "type_contrast": [
+              [
+                "S236",
+                "S235"
+              ],
+              [
+                "S237",
+                "S238"
+              ]
+            ],
+            "control": [
+              [
+                "S240",
+                "S239"
+              ]
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

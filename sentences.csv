@@ -1,0 +1,241 @@
+sentence_id,sentence
+S001,John thinks that it is raining.
+S002,John thinks whether it is raining.
+S003,John knows that it is raining.
+S004,John knows whether it is raining.
+S005,John wonders that it is raining.
+S006,John wonders whether it is raining.
+S007,John thought that it was raining.
+S008,John thought whether it was raining.
+S009,John knew that it was raining.
+S010,John knew whether it was raining.
+S011,John wondered that it was raining.
+S012,John wondered whether it was raining.
+S013,John doesn't think that it is raining.
+S014,John doesn't think whether it is raining.
+S015,John doesn't know that it is raining.
+S016,John doesn't know whether it is raining.
+S017,John doesn't wonder that it is raining.
+S018,John doesn't wonder whether it is raining.
+S019,John didn't think that it was raining.
+S020,John didn't think whether it was raining.
+S021,John didn't know that it was raining.
+S022,John didn't know whether it was raining.
+S023,John didn't wonder that it was raining.
+S024,John didn't wonder whether it was raining.
+S025,I think that it is raining.
+S026,I think whether it is raining.
+S027,I know that it is raining.
+S028,I know whether it is raining.
+S029,I wonder that it is raining.
+S030,I wonder whether it is raining.
+S031,I thought that it was raining.
+S032,I thought whether it was raining.
+S033,I knew that it was raining.
+S034,I knew whether it was raining.
+S035,I wondered that it was raining.
+S036,I wondered whether it was raining.
+S037,I don't think that it is raining.
+S038,I don't think whether it is raining.
+S039,I don't know that it is raining.
+S040,I don't know whether it is raining.
+S041,I don't wonder that it is raining.
+S042,I don't wonder whether it is raining.
+S043,I didn't think that it was raining.
+S044,I didn't think whether it was raining.
+S045,I didn't know that it was raining.
+S046,I didn't know whether it was raining.
+S047,I didn't wonder that it was raining.
+S048,I didn't wonder whether it was raining.
+S049,Does John think that it is raining?
+S050,Does John think whether it is raining?
+S051,Does John know that it is raining?
+S052,Does John know whether it is raining?
+S053,Does John wonder that it is raining?
+S054,Does John wonder whether it is raining?
+S055,Did John think that it was raining?
+S056,Did John think whether it was raining?
+S057,Did John know that it was raining?
+S058,Did John know whether it was raining?
+S059,Did John wonder that it was raining?
+S060,Did John wonder whether it was raining?
+S061,Does John not think that it is raining?
+S062,Does John not think whether it is raining?
+S063,Does John not know that it is raining?
+S064,Does John not know whether it is raining?
+S065,Does John not wonder that it is raining?
+S066,Does John not wonder whether it is raining?
+S067,Did John not think that it was raining?
+S068,Did John not think whether it was raining?
+S069,Did John not know that it was raining?
+S070,Did John not know whether it was raining?
+S071,Did John not wonder that it was raining?
+S072,Did John not wonder whether it was raining?
+S073,Do you think that it is raining?
+S074,Do you think whether it is raining?
+S075,Do you know that it is raining?
+S076,Do you know whether it is raining?
+S077,Do you wonder that it is raining?
+S078,Do you wonder whether it is raining?
+S079,Did you think that it was raining?
+S080,Did you think whether it was raining?
+S081,Did you know that it was raining?
+S082,Did you know whether it was raining?
+S083,Did you wonder that it was raining?
+S084,Did you wonder whether it was raining?
+S085,Do you not think that it is raining?
+S086,Do you not think whether it is raining?
+S087,Do you not know that it is raining?
+S088,Do you not know whether it is raining?
+S089,Do you not wonder that it is raining?
+S090,Do you not wonder whether it is raining?
+S091,Did you not think that it was raining?
+S092,Did you not think whether it was raining?
+S093,Did you not know that it was raining?
+S094,Did you not know whether it was raining?
+S095,Did you not wonder that it was raining?
+S096,Did you not wonder whether it was raining?
+S097,John thinks the rumor is about Mary.
+S098,John thinks the rumor about Mary.
+S099,John knows the rumor is about Mary.
+S100,John knows the rumor about Mary.
+S101,John started the rumor is about Mary.
+S102,John started the rumor about Mary.
+S103,John thought the rumor was about Mary.
+S104,John thought the rumor about Mary.
+S105,John knew the rumor was about Mary.
+S106,John knew the rumor about Mary.
+S107,John started the rumor was about Mary.
+S108,John started the rumor about Mary.
+S109,John doesn't think the rumor is about Mary.
+S110,John doesn't think the rumor about Mary.
+S111,John doesn't know the rumor is about Mary.
+S112,John doesn't know the rumor about Mary.
+S113,John doesn't start the rumor is about Mary.
+S114,John doesn't start the rumor about Mary.
+S115,John didn't think the rumor was about Mary.
+S116,John didn't think the rumor about Mary.
+S117,John didn't know the rumor was about Mary.
+S118,John didn't know the rumor about Mary.
+S119,John didn't start the rumor was about Mary.
+S120,John didn't start the rumor about Mary.
+S121,I think the rumor is about Mary.
+S122,I think the rumor about Mary.
+S123,I know the rumor is about Mary.
+S124,I know the rumor about Mary.
+S125,I start the rumor is about Mary.
+S126,I start the rumor about Mary.
+S127,I thought the rumor was about Mary.
+S128,I thought the rumor about Mary.
+S129,I knew the rumor was about Mary.
+S130,I knew the rumor about Mary.
+S131,I started the rumor was about Mary.
+S132,I started the rumor about Mary.
+S133,I don't think the rumor is about Mary.
+S134,I don't think the rumor about Mary.
+S135,I don't know the rumor is about Mary.
+S136,I don't know the rumor about Mary.
+S137,I don't start the rumor is about Mary.
+S138,I don't start the rumor about Mary.
+S139,I didn't think the rumor was about Mary.
+S140,I didn't think the rumor about Mary.
+S141,I didn't know the rumor was about Mary.
+S142,I didn't know the rumor about Mary.
+S143,I didn't start the rumor was about Mary.
+S144,I didn't start the rumor about Mary.
+S145,John thinks the rumor is false.
+S146,John thinks the rumor. It is false.
+S147,John knows the rumor is false.
+S148,John knows the rumor. It is false.
+S149,John starts the rumor is false.
+S150,John starts the rumor. It is false.
+S151,John thought the rumor was false.
+S152,John thought the rumor. It was false.
+S153,John knew the rumor was false.
+S154,John knew the rumor. It was false.
+S155,John started the rumor was false.
+S156,John started the rumor. It was false.
+S157,John doesn't think the rumor is false.
+S158,John doesn't think the rumor. It is false.
+S159,John doesn't know the rumor is false.
+S160,John doesn't know the rumor. It is false.
+S161,John doesn't start the rumor is false.
+S162,John doesn't start the rumor. It is false.
+S163,John didn't think the rumor was false.
+S164,John didn't think the rumor. It was false.
+S165,John didn't know the rumor was false.
+S166,John didn't know the rumor. It was false.
+S167,John didn't start the rumor was false.
+S168,John didn't start the rumor. It was false.
+S169,John thinks about the rumor.
+S170,John thinks the rumor.
+S171,John knows about the rumor.
+S172,John knows the rumor.
+S173,John starts about the rumor.
+S174,John starts the rumor.
+S175,John thought about the rumor.
+S176,John thought the rumor.
+S177,John knew about the rumor.
+S178,John knew the rumor.
+S179,John started about the rumor.
+S180,John started the rumor.
+S181,John doesn't think about the rumor.
+S182,John doesn't think the rumor.
+S183,John doesn't know about the rumor.
+S184,John doesn't know the rumor.
+S185,John doesn't start about the rumor.
+S186,John doesn't start the rumor.
+S187,John didn't think about the rumor.
+S188,John didn't think the rumor.
+S189,John didn't know about the rumor.
+S190,John didn't know the rumor.
+S191,John didn't start about the rumor.
+S192,John didn't start the rumor.
+S193,Where does John know the keys are?
+S194,Where does John think the keys are?
+S195,Does John know where the keys are?
+S196,Does John think where the keys are?
+S197,What does John know that Mary ate?
+S198,What does John know whether Mary ate?
+S199,Where did John know the keys were?
+S200,Where did John think the keys were?
+S201,Did John know where the keys were?
+S202,Did John think where the keys were?
+S203,What did John know that Mary ate?
+S204,What did John know whether Mary ate?
+S205,Where does John not know the keys are?
+S206,Where does John not think the keys are?
+S207,Does John not know where the keys are?
+S208,Does John not think where the keys are?
+S209,What does John not know that Mary ate?
+S210,What does John not know whether Mary ate?
+S211,Where did John not know the keys were?
+S212,Where did John not think the keys were?
+S213,Did John not know where the keys were?
+S214,Did John not think where the keys were?
+S215,What did John not know that Mary ate?
+S216,What did John not know whether Mary ate?
+S217,Where do you know the keys are?
+S218,Where do you think the keys are?
+S219,Do you know where the keys are?
+S220,Do you think where the keys are?
+S221,What do you know that Mary ate?
+S222,What do you know whether Mary ate?
+S223,Where did you know the keys were?
+S224,Where did you think the keys were?
+S225,Did you know where the keys were?
+S226,Did you think where the keys were?
+S227,What did you know that Mary ate?
+S228,What did you know whether Mary ate?
+S229,Where do you not know the keys are?
+S230,Where do you not think the keys are?
+S231,Do you not know where the keys are?
+S232,Do you not think where the keys are?
+S233,What do you not know that Mary ate?
+S234,What do you not know whether Mary ate?
+S235,Where did you not know the keys were?
+S236,Where did you not think the keys were?
+S237,Did you not know where the keys were?
+S238,Did you not think where the keys were?
+S239,What did you not know that Mary ate?
+S240,What did you not know whether Mary ate?
