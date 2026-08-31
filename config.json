@@ -3,7 +3,7 @@
     {
       "phenomenon": "CP + Q",
       "subtype": null,
-      "comparison": "difference",
+      "comparison": "differences",
       "group_id": "GRP001",
       "comparison_types": [
         "matrix_verb",
@@ -16,7 +16,7 @@
       "phenomenon": "NP complement",
       "subtype": "NP vs CP copula deletion",
       "group_id": "GRP002",
-      "comparison": "difference",
+      "comparison": "differences",
       "comparison_types": [
         "matrix_verb",
         "embedded_type"
@@ -27,7 +27,7 @@
     {
       "phenomenon": "NP complement",
       "subtype": "NP vs. new sentence",
-      "comparison": "difference",
+      "comparison": "differences",
       "group_id": "GRP003",
       "comparison_types": [
         "matrix_verb",
@@ -39,7 +39,7 @@
     {
       "phenomenon": "NP complement",
       "subtype": "NP vs. PP",
-      "comparison": "difference",
+      "comparison": "differences",
       "group_id": "GRP004",
       "comparison_types": [
         "matrix_verb",
@@ -58,6 +58,66 @@
         "embedded_type"
       ],
       "control": "true"
+    },
+    {
+      "phenomenon": "Ellipsis",
+      "subtype": "Standalone",
+      "comparison": "differences",
+      "group_id": "GRP006",
+      "comparison_types": [
+        "embedded_type",
+        "matrix_verb"
+      ]
+    },
+    {
+      "phenomenon": "Ellipsis",
+      "subtype": "Response to polar Q",
+      "comparison": "differences",
+      "group_id": "GRP007",
+      "comparison_types": [
+        "negation",
+        "matrix_verb"
+      ]
+    },
+    {
+      "phenomenon": "Ellipsis",
+      "subtype": "Response to wh Q",
+      "comparison": "differences",
+      "group_id": "GRP008",
+      "comparison_types": [
+        "negation",
+        "matrix_verb"
+      ]
+    },
+    {
+      "phenomenon": "Ellipsis",
+      "subtype": "Response to declarative",
+      "comparison": "differences",
+      "group_id": "GRP009",
+      "comparison_types": [
+        "negation",
+        "matrix_verb"
+      ]
+    },
+    {
+      "phenomenon": "Parenthetical",
+      "subtype": "Slifting",
+      "comparison": "differences",
+      "group_id": "GRP010",
+      "comparison_types": [
+        "negation",
+        "matrix_verb"
+      ]
+    },
+    {
+      "phenomenon": "Parenthetical",
+      "subtype": "Double top",
+      "comparison": "differences",
+      "group_id": "GRP011",
+      "comparison_types": [
+        "matrix_subj",
+        "matrix_verb"
+      ]
     }
   ]
 }
