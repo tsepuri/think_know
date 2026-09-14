@@ -1,4 +1,10 @@
 config_old.json
+.env
+__pycache__/
+sentences_with_variants.csv
 pairs.csv
+pairs_scored*.csv
 eval_results.csv
+eval_results-*.csv
 eval_summary.json
+eval_summary-*.json

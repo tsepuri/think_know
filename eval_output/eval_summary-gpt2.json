@@ -1,0 +1,144 @@
+{
+  "model": "gpt2",
+  "n_assertions": 780,
+  "overall_accuracy": 0.861,
+  "overall_control_accuracy": 0.821,
+  "by_phenomenon": [
+    {
+      "phenomenon": "CP + Q",
+      "n": 120,
+      "accuracy": 1.0,
+      "control_n": 120,
+      "control_accuracy": 0.8
+    },
+    {
+      "phenomenon": "Ellipsis",
+      "n": 120,
+      "accuracy": 0.817,
+      "control_n": 0,
+      "control_accuracy": null
+    },
+    {
+      "phenomenon": "Factive island",
+      "n": 12,
+      "accuracy": 1.0,
+      "control_n": 0,
+      "control_accuracy": null
+    },
+    {
+      "phenomenon": "NP complement",
+      "n": 192,
+      "accuracy": 0.786,
+      "control_n": 192,
+      "control_accuracy": 0.833
+    },
+    {
+      "phenomenon": "Parenthetical",
+      "n": 24,
+      "accuracy": 0.917,
+      "control_n": 0,
+      "control_accuracy": null
+    }
+  ],
+  "by_phenomenon_subtype_matrix_type": [
+    {
+      "phenomenon": "CP + Q",
+      "subtype": "",
+      "matrix_type": "declarative",
+      "n": 96,
+      "accuracy": 1.0,
+      "control_n": 96,
+      "control_accuracy": 0.781
+    },
+    {
+      "phenomenon": "CP + Q",
+      "subtype": "",
+      "matrix_type": "polar_question",
+      "n": 24,
+      "accuracy": 1.0,
+      "control_n": 24,
+      "control_accuracy": 0.875
+    },
+    {
+      "phenomenon": "Ellipsis",
+      "subtype": "Response to declarative",
+      "matrix_type": "declarative",
+      "n": 12,
+      "accuracy": 0.5,
+      "control_n": 0,
+      "control_accuracy": null
+    },
+    {
+      "phenomenon": "Ellipsis",
+      "subtype": "Response to polar Q",
+      "matrix_type": "declarative",
+      "n": 6,
+      "accuracy": 0.5,
+      "control_n": 0,
+      "control_accuracy": null
+    },
+    {
+      "phenomenon": "Ellipsis",
+      "subtype": "Response to wh Q",
+      "matrix_type": "declarative",
+      "n": 6,
+      "accuracy": 0.0,
+      "control_n": 0,
+      "control_accuracy": null
+    },
+    {
+      "phenomenon": "Ellipsis",
+      "subtype": "Standalone",
+      "matrix_type": "declarative",
+      "n": 96,
+      "accuracy": 0.927,
+      "control_n": 0,
+      "control_accuracy": null
+    },
+    {
+      "phenomenon": "Factive island",
+      "subtype": "",
+      "matrix_type": "wh_question",
+      "n": 12,
+      "accuracy": 1.0,
+      "control_n": 0,
+      "control_accuracy": null
+    },
+    {
+      "phenomenon": "NP complement",
+      "subtype": "NP vs CP copula deletion",
+      "matrix_type": "declarative",
+      "n": 48,
+      "accuracy": 0.729,
+      "control_n": 48,
+      "control_accuracy": 0.896
+    },
+    {
+      "phenomenon": "NP complement",
+      "subtype": "NP vs. PP",
+      "matrix_type": "declarative",
+      "n": 96,
+      "accuracy": 0.802,
+      "control_n": 96,
+      "control_accuracy": 0.719
+    },
+    {
+      "phenomenon": "NP complement",
+      "subtype": "NP vs. new sentence",
+      "matrix_type": "declarative",
+      "n": 48,
+      "accuracy": 0.812,
+      "control_n": 48,
+      "control_accuracy": 1.0
+    },
+    {
+      "phenomenon": "Parenthetical",
+      "subtype": "Slifting",
+      "matrix_type": "declarative",
+      "n": 24,
+      "accuracy": 0.917,
+      "control_n": 0,
+      "control_accuracy": null
+    }
+  ]
+}

@@ -3,6 +3,7 @@
     {
       "phenomenon": "CP + Q",
       "subtype": null,
+      "code": "cpq",
       "comparison": "differences",
       "group_id": "GRP001",
       "comparison_types": [
@@ -10,11 +11,20 @@
         "embedded_type"
       ],
       "control": "true",
-      "control_comparison_verb": "know"
+      "control_comparison_verb": "know",
+      "manipulated_types": [
+        "tense",
+        "negation",
+        "matrix_subj_category",
+        "matrix_type",
+        "complementizer"
+      ],
+      "free_embedded_clause": true
     },
     {
       "phenomenon": "NP complement",
       "subtype": "NP vs CP copula deletion",
+      "code": "npcop",
       "group_id": "GRP002",
       "comparison": "differences",
       "comparison_types": [
@@ -22,11 +32,17 @@
         "embedded_type"
       ],
       "control": "true",
-      "control_comparison_verb": "know"
+      "control_comparison_verb": "know",
+      "manipulated_types": [
+        "tense",
+        "negation",
+        "matrix_subj_category"
+      ]
     },
     {
       "phenomenon": "NP complement",
       "subtype": "NP vs. new sentence",
+      "code": "npnew",
       "comparison": "differences",
       "group_id": "GRP003",
       "comparison_types": [
@@ -34,11 +50,17 @@
         "embedded_type"
       ],
       "control": "true",
-      "control_comparison_verb": "know"
+      "control_comparison_verb": "know",
+      "manipulated_types": [
+        "tense",
+        "negation",
+        "matrix_subj_category"
+      ]
     },
     {
       "phenomenon": "NP complement",
       "subtype": "NP vs. PP",
+      "code": "nppp",
       "comparison": "differences",
       "group_id": "GRP004",
       "comparison_types": [
@@ -46,77 +68,95 @@
         "embedded_type"
       ],
       "control": "true",
-      "control_comparison_verb": "know"
+      "control_comparison_verb": "know",
+      "manipulated_types": [
+        "tense",
+        "negation",
+        "matrix_subj_category",
+        "preposition"
+      ]
     },
     {
       "phenomenon": "Factive island",
       "subtype": null,
+      "code": "fact",
       "comparison": "direct",
       "group_id": "GRP005",
       "comparison_types": [
-        "matrix_verb",
-        "embedded_type"
+        "matrix_type",
+        "matrix_verb"
       ],
-      "control": "true"
+      "control": "true",
+      "manipulated_types": [
+        "tense",
+        "negation",
+        "matrix_subj_category"
+      ]
     },
     {
       "phenomenon": "Ellipsis",
       "subtype": "Standalone",
-      "comparison": "differences",
+      "code": "ellsa",
+      "comparison": "direct",
       "group_id": "GRP006",
       "comparison_types": [
         "embedded_type",
         "matrix_verb"
+      ],
+      "manipulated_types": [
+        "tense",
+        "negation",
+        "matrix_subj_category"
       ]
     },
     {
       "phenomenon": "Ellipsis",
       "subtype": "Response to polar Q",
+      "code": "ellpolq",
       "comparison": "differences",
       "group_id": "GRP007",
       "comparison_types": [
         "negation",
         "matrix_verb"
-      ]
+      ],
+      "manipulated_types": []
     },
     {
       "phenomenon": "Ellipsis",
       "subtype": "Response to wh Q",
+      "code": "ellwhq",
       "comparison": "differences",
       "group_id": "GRP008",
       "comparison_types": [
         "negation",
         "matrix_verb"
-      ]
+      ],
+      "manipulated_types": []
     },
     {
       "phenomenon": "Ellipsis",
       "subtype": "Response to declarative",
-      "comparison": "differences",
+      "code": "elldecl",
+      "comparison": "direct",
       "group_id": "GRP009",
       "comparison_types": [
         "negation",
         "matrix_verb"
-      ]
+      ],
+      "manipulated_types": []
     },
     {
       "phenomenon": "Parenthetical",
       "subtype": "Slifting",
-      "comparison": "differences",
+      "code": "slift",
+      "comparison": "direct",
       "group_id": "GRP010",
       "comparison_types": [
-        "negation",
+        "matrix_subj_category",
         "matrix_verb"
-      ]
-    },
-    {
-      "phenomenon": "Parenthetical",
-      "subtype": "Double top",
-      "comparison": "differences",
-      "group_id": "GRP011",
-      "comparison_types": [
-        "matrix_subj",
-        "matrix_verb"
+      ],
+      "manipulated_types": [
+        "tense"
       ]
     }
   ]

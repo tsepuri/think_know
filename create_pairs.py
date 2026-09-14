@@ -2,9 +2,11 @@
 
 Each row is a pair of sentences, where sentence1 is expected to rank above
 sentence2. A "direct" comparison (logP(a) > logP(b)) is a single row, with
-pair_role "comparison". A "differences" comparison (logP(a) - logP(b) >
-logP(c) - logP(d)) is two rows - (a, b) as "minuend" and (c, d) as
-"subtrahend" - sharing the same integer `assertion_id`.
+`rank` 1. A "differences" comparison (logP(a) - logP(b) > logP(c) - logP(d))
+is two rows - (a, b) at rank 1 (the genuine grammatical contrast) and (c, d)
+at rank 2 (no contrast expected) - sharing the same integer `assertion_id`.
+`rank` generalizes past exactly one rank-2 row if a future condition ever
+needs more than a single minuend/subtrahend pair.
 
 config.json lists one entry per phenomenon/subtype ("conditions"). Each
 condition is matched against sentences.csv (phenomenon + subtype), then split
@@ -13,85 +15,29 @@ into "groups" by group_id.
 - "direct" conditions: rows are taken two at a time, in file order, and paired
   as (grammatical, ungrammatical).
 - "differences" conditions: within the group's critical rows (condition ==
-  "critical"), exactly one sentence is grammatical. Difference assertions 
-  are built from those 4 sentences per the condition's comparison_types. 
-  When the condition has control: true and a control_comparison_verb, 
-  the same is repeated using the group's control rows (matrix_verb == "control") 
-  as the target and the critical rows for control_comparison_verb as the reference.
+  "critical"), exactly one sentence is grammatical or exactly one sentence is
+  ungrammatical. Difference assertions are built from those 4 sentences per the condition's comparison_types.
+  When the condition has control: true and a control_comparison_verb, the same is 
+  repeated using the group's control rows (condition == "control") as the 
+  target and the critical rows for control_comparison_verb as the reference.
 
-By default, every assertion is duplicated with a few lexical substitutions
-applied to all of its sentences (skipped when the substitution has no effect):
-  - rumor -> message
-  - rain -> snow (and inflections: rains/raining/rained -> snows/snowing/snowed)
-  - Mary -> Christopher, John -> Theresa   (proper-name swap)
-  - Mary -> the student, John -> the teacher   (role-noun swap)
+see generate_variants.py's make_unique_id to see how variant sentences are kept from mixing
 """
 
 import argparse
 import json
-import re
 import pandas as pd
-
-BASE_VARIANT = "base"
-LEXICAL_VARIANTS = {
-    "rumor_message": {"rumor": "message"},
-    "rain_snow": {"rain": "snow"},
-    "name_swap_proper": {"Mary": "Christopher", "John": "Theresa"},
-    "name_swap_role": {"Mary": "the student", "John": "the teacher"},
-}
-ALL_VARIANTS = [BASE_VARIANT] + list(LEXICAL_VARIANTS)
-INFLECTIONAL_SUFFIXES = ("s", "ing", "ed")  # rain -> rain/rains/raining/rained
 
 OUTPUT_COLUMNS = [
     "phenomenon", "subtype", "group_id", "comparison", "condition_type",
-    "comparison_type", "tense", "negation", "matrix_subj", "matrix_type",
-    "verb_target", "verb_reference", "lexical_variant", "assertion_id", "pair_role",
+    "comparison_type", "tense", "negation", "matrix_subj_category", "matrix_subj", "matrix_type",
+    "verb_target", "verb_reference", "unique_id", "assertion_id", "rank",
     "sentence1", "sentence2"
 ]
 
-# Descriptive columns that identify one instantiation of a condition (e.g. one
-# of CP + Q's 8 present/past x person x declarative/polar_question combos).
-SET_KEY_COLUMNS = ["tense", "negation", "matrix_subj"]
-
-
 def load_sentences(path):
-    """Load sentences.csv, tagging every row with its file order (row_num)."""
-    df = pd.read_csv(path, dtype=str, keep_default_na=False)
-    df["row_num"] = range(len(df))
-    return df
+    return pd.read_csv(path, dtype=str, keep_default_na=False)
 
-def apply_substitution(text, mapping):
-    """Whole-word find/replace for every (old, new) pair in mapping.
-
-    Each old word also matches with an inflectional suffix tacked on - "rain"
-    matches "rains"/"raining"/"rained" too - and that suffix carries over to
-    the replacement (rain -> snow, raining -> snowing), so this only needs to
-    be spelled once per stem. \\b...\\b avoids matching "rain" inside an
-    unrelated longer word like "train"; case-sensitive since these words only
-    ever appear capitalized (proper nouns) or lowercase (common nouns).
-    """
-    suffix_group = "|".join(INFLECTIONAL_SUFFIXES)
-    for old, new in mapping.items():
-        pattern = rf"\b{re.escape(old)}({suffix_group})?\b"
-        text = re.sub(pattern, lambda m, new=new: new + (m.group(1) or ""), text)
-    return text
-
-def variant_texts(row_nums, text_lookup, variant):
-    """Apply one lexical variant to a set of sentences, or None if it's a no-op.
-
-    Substitution is applied to the whole sentence set at once (not sentence by
-    sentence) so that a difference assertion's four sentences stay consistent
-    with each other under the same variant.
-    """
-    base_texts = [text_lookup[r] for r in row_nums]
-    if variant == BASE_VARIANT:
-        return base_texts
-    mapping = LEXICAL_VARIANTS[variant]
-    substituted = [apply_substitution(t, mapping) for t in base_texts]
-    # Re-capitalize the sentence-initial word: a substitution like John -> "the teacher"
-    # would otherwise leave a lowercase sentence opener when John was the first word.
-    substituted = [t[:1].upper() + t[1:] for t in substituted]
-    return substituted if substituted != base_texts else None
 
 def condition_matches(df, condition):
     """Rows of sentences.csv matching one config.json condition's phenomenon/subtype."""
@@ -101,16 +47,11 @@ def condition_matches(df, condition):
     return df[mask]
 
 
-def iter_groups(rows, comparison_types):
+def iter_groups(rows):
     """Split a condition's matched rows into groups, one per distinct
-    combination of the descriptive columns (SET_KEY_COLUMNS) that aren't
-    themselves one of this condition's comparison_types.
-    """
-    key_cols = [c for c in SET_KEY_COLUMNS if c not in comparison_types]
-    if not key_cols:
-        yield rows
-        return
-    for _, group in rows.groupby(key_cols, sort=False):
+    `unique_id` - generate_variants.py already builds that to be exactly the
+    right grouping key (see make_unique_id there)."""
+    for _, group in rows.groupby("unique_id", sort=False):
         yield group
 
 
@@ -119,16 +60,23 @@ def comparison_grouping(rows, comparison_type, comparison):
     comparison_type column, and for each group of 2, pair the grammatical row
     with the ungrammatical one.
 
-    For "direct" comparisons, every group becomes its own ("comparison",
-    gram, ungram) pair.
+    Each pair gets a `rank`: rank 1 is the group expected to show the larger
+    log-probability gap (a genuine grammatical/ungrammatical contrast), rank 2
+    the group expected to show little to none (both rows share the same
+    grammaticality) - the same rank>1 group is repeated for however many
+    "no genuine contrast" groups a comparison_type produces, so this
+    generalizes past exactly 2 groups if a future condition ever needs it.
 
-    For "differences" comparisons: the group with exactly 1 grammatical row
-    (mixed) is the "minuend", ordered (grammatical, ungrammatical); the other
-    group - both grammatical or both ungrammatical - is the "subtrahend", in
-    its original row order. This works for both a (1 ungrammatical, 3
-    grammatical) split and a (3 ungrammatical, 1 grammatical) split across the
-    two groups, since it's driven by each group's own grammaticality count
-    rather than assuming which group is which.
+    For "direct" comparisons, every group is independently rank 1 - there's
+    no second group to subtract against.
+
+    For "differences" comparisons: a group with exactly 1 grammatical row
+    (mixed) is rank 1, ordered (grammatical, ungrammatical); a group that's
+    uniformly grammatical or ungrammatical is rank 2, in its original row
+    order. This works for both a (1 ungrammatical, 3 grammatical) split and a
+    (3 ungrammatical, 1 grammatical) split across the two groups, since it's
+    driven by each group's own grammaticality count rather than assuming
+    which group is which.
     """
     all_variants = rows[comparison_type].unique()
     sorted_groups = []
@@ -140,22 +88,22 @@ def comparison_grouping(rows, comparison_type, comparison):
         gram = variant_group[variant_group["grammaticality"] == "grammatical"]
         ungram = variant_group[variant_group["grammaticality"] == "ungrammatical"]
         if comparison == "direct":
-            sorted_groups.append(("comparison", gram.iloc[0], ungram.iloc[0]))
+            sorted_groups.append((1, gram.iloc[0], ungram.iloc[0]))
         else:
             if len(gram) == 1:
-                sorted_groups.append(("minuend", gram.iloc[0], ungram.iloc[0]))
+                sorted_groups.append((1, gram.iloc[0], ungram.iloc[0]))
             else:
-                sorted_groups.append(("subtrahend", variant_group.iloc[0], variant_group.iloc[1]))
+                sorted_groups.append((2, variant_group.iloc[0], variant_group.iloc[1]))
     return sorted_groups
 
-def build_comparison(set_rows, meta, condition, variants, text_lookup, assertion_id):
+def build_comparison(set_rows, meta, condition, assertion_id):
     """Build every pair row for one condition's one set, returning
     (rows, next_assertion_id).
 
     Builds a "critical" group (set_rows where condition == "critical") and,
-    when the condition has control: true, an additional "control" group 
-    (the group's control rows plus optionally the critical rows for 
-    control_comparison_verb. Each group gets one comparison_grouping 
+    when the condition has control: true, an additional "control" group
+    (the group's control rows plus optionally the critical rows for
+    control_comparison_verb. Each group gets one comparison_grouping
     assertion per entry in the condition's comparison_types.
     """
     comparison = condition["comparison"]
@@ -178,36 +126,49 @@ def build_comparison(set_rows, meta, condition, variants, text_lookup, assertion
     for condition_type, group_rows in groups:
         for comparison_type in comparison_types:
             assertions = comparison_grouping(group_rows, comparison_type, comparison)
-            row_nums = sorted({row["row_num"] for _, row1, row2 in assertions for row in (row1, row2)})
-            for variant in variants:
-                texts = variant_texts(row_nums, text_lookup, variant)
-                if texts is None:
-                    continue
-                text_by_row = dict(zip(row_nums, texts))
-                base_row = {
-                    **meta,
-                    "comparison_type": comparison_type,
-                    "condition_type": condition_type,
-                    "lexical_variant": variant,
-                    "assertion_id": assertion_id,
-                }
-                assertion_id += 1
-                for pair_role, row1, row2 in assertions:
+            base_row = {**meta, "comparison_type": comparison_type, "condition_type": condition_type}
+
+            if comparison == "direct":
+                # every rank-1 tuple is a complete, independent assertion on its
+                # own - one comparison_type can produce more than one (e.g.
+                # Factive island's matrix_type has 2 values), so each needs its
+                # own assertion_id rather than sharing one across all of them
+                for rank, row1, row2 in assertions:
                     rows_out.append({
-                        **base_row,
-                        "pair_role": pair_role,
-                        "sentence1": text_by_row[row1["row_num"]],
-                        "sentence2": text_by_row[row2["row_num"]],
+                        **base_row, "assertion_id": assertion_id, "rank": rank,
+                        "sentence1": row1["sentence"], "sentence2": row2["sentence"],
                     })
+                    assertion_id += 1
+            else:
+                # a differences assertion needs one rank-1 (genuine contrast)
+                # group paired with one rank-2 (no contrast) group; pair them up
+                # in order rather than assuming there's only ever one of each,
+                # so this still works if a comparison_type ever produces more
+                by_rank = {}
+                for rank, row1, row2 in assertions:
+                    by_rank.setdefault(rank, []).append((row1, row2))
+                if by_rank.keys() != {1, 2} or len(by_rank[1]) != len(by_rank[2]):
+                    raise ValueError(
+                        f"expected equal rank-1/rank-2 counts for comparison_type="
+                        f"{comparison_type!r}, got { {k: len(v) for k, v in by_rank.items()} }"
+                    )
+                for (r1a, r1b), (r2a, r2b) in zip(by_rank[1], by_rank[2]):
+                    rows_out.append({
+                        **base_row, "assertion_id": assertion_id, "rank": 1,
+                        "sentence1": r1a["sentence"], "sentence2": r1b["sentence"],
+                    })
+                    rows_out.append({
+                        **base_row, "assertion_id": assertion_id, "rank": 2,
+                        "sentence1": r2a["sentence"], "sentence2": r2b["sentence"],
+                    })
+                    assertion_id += 1
     return rows_out, assertion_id
 
 def _invalid_phenomena_or_subtype(condition, phenomena, subtypes):
     return (phenomena and condition["phenomenon"] not in phenomena) or subtypes and condition.get("subtype") not in subtypes
 
-def build_pairs(config, sentences_df, phenomena=None, subtypes=None, variants=None):
-    """Build the full list of pair rows for every matching condition/set/variant."""
-    variants = variants if variants is not None else ALL_VARIANTS
-    text_lookup = dict(zip(sentences_df["row_num"], sentences_df["sentence"]))
+def build_pairs(config, sentences_df, phenomena=None, subtypes=None):
+    """Build the full list of pair rows for every matching condition/set."""
     rows_out = []
     assertion_id = 0
 
@@ -219,7 +180,7 @@ def build_pairs(config, sentences_df, phenomena=None, subtypes=None, variants=No
             raise ValueError(f"no sentences matched condition {condition.get('group_id')}")
 
         comparison = condition["comparison"]
-        for set_rows in iter_groups(matched_sentences, condition["comparison_types"]):
+        for set_rows in iter_groups(matched_sentences):
             meta = {
                 "phenomenon": condition["phenomenon"],
                 "subtype": condition.get("subtype") or "",
@@ -227,10 +188,12 @@ def build_pairs(config, sentences_df, phenomena=None, subtypes=None, variants=No
                 "comparison": comparison,
                 "tense": set_rows["tense"].iloc[0],
                 "negation": set_rows["negation"].iloc[0],
+                "matrix_subj_category": set_rows["matrix_subj_category"].iloc[0],
                 "matrix_subj": set_rows["matrix_subj"].iloc[0],
                 "matrix_type": set_rows["matrix_type"].iloc[0],
+                "unique_id": set_rows["unique_id"].iloc[0],
             }
-            new_rows, assertion_id = build_comparison(set_rows, meta, condition, variants, text_lookup, assertion_id)
+            new_rows, assertion_id = build_comparison(set_rows, meta, condition, assertion_id)
             rows_out.extend(new_rows)
 
     return rows_out
@@ -246,18 +209,11 @@ def write_pairs(rows, output_path):
 def main():
     """CLI entry point: parse args, load config.json + sentences.csv, write pairs.csv."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--config", default="config.json")
-    parser.add_argument("--sentences", default="sentences.csv")
-    parser.add_argument("--output", default="pairs.csv")
+    parser.add_argument("--config", default="benchmark_data/config.json")
+    parser.add_argument("--sentences", default="benchmark_data/sentences_with_variants.csv")
+    parser.add_argument("--output", default="benchmark_data/pairs.csv")
     parser.add_argument("--phenomena", nargs="*", default=None, help="restrict to these phenomenon names")
     parser.add_argument("--subtypes", nargs="*", default=None, help="restrict to these subtypes")
-    parser.add_argument(
-        "--variants",
-        nargs="*",
-        default=None,
-        choices=ALL_VARIANTS,
-        help="lexical variants to include (default: all)",
-    )
     args = parser.parse_args()
 
     with open(args.config, encoding="utf-8") as f:
@@ -269,7 +225,6 @@ def main():
         sentences_df,
         phenomena=args.phenomena,
         subtypes=args.subtypes,
-        variants=args.variants,
     )
     write_pairs(rows, args.output)
     n_assertions = len({row["assertion_id"] for row in rows})
