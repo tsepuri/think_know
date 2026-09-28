@@ -30,6 +30,8 @@ import pandas as pd
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
+from utils import normative_to_childes_formatting
+
 # TODO: add SLOR
 
 # fields to include in results file and for grouping
@@ -172,6 +174,24 @@ def insert_suffix(path, suffix):
     return f"{path}-{suffix}"
 
 
+def insert_prefix(path, prefix):
+    """Insert '{prefix}_' before a path's filename, e.g. ('eval_output/eval_results.csv',
+    'childes') -> 'eval_output/childes_eval_results.csv'."""
+    head, sep, name = path.rpartition("/")
+    return f"{head}{sep}{prefix}_{name}"
+
+
+def apply_childes_format(pairs_df, args):
+    """Convert both sentence columns to CHILDES formatting and prefix every output path
+    with 'childes_formatted_' so these results don't overwrite the normatively formatted ones."""
+    pairs_df = pairs_df.copy()
+    for col in ("sentence1", "sentence2"):
+        pairs_df[col] = pairs_df[col].map(normative_to_childes_formatting)
+    for output in ("pairs_output", "details_output", "summary_output"):
+        setattr(args, output, insert_prefix(getattr(args, output), "childes_formatted"))
+    return pairs_df
+
+
 def load_model(model_name, device, cache_dir):
     """Load any causal LM (gpt2, Llama, etc.) and its tokenizer via the Auto* classes."""
     tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir)
@@ -267,6 +287,10 @@ def main():
         "--cache-dir", default=None,
         help="Where downloaded model weights are stored.",
     )
+    parser.add_argument(
+        "--childes-format", action="store_true",
+        help="Score sentences in CHILDES transcript style (lowercase, space before punctuation).",
+    )
     args = parser.parse_args()
     models = args.models or [
         "gpt2", "mistralai/Mistral-7B-Instruct-v0.3", "meta-llama/Llama-3.1-8B", "meta-llama/Llama-3.1-8B-Instruct",
@@ -275,6 +299,8 @@ def main():
     pairs_df = load_pairs(args.pairs)
     if pairs_df.empty:
         raise SystemExit(f"No rows found in {args.pairs}")
+    if args.childes_format:
+        pairs_df = apply_childes_format(pairs_df, args)
 
     suffix_outputs = len(models) > 1
     comparison = [

@@ -33,7 +33,7 @@ import pandas as pd
 import torch
 
 from eval import (
-    default_device, insert_suffix, load_model, load_pairs, round_floats,
+    apply_childes_format, default_device, insert_suffix, load_model, load_pairs, round_floats,
     score_assertions, score_pairs, slugify_model_name, summarize_with_controls,
 )
 
@@ -203,6 +203,10 @@ def main():
         "--cache-dir", default=None,
         help="Where downloaded model weights are stored.",
     )
+    parser.add_argument(
+        "--childes-format", action="store_true",
+        help="Score sentences in CHILDES transcript style (lowercase, space before punctuation).",
+    )
     args = parser.parse_args()
 
     model_corpora = []
@@ -216,6 +220,8 @@ def main():
     pairs_df = load_pairs(args.pairs)
     if pairs_df.empty:
         raise SystemExit(f"No rows found in {args.pairs}")
+    if args.childes_format:
+        pairs_df = apply_childes_format(pairs_df, args)
 
     comparison = [
         run_slor_for_model(model_name, corpus, pairs_df, args)

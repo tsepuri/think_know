@@ -5,6 +5,9 @@ literal substring (the subject word, a conjugated verb form) in `sentence`
 and splices in the replacement, returning None if that substring isn't found
 so callers can skip a variant rather than emit a corrupted sentence.
 """
+import csv
+import functools
+import os
 import re
 
 SUBJECT_WORD = {"first_person": "I", "second_person": "you", "third_person": "John"}
@@ -212,4 +215,37 @@ def toggle_preposition(sentence, matrix_verb, person, tense, preposition):
     result = _splice(sentence, f"{verb_form} {preposition}", f"{verb_form} {new_prep}")
     return (result, new_prep) if result is not None else None
 
-# TODO: add util to use childes format. lowercase and spaces
+# CHILDES-style transcripts are all lowercase with punctuation split off as its own
+# token ("john thinks that it is raining ."). Apostrophes inside contractions stay put.
+PUNCTUATION = ".,?!;"
+VOCABULARY_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "benchmark_data", "vocabulary.csv")
+
+
+@functools.lru_cache(maxsize=None)
+def proper_nouns(vocabulary_path=VOCABULARY_PATH):
+    """Capitalized `person` entries in vocabulary.csv (John, Mary, ...), whose
+    capitalization lowercasing loses."""
+    with open(vocabulary_path, newline="", encoding="utf-8") as f:
+        return frozenset(
+            row["word"] for row in csv.DictReader(f)
+            if row["slot"] == "person" and row["word"][:1].isupper()
+        )
+
+
+def normative_to_childes_formatting(sentence):
+    """'John thinks that it's raining.' -> 'john thinks that it's raining .'
+    Dialogue speaker labels stay uppercase: 'A: Is it raining?' -> 'A: is it raining ?'"""
+    sentence = re.sub(rf"\s*([{re.escape(PUNCTUATION)}])", r" \1", sentence.lower())
+    sentence = re.sub(r"\b([ab]):", lambda m: m.group(1).upper() + ":", sentence)
+    return re.sub(r"\s+", " ", sentence).strip()
+
+
+def childes_to_normative_formatting(sentence):
+    """Best-effort inverse of normative_to_childes_formatting: reattach punctuation,
+    capitalize sentence starts (and after dialogue speaker labels like 'A:'), 'I', and
+    vocabulary proper nouns. Any other capitalization in the original can't be recovered."""
+    sentence = re.sub(rf"\s+([{re.escape(PUNCTUATION)}])", r"\1", sentence.strip())
+    sentence = re.sub(r"\bi\b", "I", sentence)
+    for name in proper_nouns():
+        sentence = re.sub(rf"\b{name.lower()}\b", name, sentence)
+    return re.sub(r"(^|[.?!:]\s+)([a-z])", lambda m: m.group(1) + m.group(2).upper(), sentence)
