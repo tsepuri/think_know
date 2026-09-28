@@ -46,14 +46,14 @@ inspecting individual sentence scores rather than only assertion-level results.
 
 ### SLOR scoring
 
-`eval_slor.py` scores the same pairs with SLOR (model logprob minus a unigram model's
+`eval_slor_manual.py` scores the same pairs with SLOR (model logprob minus a unigram model's
 logprob, per token) instead of mean logprob, so token frequency alone can't decide a
 pair. The unigram model is estimated per model with its own tokenizer; pass a corpus
 close to what that model was trained on (`hf:` corpora are streamed and only a ~1 MB
 `.npy` of counts is cached but this can be changed):
 
 ```
-python eval_slor.py \
+python eval_slor_manual.py \
   --model gpt2=hf:Skylion007/openwebtext
 ```
 

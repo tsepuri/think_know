@@ -37,6 +37,9 @@
         "tense",
         "negation",
         "matrix_subj_category"
+      ],
+      "bad_substitutions": [
+        "pres_neg_1p"
       ]
     },
     {
@@ -55,6 +58,9 @@
         "tense",
         "negation",
         "matrix_subj_category"
+      ],
+      "bad_substitutions": [
+        "pres_neg_1p"
       ]
     },
     {
@@ -157,9 +163,8 @@
         "matrix_subj_category",
         "matrix_verb"
       ],
-      "manipulated_types": [
-        "tense"
-      ]
+      "manipulated_types": [],
+      "free_embedded_clause": true
     }
   ]
 }

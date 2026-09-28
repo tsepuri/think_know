@@ -20,6 +20,7 @@ they,pronoun,pl,any,1,,,,,plural - matches a pl noun (e.g. keys)
 it,pronoun,sg,N,0,,,,,"inanimate singular - matches a sg inanimate noun (e.g. the rumor), never a person"
 raining,weather_predicate,,,,,,,,
 snowing,weather_predicate,,,,,,,,
+sunny,weather_predicate,,,,,,,,
 rumor,content_noun,sg,N,0,,,,,a rumor is startable
 message,content_noun,sg,N,0,,,,"matrix_verb:think,know","a message isn't startable - ""John starts the message"" is bad"
 false,judgment,,,,,,,,
@@ -41,10 +42,14 @@ water,mishap_object,sg,N,0,,1,0,,mass noun - stays sg
 broke,mishap_verb,,,,,,,breakable:1,requires a breakable=1 object
 shattered,mishap_verb,,,,,,,breakable:1,requires a breakable=1 object
 spilled,mishap_verb,,,,,,,liquid:1,requires a liquid=1 object
-it is raining,embedded_clause,,,,,,,,CP+Q only - free declarative complement
-it is snowing,embedded_clause,,,,,,,,CP+Q only - free declarative complement
-the rumor is true,embedded_clause,,,,,,,,CP+Q only - free declarative complement
-the rumor is false,embedded_clause,,,,,,,,CP+Q only - free declarative complement
+it is raining,embedded_clause,,,,,,,"phenomenon:CP + Q,Ellipsis,NP complement",CP+Q only - free declarative complement
+it is snowing,embedded_clause,,,,,,,"phenomenon:CP + Q,Ellipsis,NP complement",CP+Q only - free declarative complement
+the rumor is true,embedded_clause,,,,,,,"phenomenon:CP + Q,Ellipsis,NP complement",CP+Q only - free declarative complement
+the rumor is false,embedded_clause,,,,,,,"phenomenon:CP + Q,Ellipsis,NP complement",CP+Q only - free declarative complement
+it's raining,embedded_clause,,,,,,,"phenomenon:Parenthetical",
+it's snowing,embedded_clause,,,,,,,"phenomenon:Parenthetical",
+the rumor's true,embedded_clause,,,,,,,"phenomenon:Parenthetical",
+the rumor's false,embedded_clause,,,,,,,"phenomenon:Parenthetical",
 the vase broke,embedded_clause,,,,,,,,CP+Q only - free declarative complement
 the glass shattered,embedded_clause,,,,,,,,CP+Q only - free declarative complement
 the keys are,embedded_clause,,,,,,,complementizer:where,factive island base clause - only where can ask about it
@@ -62,7 +67,6 @@ when did Mary eat the cookies,wh_question,,,,,,,"paradigm:mini-discourse",for mi
 where are my keys,wh_question,,,,,,,,for mini-discourses
 my,determiner,pl,,,,,,,
 the,determiner,pl,,,,,,,
-a,determiner,sg,,,,,,,
 <person>'s,determiner,pl,,,,,,,
-some of the,determiner,pl,,,,,,countable: 1,
+some of the,determiner,pl,,,,,,countable:1,
 all of the,determiner,pl,,,,,,,

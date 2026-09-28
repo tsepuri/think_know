@@ -825,9 +825,23 @@ def make_unique_id(row, code, partition_dims, axis_tags, variant_id):
     return "_".join(str(p) for p in parts)
 
 
+# unique_id -> rows dropped because it matches a condition's bad_substitutions
+EXCLUDED = collections.Counter()
+
+
+def is_bad_substitution(unique_id, bad_substitutions):
+    """True if every underscore-separated word of some config.json
+    `bad_substitutions` entry is also a whole underscore-separated word of
+    `unique_id` (in any order) - "pres_neg_1p" excludes
+    "npcop_pres_neg_1p_variant_1" but not "npcop_pres_neg_3p_base"."""
+    id_words = set(unique_id.split("_"))
+    return any(set(bad.split("_")) <= id_words for bad in bad_substitutions)
+
+
 def build_variants(sentences_df, config, vocab, variant_config, n_lexical_variants=2):
     conditions = config["conditions"]
     SKIPPED.clear()
+    EXCLUDED.clear()
     out_rows = []
     for group_id, group_df in sentences_df.groupby("group_id", sort=False):
         group_rows = group_df.to_dict("records")
@@ -839,6 +853,7 @@ def build_variants(sentences_df, config, vocab, variant_config, n_lexical_varian
         manipulated_types = condition.get("manipulated_types", [])
         comparison_types = condition.get("comparison_types", [])
         settings = variation_settings(variant_config, condition)
+        bad_substitutions = condition.get("bad_substitutions", [])
         effective_manipulated_types = [
             d for d in manipulated_types
             if d not in STRUCTURAL_DIMENSIONS or not already_varies(group_df, d)
@@ -851,14 +866,18 @@ def build_variants(sentences_df, config, vocab, variant_config, n_lexical_varian
 
         for axis_tags, axis_rows in duplicate_for_axes(structural_rows, manipulated_types, comparison_types):
             for part_rows in partition_by_dimensions(axis_rows, partition_dims):
-                for r in part_rows:
-                    uid = make_unique_id(r, code, partition_dims, axis_tags, "base")
-                    out_rows.append({**r, "unique_id": uid, "variant_id": "base"})
-                for i in range(1, n_lexical_variants + 1):
-                    variant_id = f"variant_{i}"
-                    variant_rows = make_lexical_variant(part_rows, vocab, condition, settings)
+                # variants are still generated for excluded sets so the random draws,
+                # and so every other set's output, match a run without bad_substitutions
+                variant_sets = [("base", part_rows)] + [
+                    (f"variant_{i}", make_lexical_variant(part_rows, vocab, condition, settings))
+                    for i in range(1, n_lexical_variants + 1)
+                ]
+                for variant_id, variant_rows in variant_sets:
                     for r in variant_rows:
                         uid = make_unique_id(r, code, partition_dims, axis_tags, variant_id)
+                        if is_bad_substitution(uid, bad_substitutions):
+                            EXCLUDED[uid] += 1
+                            continue
                         out_rows.append({**r, "unique_id": uid, "variant_id": variant_id})
 
     for i, row in enumerate(out_rows, start=1):
@@ -895,6 +914,8 @@ def main():
     rows = build_variants(sentences_df, config, vocab, variant_config, n_lexical_variants=args.n_variants)
     for (group_id, dimension, matrix_type), n in sorted(SKIPPED.items()):
         print(f"warning: {group_id}: couldn't apply {dimension} to {matrix_type} rows ({n}x), left unchanged", file=sys.stderr)
+    if EXCLUDED:
+        print(f"Excluded {sum(EXCLUDED.values())} rows in {len(EXCLUDED)} sets matching bad_substitutions: {', '.join(sorted(EXCLUDED))}", file=sys.stderr)
     pd.DataFrame(rows).reindex(columns=OUTPUT_COLUMNS).to_csv(args.output, index=False)
     n_ids = len({row["variant_id"] for row in rows}) if rows else 0
     print(f"Wrote {len(rows)} rows ({args.n_variants + 1} variant_ids per set, {n_ids} distinct variant_id labels) to {args.output}")
