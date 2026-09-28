@@ -1,5 +1,6 @@
 config_old.json
 .env
+.DS_Store
 __pycache__/
 sentences_with_variants.csv
 pairs.csv
@@ -8,3 +9,4 @@ eval_results.csv
 eval_results-*.csv
 eval_summary.json
 eval_summary-*.json
+*npy

@@ -89,9 +89,9 @@
       "control": "true",
       "manipulated_types": [
         "tense",
-        "negation",
         "matrix_subj_category"
-      ]
+      ],
+      "free_embedded_clause": true
     },
     {
       "phenomenon": "Ellipsis",
@@ -131,7 +131,8 @@
         "negation",
         "matrix_verb"
       ],
-      "manipulated_types": []
+      "manipulated_types": [],
+      "free_embedded_clause": true
     },
     {
       "phenomenon": "Ellipsis",
@@ -143,7 +144,8 @@
         "negation",
         "matrix_verb"
       ],
-      "manipulated_types": []
+      "manipulated_types": [],
+      "free_embedded_clause": true
     },
     {
       "phenomenon": "Parenthetical",

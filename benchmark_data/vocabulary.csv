@@ -1,52 +1,68 @@
-word,slot,number,gender,animate,liquid,breakable,requires,notes
-John,person,sg,M,1,,,,proper name
-Christopher,person,sg,M,1,,,,proper name
-Theresa,person,sg,F,1,,,,proper name
-Mary,person,sg,F,1,,,,proper name
-Olivia,person,sg,F,1,,,,proper name
-Sarah,person,sg,F,1,,,,proper name
-the man,person,sg,M,1,,,,role noun
-the woman,person,sg,F,1,,,,role noun
-the teacher,person,sg,any,1,,,,role noun
-the student,person,sg,any,1,,,,role noun
-the doctor,person,sg,any,1,,,,role noun
-the cashier,person,sg,any,1,,,,role noun
-he,pronoun,sg,M,1,,,,matches a sg animate person
-she,pronoun,sg,F,1,,,,matches a sg animate person
-they,pronoun,sg,any,1,,,,singular they - matches a sg animate person of any gender
-they,pronoun,pl,any,1,,,,plural - matches a pl noun (e.g. keys)
-it,pronoun,sg,N,0,,,,"inanimate singular - matches a sg inanimate noun (e.g. the rumor), never a person"
-raining,weather_predicate,,,,,,,
-snowing,weather_predicate,,,,,,,
-rumor,content_noun,sg,N,0,,,,a rumor is startable
-message,content_noun,sg,N,0,,,"think,know","a message isn't startable - ""John starts the message"" is bad"
-false,judgment,,,,,,,
-true,judgment,,,,,,,
-good,judgment,,,,,,,
-bad,judgment,,,,,,,
-keys,object,pl,N,0,,,,
-documents,object,pl,N,0,,,,
-files,object,pl,N,0,,,,
-hid,hiding_verb,,,,,,,
-stashed,hiding_verb,,,,,,,
-buried,hiding_verb,,,,,,,
-put,hiding_verb,,,,,,,
-vase,mishap_object,sg,N,0,0,1,,
-glass,mishap_object,sg,N,0,0,1,,
-coffee,mishap_object,sg,N,0,1,0,,mass noun - stays sg
-juice,mishap_object,sg,N,0,1,0,,mass noun - stays sg
-water,mishap_object,sg,N,0,1,0,,mass noun - stays sg
-broke,mishap_verb,,,,,,breakable,requires a breakable=1 object
-shattered,mishap_verb,,,,,,breakable,requires a breakable=1 object
-spilled,mishap_verb,,,,,,liquid,requires a liquid=1 object
-it is raining,embedded_clause,,,,,,,CP+Q only - free declarative complement
-it is snowing,embedded_clause,,,,,,,CP+Q only - free declarative complement
-the rumor is true,embedded_clause,,,,,,,CP+Q only - free declarative complement
-the rumor is false,embedded_clause,,,,,,,CP+Q only - free declarative complement
-the vase broke,embedded_clause,,,,,,,CP+Q only - free declarative complement
-the glass shattered,embedded_clause,,,,,,,CP+Q only - free declarative complement
-Mary hid the keys,embedded_clause,,,,,,,CP+Q only - free declarative complement
-that,complementizer,,,,,,,"declarative CP - optional, see toggle_complementizer"
-whether,complementizer,,,,,,,"interrogative CP - obligatory, never varied"
-about,preposition,,,,,,"think,know",attested with think and know
-of,preposition,,,,,,"think,know",attested with think and know
+word,slot,number,gender,animate,countable,liquid,breakable,requires,notes
+John,person,sg,M,1,,,,,proper name
+Christopher,person,sg,M,1,,,,,proper name
+Bob,person,sg,M,1,,,,,proper name
+Theresa,person,sg,F,1,,,,,proper name
+Mary,person,sg,F,1,,,,,proper name
+Olivia,person,sg,F,1,,,,,proper name
+Sarah,person,sg,F,1,,,,,proper name
+Jane,person,sg,F,1,,,,,proper name
+the man,person,sg,M,1,,,,,role noun
+the woman,person,sg,F,1,,,,,role noun
+the teacher,person,sg,any,1,,,,,role noun
+the student,person,sg,any,1,,,,,role noun
+the doctor,person,sg,any,1,,,,,role noun
+the cashier,person,sg,any,1,,,,,role noun
+he,pronoun,sg,M,1,,,,,matches a sg animate person
+she,pronoun,sg,F,1,,,,,matches a sg animate person
+they,pronoun,sg,any,1,,,,,singular they - matches a sg animate person of any gender
+they,pronoun,pl,any,1,,,,,plural - matches a pl noun (e.g. keys)
+it,pronoun,sg,N,0,,,,,"inanimate singular - matches a sg inanimate noun (e.g. the rumor), never a person"
+raining,weather_predicate,,,,,,,,
+snowing,weather_predicate,,,,,,,,
+rumor,content_noun,sg,N,0,,,,,a rumor is startable
+message,content_noun,sg,N,0,,,,"matrix_verb:think,know","a message isn't startable - ""John starts the message"" is bad"
+false,judgment,,,,,,,,
+true,judgment,,,,,,,,
+good,judgment,,,,,,,,
+bad,judgment,,,,,,,,
+keys,object,pl,N,0,,,,,
+documents,object,pl,N,0,,,,,
+files,object,pl,N,0,,,,,
+hid,hiding_verb,,,,,,,,
+stashed,hiding_verb,,,,,,,,
+buried,hiding_verb,,,,,,,,
+put,hiding_verb,,,,,,,,
+vase,mishap_object,sg,N,0,,0,1,,
+glass,mishap_object,sg,N,0,,0,1,,
+coffee,mishap_object,sg,N,0,,1,0,,mass noun - stays sg
+juice,mishap_object,sg,N,0,,1,0,,mass noun - stays sg
+water,mishap_object,sg,N,0,,1,0,,mass noun - stays sg
+broke,mishap_verb,,,,,,,breakable:1,requires a breakable=1 object
+shattered,mishap_verb,,,,,,,breakable:1,requires a breakable=1 object
+spilled,mishap_verb,,,,,,,liquid:1,requires a liquid=1 object
+it is raining,embedded_clause,,,,,,,,CP+Q only - free declarative complement
+it is snowing,embedded_clause,,,,,,,,CP+Q only - free declarative complement
+the rumor is true,embedded_clause,,,,,,,,CP+Q only - free declarative complement
+the rumor is false,embedded_clause,,,,,,,,CP+Q only - free declarative complement
+the vase broke,embedded_clause,,,,,,,,CP+Q only - free declarative complement
+the glass shattered,embedded_clause,,,,,,,,CP+Q only - free declarative complement
+the keys are,embedded_clause,,,,,,,complementizer:where,factive island base clause - only where can ask about it
+Mary hid the keys,embedded_clause,,,,,,,"complementizer:where,when,why",CP+Q only - free declarative complement
+Mary ate the cookies,embedded_clause,,,,,,,"complementizer:when,why",CP+Q only - free declarative complement
+that,complementizer,,,,,,,,"declarative CP - optional, see toggle_complementizer"
+whether,complementizer,,,,,,,,"interrogative CP - obligatory, never varied"
+when,complementizer,,,,,,,,
+where,complementizer,,,,,,,,
+why,complementizer,,,,,,,,
+about,preposition,,,,,,,"matrix_verb:think,know",attested with think and know
+of,preposition,,,,,,,"matrix_verb:think,know",attested with think and know
+where did Mary hide the keys,wh_question,,,,,,,"paradigm:mini-discourse",for mini-discourses
+when did Mary eat the cookies,wh_question,,,,,,,"paradigm:mini-discourse",for mini-discourses
+where are my keys,wh_question,,,,,,,,for mini-discourses
+my,determiner,pl,,,,,,,
+the,determiner,pl,,,,,,,
+a,determiner,sg,,,,,,,
+<person>'s,determiner,pl,,,,,,,
+some of the,determiner,pl,,,,,,countable: 1,
+all of the,determiner,pl,,,,,,,

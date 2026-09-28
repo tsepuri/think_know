@@ -20,7 +20,12 @@ VERB_FORMS = {
 }
 
 COPULA = {"present": "is", "past": "was"}
+COPULA_SWAP = {
+    ("present", "past"): {"is": "was", "are": "were"},
+    ("past", "present"): {"was": "is", "were": "are"},
+}
 DO_PAST = "did"
+QUESTION_TYPES = ("wh_question", "polar_question")
 
 
 def conjugate(verb, person, tense):
@@ -55,19 +60,35 @@ def _splice(sentence, old, new, count=1):
         result = result[0].upper() + result[1:]
     return result
 
+def _splice_aux(sentence, old, new):
+    """Swap a do-support auxiliary, which is capitalized when sentence-initial
+    ('Does John know...?'). Returns None if neither casing is found."""
+    return _splice(sentence, old, new) or _splice(sentence, old.capitalize(), new.capitalize())
+
+
+def _swap_embedded_copula(sentence, from_tense, to_tense):
+    """Swap the first is/are (or was/were) for the other tense; unchanged if there is none."""
+    mapping = COPULA_SWAP[(from_tense, to_tense)]
+    pattern = r"\b(" + "|".join(mapping) + r")\b"
+    return re.sub(pattern, lambda m: mapping[m.group(1)], sentence, count=1)
+
+
 # TODO: refactor change methods to avoid duplicate code
-def change_person(sentence, matrix_subj, matrix_verb, from_person, to_person, tense):
-    """Swap the matrix subject + reconjugate its verb.
+def change_person(sentence, matrix_subj, matrix_verb, from_person, to_person, tense, matrix_type):
+    """Swap the matrix subject and re-agree the verb. In a declarative that
+    means reconjugating the verb ('John thinks' -> 'I think'); in a wh/polar
+    question the verb stays bare and agreement lives on the fronted do-support
+    auxiliary ('Does John know' -> 'Do I know').
     Returns (new_sentence, new_matrix_subj), or None if the expected literal
-    subject/verb text isn't found (e.g. the matrix verb is already in bare
-    do-support form, as in an already-formed question)."""
+    subject/verb/aux text isn't found."""
     new_subj = SUBJECT_WORD[to_person]
-    old_verb_form = conjugate(matrix_verb, from_person, tense)
-    new_verb_form = conjugate(matrix_verb, to_person, tense)
     result = _splice(sentence, matrix_subj, new_subj)
     if result is None:
         return None
-    result = _splice(result, old_verb_form, new_verb_form)
+    if matrix_type in QUESTION_TYPES:
+        result = _splice_aux(result, do_form(from_person, tense), do_form(to_person, tense))
+    else:
+        result = _splice(result, conjugate(matrix_verb, from_person, tense), conjugate(matrix_verb, to_person, tense))
     if result is None:
         return None
     return result, new_subj
@@ -75,12 +96,16 @@ def change_person(sentence, matrix_subj, matrix_verb, from_person, to_person, te
 
 def change_tense(sentence, matrix_subj, matrix_verb, person, from_tense, to_tense, matrix_type):
     """Swap matrix verb tense and the embedded copula (is/was). Returns None
-    if the matrix verb's conjugated form for `from_tense` isn't found, or if
-    matrix_type isn't declarative: for first/second person, the present-tense
-    conjugated form and the bare form are the same string ("I think"), so
-    without this guard an already-formed question like 'Do I think...' would
-    match on 'think' and get its tense swapped without updating 'Do'->'Did',
-    producing 'Do I thought...'."""
+    if the matrix verb's conjugated form for `from_tense` isn't found.
+    Wh/polar questions take a separate path that swaps the do-support
+    auxiliary and the embedded copula ('Does John know where the keys are?'
+    -> 'Did John know where the keys were?') and never touches the bare verb:
+    for first/second person the present-tense conjugated form and the bare
+    form are the same string ("I think"), so matching on the verb would
+    produce 'Do I thought...'."""
+    if matrix_type in QUESTION_TYPES:
+        result = _splice_aux(sentence, do_form(person, from_tense), do_form(person, to_tense))
+        return None if result is None else _swap_embedded_copula(result, from_tense, to_tense)
     if matrix_type != "declarative":
         return None
     old_verb_form = conjugate(matrix_verb, person, from_tense)

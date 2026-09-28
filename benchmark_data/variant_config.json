@@ -1,0 +1,6 @@
+{
+  "embedded_clause_swap_prob": 0.5,
+  "min_slots_modified": 1,
+  "max_slots_modified": 2,
+  "conditions": {}
+}

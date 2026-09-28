@@ -17,14 +17,24 @@ Two independent expansion passes, per condition in config.json:
    sentences stay about the same rumor/weather/mishap instance while
    different tense/person/etc. combinations within one group_id still get
    independently varied. On top of the unchanged base copy, --n-variants (2
-   by default) more full copies are generated per set, each stacking a
-   random 1-3 substitutions drawn from whichever vocabulary slots actually
-   match text present in that set's rows.
+   by default) more full copies are generated per set. In a condition with
+   free_embedded_clause, a copy first gets a different embedded clause
+   (with probability embedded_clause_swap_prob); then a random
+   min_slots_modified..max_slots_modified substitutions are stacked, drawn from
+   whichever vocabulary slots actually match text present in that set's rows
+   (now including the swapped-in clause). Both are set in variant_config.json,
+   for every condition or overridden per condition code.
+
+   A vocabulary entry's `requires` (<column>:<value>[,<value>..], see
+   parse_requires) restricts where it may be swapped in; a substitution is
+   never allowed to newly break one, whichever word it's on.
 """
 import argparse
+import collections
 import json
 import random
 import re
+import sys
 
 import pandas as pd
 
@@ -32,7 +42,12 @@ import utils
 
 # second person conditions are not expanded
 PERSONS = ["first_person", "third_person"]
-SIMPLE_SLOTS = ["person", "weather_predicate", "content_noun", "judgment", "object", "hiding_verb"]
+# slots whose words are swapped for one another wherever they appear. person has its own
+# rename/pronoun handling, and embedded_clause/complementizer/determiner their own logic
+SIMPLE_SLOTS = ["weather_predicate", "content_noun", "judgment", "object", "hiding_verb", "mishap_object", "mishap_verb"]
+# the "content" a free_embedded_clause condition swaps first, before any of the above: a clause
+# ("John knows where Mary hid the keys") or, in a mini-discourse, its wh-question ("A: Where are my keys?")
+CLAUSE_SLOTS = ["embedded_clause", "wh_question"]
 
 def load_config(path):
     with open(path, encoding="utf-8") as f:
@@ -60,6 +75,14 @@ def condition_for_row(conditions, row):
 # Structural expansion
 # ---------------------------------------------------------------------------
 
+# (group_id, dimension, matrix_type) -> times a manipulation the config asks for couldn't be applied
+SKIPPED = collections.Counter()
+
+
+def _skip(row, dimension):
+    SKIPPED[(row["group_id"], dimension, row["matrix_type"])] += 1
+
+
 def _wants(dimension, manipulated_types, comparison_types):
     return dimension in manipulated_types and dimension not in comparison_types
 
@@ -72,8 +95,9 @@ def expand_person(row, manipulated_types, comparison_types):
     for person in PERSONS:
         if person == base_person or base_person not in PERSONS:
             continue
-        result = utils.change_person(row["sentence"], row["matrix_subj"], row["matrix_verb"], base_person, person, row["tense"])
+        result = utils.change_person(row["sentence"], row["matrix_subj"], row["matrix_verb"], base_person, person, row["tense"], row["matrix_type"])
         if result is None:
+            _skip(row, "matrix_subj_category")
             continue
         new_sentence, new_subj = result
         rows.append({**row, "sentence": new_sentence, "matrix_subj_category": person, "matrix_subj": new_subj})
@@ -85,6 +109,7 @@ def expand_matrix_type(row, manipulated_types, comparison_types):
         return [row]
     new_sentence = utils.make_polar_question(row["sentence"], row["matrix_subj"], row["matrix_verb"], row["matrix_subj_category"], row["tense"])
     if new_sentence is None:
+        _skip(row, "matrix_type")
         return [row]
     return [row, {**row, "sentence": new_sentence, "matrix_type": "polar_question"}]
 
@@ -94,6 +119,7 @@ def expand_tense(row, manipulated_types, comparison_types):
         return [row]
     new_sentence = utils.change_tense(row["sentence"], row["matrix_subj"], row["matrix_verb"], row["matrix_subj_category"], "present", "past", row["matrix_type"])
     if new_sentence is None:
+        _skip(row, "tense")
         return [row]
     return [row, {**row, "sentence": new_sentence, "tense": "past"}]
 
@@ -103,6 +129,7 @@ def expand_negation(row, manipulated_types, comparison_types):
         return [row]
     new_sentence = utils.negate_clause(row["sentence"], row["matrix_subj"], row["matrix_verb"], row["matrix_subj_category"], row["tense"], row["matrix_type"])
     if new_sentence is None:
+        _skip(row, "negation")
         return [row]
     return [row, {**row, "sentence": new_sentence, "negation": "yes"}]
 
@@ -187,63 +214,218 @@ def duplicate_for_axes(structural_rows, manipulated_types, comparison_types):
 
 
 # ---------------------------------------------------------------------------
+# Vocabulary + `requires`
+# ---------------------------------------------------------------------------
+
+DETERMINER_SLOT = "determiner" 
+NOUN_SLOTS = ("content_noun", "object", "mishap_object")
+NON_WH_COMPLEMENTIZERS = {"that", "whether"}
+NON_FEATURE_COLUMNS = {"word", "slot", "requires", "notes"}
+
+
+def parse_requires(text):
+    """vocabulary.csv `requires` -> {column: {values}}. Syntax is
+    <column>:<value>[,<value>...], with ';' between several requirements
+    (all must hold). <column> is either a sentences.csv column - the row
+    being varied must have one of the values, e.g. matrix_verb:think,know,
+    paradigm:mini-discourse, complementizer:where,why - or a vocabulary.csv
+    feature column - some word in the sentence must have one of the values,
+    e.g. breakable:1 on a mishap_verb wants a breakable object present."""
+    reqs = {}
+    for part in (text or "").split(";"):
+        part = part.strip()
+        if not part:
+            continue
+        column, sep, values = part.partition(":")
+        values = {v.strip() for v in values.split(",") if v.strip()}
+        if not sep or not column.strip() or not values:
+            raise ValueError(f"bad requires {text!r}: expected <column>:<value>[,<value>...]")
+        reqs[column.strip()] = values
+    return reqs
+
+
+class Vocabulary:
+    """vocabulary.csv plus the lookups `requires` checking needs. Raises on a
+    malformed `requires` or one naming a column that's in neither
+    sentences.csv nor vocabulary.csv; a value that never occurs in that
+    sentences.csv column (or in the vocabulary slot of the same name, for
+    e.g. complementizer) is only recorded in `warnings`, since it may just
+    be a value no base sentence uses yet."""
+
+    def __init__(self, vocab_df, sentences_df):
+        self.records = vocab_df.to_dict("records")
+        self.sentence_columns = set(sentences_df.columns)
+        self.feature_columns = set(vocab_df.columns) - NON_FEATURE_COLUMNS
+        self.warnings = []
+        self._pools = {}
+        for entry in self.records:
+            self._pools.setdefault(entry["slot"], []).append(entry)
+        self.wh_complementizers = {e["word"] for e in self.pool("complementizer")} - NON_WH_COMPLEMENTIZERS
+        for slot in SIMPLE_SLOTS + CLAUSE_SLOTS + [DETERMINER_SLOT, "person", "pronoun", "complementizer"]:
+            if not self.pool(slot):
+                self.warnings.append(f"vocabulary.csv has no {slot!r} entries (a renamed slot?) - that slot won't be varied")
+        for entry in self.pool(DETERMINER_SLOT):
+            if entry["number"] not in ("sg", "pl", ""):
+                self.warnings.append(f"determiner {entry['word']!r}: number {entry['number']!r} should be sg, pl, or blank for either")
+        self.constrained = []  # (entry, parsed requires) for entries that have one
+        for entry in self.records:
+            try:
+                reqs = parse_requires(entry["requires"])
+            except ValueError as err:
+                raise ValueError(f"vocabulary.csv, {entry['word']!r}: {err}") from None
+            for column, values in reqs.items():
+                self._check_requirement(entry, column, values, sentences_df)
+            if reqs:
+                self.constrained.append((entry, reqs))
+        # a clause that lists no complementizers is for that/whether/none only
+        # - a wh-word needs a clause that names it (see requires_violations)
+        self.unlicensed_clauses = [e for e in self.pool("embedded_clause") if "complementizer" not in parse_requires(e["requires"])]
+        self._words_in_cache = {}
+
+    def _check_requirement(self, entry, column, values, sentences_df):
+        if column in self.sentence_columns:
+            known = set(sentences_df[column]) | {e["word"] for e in self.pool(column)}
+            for value in sorted(values - known):
+                self.warnings.append(f"{entry['word']!r} requires {column}:{value}, but no {column} in sentences.csv or vocabulary.csv is {value!r}")
+        elif column not in self.feature_columns:
+            raise ValueError(f"vocabulary.csv, {entry['word']!r}: requires column {column!r} is in neither sentences.csv nor vocabulary.csv")
+
+    def pool(self, slot):
+        return self._pools.get(slot, [])
+
+    def noun(self, word):
+        for slot in NOUN_SLOTS:
+            for entry in self.pool(slot):
+                if entry["word"].lower() == word.lower():
+                    return entry
+        return None
+
+    def words_in(self, text):
+        """Vocabulary entries whose word appears in `text`."""
+        if text not in self._words_in_cache:
+            self._words_in_cache[text] = [e for e in self.records if "<" not in e["word"] and _contains(text, e["word"])]
+        return self._words_in_cache[text]
+
+
+def _row_value(row, column, vocab):
+    """row[column], except a wh_question's complementizer is the wh-word it
+    fronts: 'Where does John know Mary hid the keys?' is 'none' in
+    sentences.csv, but for `requires` purposes (and for varying it in step with
+    its embedded-wh siblings) it's 'where'."""
+    value = row[column]
+    if column == "complementizer" and value not in vocab.wh_complementizers and row["matrix_type"] == "wh_question":
+        first = re.match(r"\w+", row["sentence"])
+        if first and first.group(0).lower() in vocab.wh_complementizers:
+            return first.group(0).lower()
+    return value
+
+
+def requirement_met(column, values, row, text, vocab, context=None):
+    """One parsed `requires` entry. A sentences.csv column is checked against
+    the row; a vocabulary feature column against the vocabulary words present
+    in `text` (or in `context`, when the requirement is about one specific
+    word - a determiner's noun - rather than anything in the sentence)."""
+    if column in vocab.sentence_columns:
+        return _row_value(row, column, vocab) in values
+    words = context if context is not None else vocab.words_in(text)
+    return any(e.get(column) in values for e in words)
+
+
+def requires_violations(rows, vocab):
+    """(row index, slot, column) for every unmet `requires` among the
+    vocabulary words present in `rows`. A substitution is safe when it leaves
+    this no bigger than before - which grandfathers the unmet requirements
+    that are the point of a control row (e.g. 'about' with 'John starts
+    about the rumor') while catching a swap that newly breaks one: 'message'
+    into a partition that has start rows, or 'vase' -> 'coffee' under 'broke'.
+    Determiners are left out - their requirement is about their own noun, see
+    find_determiner_candidates.
+
+    Also counted: a wh-complementizer on a clause that doesn't list any
+    ('Where did John know the message was true?') - only clauses whose
+    `requires` names complementizers (e.g. 'Mary hid the keys') license one."""
+    found = set()
+    for i, row in enumerate(rows):
+        present = None
+        for entry, reqs in vocab.constrained:
+            if entry["slot"] == DETERMINER_SLOT:
+                continue
+            if entry["slot"] == "embedded_clause":
+                present = present if present is not None else _present_tensed(row)
+                text = present
+            else:
+                text = row["sentence"]
+            if not _contains(text, entry["word"]):
+                continue
+            for column, values in reqs.items():
+                if not requirement_met(column, values, row, text, vocab):
+                    found.add((i, entry["slot"], column))
+        if _row_value(row, "complementizer", vocab) in vocab.wh_complementizers:
+            present = present if present is not None else _present_tensed(row)
+            if any(_contains(present, e["word"]) for e in vocab.unlicensed_clauses):
+                found.add((i, "embedded_clause", "complementizer"))
+    return found
+
+
+# ---------------------------------------------------------------------------
 # Lexical variation
 # ---------------------------------------------------------------------------
 
-def build_slot_pool(vocab_df, slot):
-    return vocab_df[vocab_df["slot"] == slot].to_dict("records")
+# sentence-initial, or right after a discourse turn label ("A: Where are my keys?")
+_SENTENCE_START = re.compile(r"(?:^|[.?!:]\s+)$")
+
+DEFAULT_VARIATION = {
+    "embedded_clause_swap_prob": 0.5,  # chance a variant first gets a different embedded clause
+    "min_slots_modified": 1,           # then this many..
+    "max_slots_modified": 2,           # ..to this many other slots modified
+}
+
+
+def variation_settings(variant_config, condition):
+    """DEFAULT_VARIATION, overridden by variant_config.json's top-level
+    settings, overridden in turn by its "conditions" entry for this
+    condition's code (e.g. {"conditions": {"cpq": {"max_slots_modified": 3}}})."""
+    top_level = {k: v for k, v in variant_config.items() if k != "conditions"}
+    per_condition = variant_config.get("conditions", {}).get(condition.get("code"), {})
+    settings = {**DEFAULT_VARIATION, **top_level, **per_condition}
+    unknown = settings.keys() - DEFAULT_VARIATION.keys()
+    if unknown:
+        raise ValueError(f"variant_config.json: unknown setting(s) {sorted(unknown)}")
+    if not 0 <= settings["min_slots_modified"] <= settings["max_slots_modified"]:
+        raise ValueError(f"variant_config.json needs 0 <= min_slots_modified <= max_slots_modified, got {settings}")
+    return settings
 
 
 def _contains(sentence, word):
-    return re.search(r"\b" + re.escape(word) + r"\b", sentence) is not None
+    return re.search(r"\b" + re.escape(word) + r"\b", sentence, re.IGNORECASE) is not None
 
 
 def _replace_all(sentence, old, new):
-    return re.sub(r"\b" + re.escape(old) + r"\b", new, sentence)
+    """Whole-word, case-insensitive replace; `new` is capitalized when it
+    lands at the start of a sentence or discourse turn ('Where are my keys?'
+    -> 'When did Mary eat the cookies?')."""
+    def sub(match):
+        at_start = _SENTENCE_START.search(sentence[:match.start()]) is not None
+        return new[:1].upper() + new[1:] if at_start else new
+    return re.sub(r"\b" + re.escape(old) + r"\b", sub, sentence, flags=re.IGNORECASE)
 
 
-def _verb_compatible(entry, rows):
-    """True if `entry` has no `requires` list, or every row in the partition
-    has a matrix_verb on it - e.g. content_noun "message" requires
-    "think,know": a partition mixing critical (think/know) and control
-    (start) rows for the same tense/person/type must not offer "message" as
-    an alternative, since "John starts the message" is not felicitious.
-    TODO: fix this so that it instead just does 
-    not include controls if message is chosen at the replacement?"""
-    requires = [v.strip() for v in (entry.get("requires") or "").split(",") if v.strip()]
-    return not requires or all(r["matrix_verb"] in requires for r in rows)
+def _substitutable(rows, old, alternatives, vocab):
+    """The `alternatives` to `old` that don't leave any `requires` newly unmet."""
+    before = requires_violations(rows, vocab)
+    return [a for a in alternatives if requires_violations(_apply_simple(rows, old, a), vocab) <= before]
 
 
-def find_simple_candidates(rows, pool):
+def find_simple_candidates(rows, pool, vocab):
     """Words from `pool` that appear in at least one row's sentence, each
     mapped to alternatives from the same pool (all members, minus itself,
-    and minus any not verb_compatible with every row in this partition)."""
+    and minus any that would newly break a `requires`)."""
     found = {}
     for entry in pool:
         word = entry["word"]
         if not any(_contains(r["sentence"], word) for r in rows):
             continue
-        alternatives = [e["word"] for e in pool if e["word"] != word and _verb_compatible(e, rows)]
-        if alternatives:
-            found[word] = alternatives
-    return found
-
-
-def find_feature_matched_candidates(rows, pool, feature_cols):
-    """Like find_simple_candidates, but alternatives are restricted to pool
-    entries sharing the same feature values (so a swap never breaks a
-    dependent slot - e.g. keeping 'broke' compatible with the still-present
-    'breakable' object, or keeping a swapped object compatible with the
-    still-present verb)."""
-    by_word = {entry["word"]: entry for entry in pool}
-    found = {}
-    for word, entry in by_word.items():
-        if not any(_contains(r["sentence"], word) for r in rows):
-            continue
-        alternatives = [
-            w for w, other in by_word.items()
-            if w != word and all(other.get(c) == entry.get(c) for c in feature_cols)
-        ]
+        alternatives = _substitutable(rows, word, [e["word"] for e in pool if e["word"] != word], vocab)
         if alternatives:
             found[word] = alternatives
     return found
@@ -258,7 +440,7 @@ def find_person_rename_candidates(rows, person_pool):
 def find_pronoun_candidate(rows, person_pool, pronoun_pool):
     """Only works for the matrix subject (not e.g. a content-referenced
     name like "Mary" in "about Mary") - that's the one position we can
-    reconjugate correctly; TODO: work for object-position pronoun as well. 
+    reconjugate correctly; TODO: work for object-position pronoun as well.
     Matches are by number and animacy, not gender. "they" is only offered when every row
     sharing that subject is a shape utils.repronoun_subject knows how to
     reconjugate (declarative, negated or not, or polar_question). in the future "they"
@@ -280,66 +462,177 @@ def find_pronoun_candidate(rows, person_pool, pronoun_pool):
     return word, random.choice(matches)["word"]
 
 
+def _determiner_pattern(dets, names):
+    """One regex over every determiner (longest first, so 'some of the' wins
+    over 'the'), each a named group d<i>, followed by its noun. '<person>'s'
+    matches any proper name plus 's."""
+    name_alt = "|".join(re.escape(n) for n in names)
+    branches = []
+    for i, det in sorted(enumerate(dets), key=lambda item: -len(item[1]["word"])):
+        body = re.escape(det["word"]).replace(re.escape("<person>"), f"(?:{name_alt})")
+        branches.append(f"(?P<d{i}>{body})")
+    return re.compile(r"\b(?:" + "|".join(branches) + r")\s+(?P<noun>[A-Za-z]+)", re.IGNORECASE)
+
+
+def _determiner_fits(det, noun_entry, rows, vocab):
+    """A determiner's `number` (sg/pl) must match its noun's - 'a' only with
+    singular nouns, 'all of the' only with plural ones; blank takes either.
+    The determiner's own `requires` (e.g. countable:1) is checked against its
+    noun's vocabulary entry. A noun with no entry (e.g. 'cookies') has no known
+    number and can't satisfy a vocabulary-column requirement, so it only takes
+    determiners with a blank number and no such requirement."""
+    if det["number"] in ("sg", "pl") and not (noun_entry and noun_entry["number"] == det["number"]):
+        return False
+    context = [noun_entry] if noun_entry else []
+    return all(
+        requirement_met(column, values, r, r["sentence"], vocab, context)
+        for r in rows for column, values in parse_requires(det["requires"]).items()
+    )
+
+
+def find_determiner_candidates(rows, vocab):
+    """{'the keys': ['my keys', "Sarah's keys", ...]} - every determiner+noun
+    phrase in `rows` mapped to the phrases the same noun could take instead.
+    Persons' role nouns ('the man') are skipped: the determiner is part of
+    that person entry, not a slot of its own."""
+    dets = vocab.pool(DETERMINER_SLOT)
+    persons = vocab.pool("person")
+    names = [e["word"] for e in persons if not e["word"].startswith("the ")]
+    if not dets:
+        return {}
+    pattern = _determiner_pattern(dets, names)
+    role_nouns = {e["word"].lower() for e in persons}
+    found = {}
+    for r in rows:
+        for m in pattern.finditer(r["sentence"]):
+            if m.group(0).lower() in role_nouns or m.group(0) in found:
+                continue
+            det = next(d for i, d in enumerate(dets) if m.group(f"d{i}") is not None)
+            noun = m.group("noun")
+            affected = [row for row in rows if _contains(row["sentence"], m.group(0))]
+            unused_names = [n for n in names if not any(_contains(row["sentence"], n) for row in rows)]
+            alternatives = []
+            for other in dets:
+                if other is det or not _determiner_fits(other, vocab.noun(noun), affected, vocab):
+                    continue
+                if "<person>" in other["word"]:
+                    alternatives.extend(other["word"].replace("<person>", n) + " " + noun for n in unused_names)
+                else:
+                    alternatives.append(other["word"] + " " + noun)
+            if alternatives:
+                found[m.group(0)] = alternatives
+    return found
+
+
 def _present_tensed(row):
     """`row`'s sentence normalized to present tense, via utils.change_tense,
     so embedded-clause detection/substitution can work against
     vocabulary.csv's present-tense-canonical clause forms (e.g. 'it is
-    raining', 'the rumor is true') - there's no separate past-tense entry.
-    No-op when the row is already present tense."""
+    raining', 'the rumor is true'). No-op when the row is already present tense."""
     if row["tense"] == "present":
         return row["sentence"]
     reverted = utils.change_tense(row["sentence"], row["matrix_subj"], row["matrix_verb"], row["matrix_subj_category"], row["tense"], "present", row["matrix_type"])
     return reverted if reverted is not None else row["sentence"]
 
 
-def find_embedded_clause_candidate(rows, clause_pool):
-    present_word = None
-    # needs to contain an embedded clause to be able to replace
-    for entry in clause_pool:
-        if any(_contains(_present_tensed(r), entry["word"]) for r in rows):
-            present_word = entry["word"]
-            break
-    if present_word is None:
-        return None
-    alternatives = [e["word"] for e in clause_pool if e["word"] != present_word]
-    if not alternatives:
-        return None
-    return present_word, alternatives
+def _present_clauses(rows, vocab):
+    """embedded_clause / wh_question entries whose text appears in at least one row."""
+    return [e for slot in CLAUSE_SLOTS for e in vocab.pool(slot) if any(_contains(_present_tensed(r), e["word"]) for r in rows)]
 
 
-def gather_candidates(rows, vocab_df, condition):
+def _wh_complementizer(rows, vocab):
+    """The one wh-complementizer (where/when/why) `rows` share, else None."""
+    current = {_row_value(r, "complementizer", vocab) for r in rows} & vocab.wh_complementizers
+    return next(iter(current)) if len(current) == 1 else None
+
+
+def find_complementizer_candidate(rows, vocab):
+    """(current wh-word, alternatives): a wh-complementizer can change when
+    an embedded clause in the rows lists several via its `requires`
+    (e.g. 'Mary hid the keys' requires complementizer:where,when,why). The
+    alternatives are the ones every such clause allows and no other
+    `requires` objects to."""
+    allowed = None
+    for entry in _present_clauses(rows, vocab):
+        values = parse_requires(entry["requires"]).get("complementizer")
+        if values:
+            allowed = values if allowed is None else allowed & values
+    current = _wh_complementizer(rows, vocab)
+    if not allowed or current not in allowed:
+        return None
+    before = requires_violations(rows, vocab)
+    alternatives = [
+        c for c in sorted((allowed - {current}) & vocab.wh_complementizers)
+        if requires_violations(_apply_complementizer(rows, current, c, vocab), vocab) <= before
+    ]
+    return (current, alternatives) if alternatives else None
+
+
+def find_embedded_clause_swap(rows, vocab):
+    """(old clause, new clause, (old wh, new wh) or None) for a random
+    swappable clause, or None - an embedded_clause is swapped for another
+    embedded_clause, a mini-discourse's wh_question for another wh_question.
+    A clause whose `requires` the rows
+    already satisfy is swapped as-is; one that lists other complementizers
+    (e.g. 'Mary ate the cookies' can't ask 'where') is also swapped in if
+    the rows' wh-complementizer can change to one it allows."""
+    present = _present_clauses(rows, vocab)
+    if not present:
+        return None
+    old = present[0]["word"]
+    before = requires_violations(rows, vocab)
+    current = _wh_complementizer(rows, vocab)
+    options = {}
+    for entry in vocab.pool(present[0]["slot"]):
+        new = entry["word"]
+        if new == old:
+            continue
+        swapped = _apply_embedded_clause(rows, old, new)
+        if requires_violations(swapped, vocab) <= before:
+            options.setdefault(new, []).append(None)
+            continue
+        allowed = parse_requires(entry["requires"]).get("complementizer") or set()
+        for comp in sorted((allowed - {current}) & vocab.wh_complementizers) if current else []:
+            adapted = _apply_complementizer(swapped, current, comp, vocab)
+            if requires_violations(adapted, vocab) <= before:
+                options.setdefault(new, []).append((current, comp))
+    if not options:
+        return None
+    new = random.choice(sorted(options))
+    return old, new, random.choice(options[new])
+
+
+def gather_candidates(rows, vocab):
     """All applicable substitution candidates for this group's rows, keyed
-    by an arbitrary candidate id -> a zero-arg apply function."""
+    by an arbitrary candidate id -> (apply function, label)."""
     candidates = {}
 
     for slot in SIMPLE_SLOTS:
-        pool = build_slot_pool(vocab_df, slot)
-        if slot == "person":
-            continue  # person has its own rename/pronoun handling below
-        for word, alternatives in find_simple_candidates(rows, pool).items():
+        for word, alternatives in find_simple_candidates(rows, vocab.pool(slot), vocab).items():
             new_word = random.choice(alternatives)
             candidates[f"{slot}:{word}"] = (
                 lambda rs, w=word, nw=new_word: _apply_simple(rs, w, nw),
                 f"{slot}: {word}->{new_word}",
             )
-    # TODO: simplify these to work more straightforward like simple slots
-    mishap_object_pool = build_slot_pool(vocab_df, "mishap_object")
-    mishap_verb_pool = build_slot_pool(vocab_df, "mishap_verb")
-    for word, alternatives in find_feature_matched_candidates(rows, mishap_object_pool, ["liquid", "breakable"]).items():
-        new_word = random.choice(alternatives)
-        candidates[f"mishap_object:{word}"] = (
-            lambda rs, w=word, nw=new_word: _apply_simple(rs, w, nw),
-            f"mishap_object: {word}->{new_word}",
-        )
-    for word, alternatives in find_feature_matched_candidates(rows, mishap_verb_pool, ["requires"]).items():
-        new_word = random.choice(alternatives)
-        candidates[f"mishap_verb:{word}"] = (
-            lambda rs, w=word, nw=new_word: _apply_simple(rs, w, nw),
-            f"mishap_verb: {word}->{new_word}",
+
+    for phrase, alternatives in find_determiner_candidates(rows, vocab).items():
+        new_phrase = random.choice(alternatives)
+        candidates[f"determiner:{phrase}"] = (
+            lambda rs, p=phrase, np=new_phrase: _apply_simple(rs, p, np),
+            f"determiner: {phrase}->{new_phrase}",
         )
 
-    person_pool = build_slot_pool(vocab_df, "person")
-    pronoun_pool = build_slot_pool(vocab_df, "pronoun")
+    complementizer_choice = find_complementizer_candidate(rows, vocab)
+    if complementizer_choice:
+        old, alternatives = complementizer_choice
+        new = random.choice(alternatives)
+        candidates["complementizer"] = (
+            lambda rs, o=old, n=new: _apply_complementizer(rs, o, n, vocab),
+            f"complementizer: {old}->{new}",
+        )
+
+    person_pool = vocab.pool("person")
+    pronoun_pool = vocab.pool("pronoun")
     rename_present = find_person_rename_candidates(rows, person_pool)
     if rename_present:
         pool_words = [e["word"] for e in person_pool]
@@ -359,17 +652,6 @@ def gather_candidates(rows, vocab_df, condition):
             lambda rs, w=word, p=pronoun: _apply_pronoun(rs, w, p),
             f"person: {word}->{pronoun}",
         )
-
-    if condition.get("free_embedded_clause"):
-        clause_pool = build_slot_pool(vocab_df, "embedded_clause")
-        clause_choice = find_embedded_clause_candidate(rows, clause_pool)
-        if clause_choice:
-            word, alternatives = clause_choice
-            new_word = random.choice(alternatives)
-            candidates["embedded_clause"] = (
-                lambda rs, w=word, nw=new_word: _apply_embedded_clause(rs, w, nw),
-                f"embedded_clause: {word}->{new_word}",
-            )
 
     return candidates
 
@@ -392,6 +674,31 @@ def _apply_embedded_clause(rows, old, new):
                 new_sentence = substituted
         new_rows.append({**r, "sentence": new_sentence})
     return new_rows
+
+
+def _apply_complementizer(rows, old, new, vocab):
+    """Swap wh-complementizer `old` for `new` in every row it's the wh-word
+    of - embedded ('Does John know where...') and fronted ('Where does John
+    know...') alike, so a factive island's whole assertion set keeps asking
+    about the same thing."""
+    new_rows = []
+    for r in rows:
+        if _row_value(r, "complementizer", vocab) != old:
+            new_rows.append(r)
+            continue
+        updates = {"sentence": _replace_all(r["sentence"], old, new)}
+        if r["complementizer"] == old:
+            updates["complementizer"] = new
+        new_rows.append({**r, **updates})
+    return new_rows
+
+
+def _apply_clause_swap(rows, swap, vocab):
+    old, new, complementizer_change = swap
+    rows = _apply_embedded_clause(rows, old, new)
+    if complementizer_change:
+        rows = _apply_complementizer(rows, *complementizer_change, vocab)
+    return rows
 
 
 def _apply_pronoun(rows, word, pronoun):
@@ -431,14 +738,30 @@ def _capitalize_first(rows):
     return [{**r, "sentence": s[:1].upper() + s[1:]} for r, s in zip(rows, cleaned)]
 
 
-def make_lexical_variant(rows, vocab_df, condition, min_n=1, max_n=3):
-    candidates = gather_candidates(rows, vocab_df, condition)
-    if not candidates:
-        return _capitalize_first(rows)
-    n = random.randint(min_n, min(max_n, len(candidates)))
-    chosen = random.sample(list(candidates.items()), n)
-    for _, (apply_fn, _label) in chosen:
-        rows = apply_fn(rows)
+def make_lexical_variant(rows, vocab, condition, settings):
+    """One lexically-varied copy of an assertion set. The embedded clause
+    (conditions with free_embedded_clause) goes first, with probability
+    `embedded_clause_swap_prob`, so that everything after it - determiners,
+    wh-words, mishap verbs.. - varies the clause that's actually there, the
+    original or the new one. Then a random min_slots_modified..
+    max_slots_modified of the other slots, determiners before the nouns
+    they're attached to (a noun swapped first would leave the determiner's
+    phrase unfindable). Each is re-checked against `requires` as it's applied,
+    since the choices were made independently of one another."""
+    if condition.get("free_embedded_clause") and random.random() < settings["embedded_clause_swap_prob"]:
+        swap = find_embedded_clause_swap(rows, vocab)
+        if swap:
+            rows = _apply_clause_swap(rows, swap, vocab)
+    candidates = gather_candidates(rows, vocab)
+    if candidates:
+        lo = min(settings["min_slots_modified"], len(candidates))
+        hi = min(settings["max_slots_modified"], len(candidates))
+        chosen = random.sample(list(candidates.items()), random.randint(lo, hi))
+        chosen.sort(key=lambda item: not item[0].startswith("determiner:"))
+        for _, (apply_fn, _label) in chosen:
+            varied = apply_fn(rows)
+            if requires_violations(varied, vocab) <= requires_violations(rows, vocab):
+                rows = varied
     return _capitalize_first(rows)
 
 
@@ -502,8 +825,9 @@ def make_unique_id(row, code, partition_dims, axis_tags, variant_id):
     return "_".join(str(p) for p in parts)
 
 
-def build_variants(sentences_df, config, vocab_df, n_lexical_variants=2):
+def build_variants(sentences_df, config, vocab, variant_config, n_lexical_variants=2):
     conditions = config["conditions"]
+    SKIPPED.clear()
     out_rows = []
     for group_id, group_df in sentences_df.groupby("group_id", sort=False):
         group_rows = group_df.to_dict("records")
@@ -514,6 +838,7 @@ def build_variants(sentences_df, config, vocab_df, n_lexical_variants=2):
         code = condition.get("code", group_id)
         manipulated_types = condition.get("manipulated_types", [])
         comparison_types = condition.get("comparison_types", [])
+        settings = variation_settings(variant_config, condition)
         effective_manipulated_types = [
             d for d in manipulated_types
             if d not in STRUCTURAL_DIMENSIONS or not already_varies(group_df, d)
@@ -531,7 +856,7 @@ def build_variants(sentences_df, config, vocab_df, n_lexical_variants=2):
                     out_rows.append({**r, "unique_id": uid, "variant_id": "base"})
                 for i in range(1, n_lexical_variants + 1):
                     variant_id = f"variant_{i}"
-                    variant_rows = make_lexical_variant(part_rows, vocab_df, condition)
+                    variant_rows = make_lexical_variant(part_rows, vocab, condition, settings)
                     for r in variant_rows:
                         uid = make_unique_id(r, code, partition_dims, axis_tags, variant_id)
                         out_rows.append({**r, "unique_id": uid, "variant_id": variant_id})
@@ -551,6 +876,7 @@ OUTPUT_COLUMNS = [
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="benchmark_data/config.json")
+    parser.add_argument("--variant-config", default="benchmark_data/variant_config.json", help="lexical variation settings")
     parser.add_argument("--sentences", default="benchmark_data/sentences.csv")
     parser.add_argument("--vocabulary", default="benchmark_data/vocabulary.csv")
     parser.add_argument("--output", default="benchmark_data/sentences_with_variants.csv")
@@ -560,10 +886,15 @@ def main():
 
     random.seed(args.seed)
     config = load_config(args.config)
+    variant_config = load_config(args.variant_config)
     sentences_df = load_sentences(args.sentences)
-    vocab_df = load_vocabulary(args.vocabulary)
+    vocab = Vocabulary(load_vocabulary(args.vocabulary), sentences_df)
+    for warning in vocab.warnings:
+        print(f"warning: {warning}", file=sys.stderr)
 
-    rows = build_variants(sentences_df, config, vocab_df, n_lexical_variants=args.n_variants)
+    rows = build_variants(sentences_df, config, vocab, variant_config, n_lexical_variants=args.n_variants)
+    for (group_id, dimension, matrix_type), n in sorted(SKIPPED.items()):
+        print(f"warning: {group_id}: couldn't apply {dimension} to {matrix_type} rows ({n}x), left unchanged", file=sys.stderr)
     pd.DataFrame(rows).reindex(columns=OUTPUT_COLUMNS).to_csv(args.output, index=False)
     n_ids = len({row["variant_id"] for row in rows}) if rows else 0
     print(f"Wrote {len(rows)} rows ({args.n_variants + 1} variant_ids per set, {n_ids} distinct variant_id labels) to {args.output}")

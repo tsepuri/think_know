@@ -20,6 +20,7 @@ each gets its own details/summary output (model name slotted into the filename),
 combined comparison summary across all models.
 """
 
+# TODO: think about switching to minicons
 import argparse
 import json
 import re

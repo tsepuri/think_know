@@ -2,3 +2,5 @@ torch
 transformers
 pandas
 numpy
+seaborn
+datasets
