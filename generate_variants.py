@@ -702,11 +702,16 @@ def _apply_clause_swap(rows, swap, vocab):
 
 
 def _apply_pronoun(rows, word, pronoun):
+    """Like _apply_mapping, also updates `matrix_subj` for the rows whose
+    subject was actually swapped"""
     new_rows = []
     for r in rows:
         if r["matrix_subj"] == word:
             new_sentence = utils.repronoun_subject(r["sentence"], word, pronoun, r["matrix_verb"], r["tense"], r["matrix_type"], r["negation"])
-            new_rows.append({**r, "sentence": new_sentence if new_sentence is not None else r["sentence"]})
+            if new_sentence is None:
+                new_rows.append(r)
+            else:
+                new_rows.append({**r, "sentence": new_sentence, "matrix_subj": pronoun})
         else:
             new_rows.append({**r, "sentence": _replace_all(r["sentence"], word, pronoun)})
     return new_rows
