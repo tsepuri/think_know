@@ -16,8 +16,10 @@ Two independent expansion passes, per condition in config.json:
    not per row and not per whole group_id, so a "differences" assertion's
    sentences stay about the same rumor/weather/mishap instance while
    different tense/person/etc. combinations within one group_id still get
-   independently varied. On top of the unchanged base copy, --n-variants (2
-   by default) more full copies are generated per set. In a condition with
+   independently varied. On top of the unchanged base copy, up to
+   --n-variants (2 by default) more full copies are generated per set - fewer
+   when a set can't be varied into that many distinct copies, since a copy
+   identical to the base or to another variant is dropped. In a condition with
    free_embedded_clause, a copy first gets a different embedded clause
    (with probability embedded_clause_swap_prob); then a random
    min_slots_modified..max_slots_modified substitutions are stacked, drawn from
@@ -770,6 +772,29 @@ def make_lexical_variant(rows, vocab, condition, settings):
     return _capitalize_first(rows)
 
 
+# times make_lexical_variant is retried for each variant before giving up on it
+MAX_VARIANT_ATTEMPTS = 10
+
+
+def make_distinct_variants(rows, vocab, condition, settings, n):
+    """Up to `n` lexical variants of `rows`, none identical (same sentences)
+    to the base copy or to each other. A set with too few slots to vary just
+    gets fewer variants - possibly none - instead of duplicates."""
+    seen = {tuple(r["sentence"] for r in rows)}
+    variants = []
+    for _ in range(n):
+        for _ in range(MAX_VARIANT_ATTEMPTS):
+            variant = make_lexical_variant(rows, vocab, condition, settings)
+            key = tuple(r["sentence"] for r in variant)
+            if key not in seen:
+                seen.add(key)
+                variants.append(variant)
+                break
+        else:
+            break
+    return variants
+
+
 # ---------------------------------------------------------------------------
 # Driver
 # ---------------------------------------------------------------------------
@@ -874,8 +899,8 @@ def build_variants(sentences_df, config, vocab, variant_config, n_lexical_varian
                 # variants are still generated for excluded sets so the random draws,
                 # and so every other set's output, match a run without bad_substitutions
                 variant_sets = [("base", part_rows)] + [
-                    (f"variant_{i}", make_lexical_variant(part_rows, vocab, condition, settings))
-                    for i in range(1, n_lexical_variants + 1)
+                    (f"variant_{i}", variant_rows)
+                    for i, variant_rows in enumerate(make_distinct_variants(part_rows, vocab, condition, settings, n_lexical_variants), start=1)
                 ]
                 for variant_id, variant_rows in variant_sets:
                     for r in variant_rows:
@@ -923,7 +948,7 @@ def main():
         print(f"Excluded {sum(EXCLUDED.values())} rows in {len(EXCLUDED)} sets matching bad_substitutions: {', '.join(sorted(EXCLUDED))}", file=sys.stderr)
     pd.DataFrame(rows).reindex(columns=OUTPUT_COLUMNS).to_csv(args.output, index=False)
     n_ids = len({row["variant_id"] for row in rows}) if rows else 0
-    print(f"Wrote {len(rows)} rows ({args.n_variants + 1} variant_ids per set, {n_ids} distinct variant_id labels) to {args.output}")
+    print(f"Wrote {len(rows)} rows (up to {args.n_variants + 1} variant_ids per set, {n_ids} distinct variant_id labels) to {args.output}")
 
 
 if __name__ == "__main__":
