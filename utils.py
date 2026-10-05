@@ -218,7 +218,9 @@ def toggle_preposition(sentence, matrix_verb, person, tense, preposition):
 # CHILDES-style transcripts are all lowercase with punctuation split off as its own
 # token ("john thinks that it is raining ."). Apostrophes inside contractions stay put.
 PUNCTUATION = ".,?!;"
-VOCABULARY_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "benchmark_data", "vocabulary.csv")
+# dialogue speaker labels -> CHILDES speaker tiers (A is the investigator, B the mother)
+CHILDES_SPEAKERS = {"A": "*INV", "B": "*MOT"}
+VOCABULARY_PATH =os.path.join(os.path.dirname(os.path.abspath(__file__)), "benchmark_data", "vocabulary.csv")
 
 
 @functools.lru_cache(maxsize=None)
@@ -234,17 +236,21 @@ def proper_nouns(vocabulary_path=VOCABULARY_PATH):
 
 def normative_to_childes_formatting(sentence):
     """'John thinks that it's raining.' -> 'john thinks that it's raining .'
-    Dialogue speaker labels stay uppercase: 'A: Is it raining?' -> 'A: is it raining ?'"""
+    Dialogue speaker labels become CHILDES speaker tiers:
+    'A: Is it raining? B: I think so.' -> '*INV: is it raining ? *MOT: i think so .'"""
     sentence = re.sub(rf"\s*([{re.escape(PUNCTUATION)}])", r" \1", sentence.lower())
-    sentence = re.sub(r"\b([ab]):", lambda m: m.group(1).upper() + ":", sentence)
+    sentence = re.sub(r"\b([ab]):", lambda m: CHILDES_SPEAKERS[m.group(1).upper()] + ":", sentence)
     return re.sub(r"\s+", " ", sentence).strip()
 
 
 def childes_to_normative_formatting(sentence):
     """Best-effort inverse of normative_to_childes_formatting: reattach punctuation,
-    capitalize sentence starts (and after dialogue speaker labels like 'A:'), 'I', and
-    vocabulary proper nouns. Any other capitalization in the original can't be recovered."""
+    map speaker tiers back to 'A:'/'B:', capitalize sentence starts (and after speaker
+    labels), 'I', and vocabulary proper nouns. Any other capitalization in the original
+    can't be recovered."""
     sentence = re.sub(rf"\s+([{re.escape(PUNCTUATION)}])", r"\1", sentence.strip())
+    for label, tier in CHILDES_SPEAKERS.items():
+        sentence = sentence.replace(f"{tier}:", f"{label}:")
     sentence = re.sub(r"\bi\b", "I", sentence)
     for name in proper_nouns():
         sentence = re.sub(rf"\b{name.lower()}\b", name, sentence)

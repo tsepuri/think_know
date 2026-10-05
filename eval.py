@@ -58,11 +58,13 @@ def sentence_logprob(text, model, tokenizer, device):
     if input_ids.shape[1] < 2:
         return 0.0
     with torch.no_grad():
-        # GPT2LMHeadModel with labels=input_ids shifts internally and returns the mean
-        # cross-entropy over the (seq_len - 1) predicted tokens - i.e. -loss is already
-        # the length-normalized log-probability we want.
-        outputs = model(input_ids, labels=input_ids)
-    return -outputs.loss.item()
+        # Compute the shifted loss from logits ourselves rather than passing labels=:
+        # some remote-code models (e.g. BabyLM GPT-BERT) implement labels= without the
+        # causal shift. Mean cross-entropy over the (seq_len - 1) predicted tokens is the
+        # length-normalized negative log-probability.
+        logits = model(input_ids, return_dict=True).logits.float()
+        loss = torch.nn.functional.cross_entropy(logits[0, :-1], input_ids[0, 1:])
+    return -loss.item()
 
 
 def build_logprob_cache(pairs_df, model, tokenizer, device):
@@ -194,20 +196,22 @@ def apply_childes_format(pairs_df, args):
 
 def load_model(model_name, device, cache_dir):
     """Load any causal LM (gpt2, Llama, etc.) and its tokenizer via the Auto* classes."""
-    tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir)
+    tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir, trust_remote_code=True)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
     # bigger models won't fit in fp32 on typical hardware; use bf16/fp16 off of CPU.
     # (mps has had spotty bf16 support, so use fp16 there; cuda gets bf16.)
-    if device == "cpu":
+    # GPT-BERT's remote code keeps an fp32 accumulator internally and crashes under fp16;
+    # those models are small (~100M params), so fp32 is cheap anyway.
+    if device == "cpu" or "gpt-bert" in model_name.lower():
         dtype = torch.float32
     elif device == "mps":
         dtype = torch.float16
     else:
         dtype = torch.bfloat16
     model = AutoModelForCausalLM.from_pretrained(
-        model_name, cache_dir=cache_dir, torch_dtype=dtype
+        model_name, cache_dir=cache_dir, torch_dtype=dtype, trust_remote_code=True
     ).to(device)
     model.eval()
     return model, tokenizer
@@ -293,7 +297,7 @@ def main():
     )
     args = parser.parse_args()
     models = args.models or [
-        "gpt2", "mistralai/Mistral-7B-Instruct-v0.3", "meta-llama/Llama-3.1-8B", "meta-llama/Llama-3.1-8B-Instruct",
+        "BabyLM-community/BabyLM-2026-Baseline-GPT2-Strict", "BabyLM-community/babylm-baseline-100m-gpt-bert-causal-focus", "gpt2", "mistralai/Mistral-7B-Instruct-v0.3", "meta-llama/Llama-3.1-8B", "meta-llama/Llama-3.1-8B-Instruct",
     ]
 
     pairs_df = load_pairs(args.pairs)

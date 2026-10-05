@@ -2,12 +2,15 @@
 
 Three figures:
   1. accuracy by phenomenon: a dark dot per phenomenon (mean across models, 95% bootstrap
-     CI over assertions) plus a lighter colored dot per model.
-  2. the same, broken down by group_id (each group is one phenomenon/subtype from pairs.csv),
-     in separate critical and control panels (always both, regardless of --condition).
+     CI over assertions) plus a lighter colored dot per model, in separate critical and
+     control panels (always both, regardless of --condition).
+  2. the same, broken down by group_id (each group is one phenomenon/subtype from pairs.csv).
   3. the hardest assertions (lowest mean margin across models): a dark dot per assertion
      (mean margin across models, 95% bootstrap CI over models) plus a lighter colored dot
      per model. A margin above 0 means the model got the assertion right.
+
+CHILDES-formatted results (eval.py --childes-format) are drawn as triangles next to each
+model's circle; the dark mean dots and the hardest-assertion ranking use normative results only.
 """
 
 import argparse
@@ -21,21 +24,55 @@ import pandas as pd
 import seaborn as sns
 from matplotlib.lines import Line2D
 
+from utils import normative_to_childes_formatting
+
 INK = "#0b0b0b"
 MUTED = "#52514e"
 # categorical slots 1-4 (blue, orange, aqua, yellow) from the dataviz reference palette
-MODEL_COLORS = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#800080"]
+MODEL_COLORS = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#800080", "#28EF1A", "#FF0909"]
 MODEL_ALPHA = 0.7
+MODEL_DISPLAY_NAMES = {
+    "BabyLM-community_BabyLM-2026-Baseline-GPT2-Strict": "babylm-100m-gpt2",
+    "BabyLM-community_babylm-baseline-100m-gpt-bert-causal-focus": "babylm-100m-gpt-bert",
+}
+# eval.py --childes-format writes its outputs with this prefix; plotted as triangles
+CHILDES_PREFIX = "childes_formatted_"
+CHILDES_MARKER = "^"
 N_BOOT = 10000
 SEED = 0
 
 
-def load_results(eval_dir):
-    """Stack every eval_results-<model>.csv into one long DataFrame with a `model` column."""
+def is_stale(eval_dir, prefix, model, pairs):
+    """True if <prefix>pairs_scored-<model>.csv wasn't scored on the current pairs.csv
+    (assertion ids get renumbered when pairs.csv is regenerated, so matching ids aren't enough)."""
+    path = os.path.join(eval_dir, f"{prefix}pairs_scored-{model}.csv")
+    if not os.path.exists(path):
+        return False
+    key = ["assertion_id", "rank", "sentence1", "sentence2"]
+    scored = pd.read_csv(path, keep_default_na=False, na_values=[])[key]
+    return not scored.sort_values(key).reset_index(drop=True).equals(
+        pairs[key].sort_values(key).reset_index(drop=True)
+    )
+
+
+def load_results(eval_dir, pairs_path):
+    """Stack every eval_results-<model>.csv (and childes_formatted_eval_results-<model>.csv)
+    into one long DataFrame with `model` and `childes` columns, skipping results that were
+    scored on an older pairs.csv."""
+    pairs = pd.read_csv(pairs_path, keep_default_na=False, na_values=[])
+    childes_pairs = pairs.assign(**{
+        col: pairs[col].map(normative_to_childes_formatting) for col in ["sentence1", "sentence2"]
+    })
     frames = []
-    for path in sorted(glob.glob(os.path.join(eval_dir, "eval_results-*.csv"))):
-        model = re.match(r"eval_results-(.+)\.csv", os.path.basename(path)).group(1)
-        frames.append(pd.read_csv(path, keep_default_na=False, na_values=[]).assign(model=model))
+    for prefix, expected, childes in [("", pairs, False), (CHILDES_PREFIX, childes_pairs, True)]:
+        for path in sorted(glob.glob(os.path.join(eval_dir, f"{prefix}eval_results-*.csv"))):
+            model = re.match(rf"{prefix}eval_results-(.+)\.csv", os.path.basename(path)).group(1)
+            if is_stale(eval_dir, prefix, model, expected):
+                print(f"warning: skipping {prefix}{model}: scored on a different {pairs_path} (re-run eval.py)")
+                continue
+            frames.append(pd.read_csv(path, keep_default_na=False, na_values=[]).assign(
+                model=MODEL_DISPLAY_NAMES.get(model, model), childes=childes,
+            ))
     if not frames:
         raise SystemExit(f"No eval_results-*.csv files found in {eval_dir}")
     return pd.concat(frames, ignore_index=True)
@@ -78,7 +115,7 @@ def style_axes(ax):
     ax.yaxis.label.set_color(MUTED)
 
 
-def add_legend(ax, models, palette, mean_label, **legend_kwargs):
+def add_legend(ax, models, palette, mean_label, childes=False, **legend_kwargs):
     handles = [
         Line2D([], [], marker="o", linestyle="none", markersize=9, color=INK, label=mean_label)
     ] + [
@@ -86,23 +123,38 @@ def add_legend(ax, models, palette, mean_label, **legend_kwargs):
                alpha=MODEL_ALPHA, label=m)
         for m in models
     ]
+    if childes:
+        handles.append(Line2D([], [], marker=CHILDES_MARKER, linestyle="none", markersize=7,
+                              color=MUTED, alpha=MODEL_ALPHA, label="CHILDES format"))
     ax.legend(handles=handles, frameon=False, labelcolor=MUTED, **legend_kwargs)
 
 
+def draw_models(ax, data, models, palette, **kwargs):
+    """One lighter dot per model: circles for normative results, triangles for CHILDES-formatted
+    ones. Both share hue_order, so a model's triangle is dodged to the same spot as its circle."""
+    for childes, marker in [(False, "o"), (True, CHILDES_MARKER)]:
+        subset = data[data["childes"] == childes]
+        if subset.empty:
+            continue
+        sns.stripplot(
+            data=subset, hue="model", hue_order=models, palette=palette, marker=marker,
+            dodge=True, jitter=False, size=8, alpha=MODEL_ALPHA, edgecolor=INK, linewidth=0.4,
+            legend=False, ax=ax, **kwargs,
+        )
+
+
 def draw_accuracy(ax, results, models, palette, by, order=None):
-    """On ax: one dark mean dot + CI per `by` value, with a lighter dot per model."""
-    per_assertion = results.groupby([by, "assertion_id"])["correct"].mean().reset_index()
-    per_model = results.groupby([by, "model"])["correct"].mean().reset_index()
+    """On ax: one dark mean dot + CI per `by` value (normative results only), with a lighter
+    dot per model."""
+    normative = results[~results["childes"]]
+    per_assertion = normative.groupby([by, "assertion_id"])["correct"].mean().reset_index()
+    per_model = results.groupby([by, "model", "childes"])["correct"].mean().reset_index()
     counts = results.groupby(by)["assertion_id"].nunique()
     if order is None:
         order = per_assertion.groupby(by)["correct"].mean().sort_values(ascending=False).index
 
     ax.axhline(1.0, color=MUTED, lw=0.6, ls=":")
-    sns.stripplot(
-        data=per_model, x=by, y="correct", hue="model", order=order,
-        hue_order=models, palette=palette, dodge=True, jitter=False, size=8, alpha=MODEL_ALPHA,
-        edgecolor=INK, linewidth=0.4, legend=False, ax=ax,
-    )
+    draw_models(ax, per_model, models, palette, x=by, y="correct", order=order)
     sns.pointplot(
         data=per_assertion, x=by, y="correct", order=order, linestyle="none",
         color=INK, markersize=9, errorbar=("ci", 95), n_boot=N_BOOT, seed=SEED, capsize=0.12,
@@ -119,33 +171,26 @@ def draw_accuracy(ax, results, models, palette, by, order=None):
     style_axes(ax)
 
 
-def plot_accuracy(results, models, palette, by, output, figsize, order=None):
-    """Single-panel accuracy plot per `by` value."""
-    fig, ax = plt.subplots(figsize=figsize)
-    draw_accuracy(ax, results, models, palette, by, order)
-    add_legend(ax, models, palette, "mean across models (95% CI)", loc="lower left")
-    fig.tight_layout()
-    fig.savefig(output, dpi=200)
-    plt.close(fig)
-
-
 def plot_accuracy_by_condition(results, models, palette, by, output, figsize, order):
     """Stacked panels, critical on top and control below, sharing the same `by` order."""
     fig, axes = plt.subplots(2, 1, figsize=figsize)
     for ax, condition, title in zip(
-        axes, ["critical", "control"], ["critical assertions", "control assertions (sanity checks)"]
+        axes, ["critical", "control"], ["critical assertions", "control assertions"]
     ):
         draw_accuracy(ax, results[results["condition_type"] == condition], models, palette, by, order)
         ax.set_title(title, loc="left", color=INK)
-    add_legend(axes[0], models, palette, "mean across models (95% CI)", loc="lower left")
+    add_legend(axes[0], models, palette, "mean across models (95% CI)",
+               childes=results["childes"].any(), loc="upper left", bbox_to_anchor=(1.01, 1.0))
     fig.tight_layout()
     fig.savefig(output, dpi=200)
     plt.close(fig)
 
 
 def plot_hardest_assertions(results, models, palette, labels, top_n, output):
-    """The top_n assertions with the lowest mean margin: mean dot + CI, lighter dot per model."""
-    all_hardest = results.groupby("assertion_id")["margin"].mean().sort_values()
+    """The top_n assertions with the lowest mean margin (normative results only): mean dot +
+    CI, lighter dot per model."""
+    normative = results[~results["childes"]]
+    all_hardest = normative.groupby("assertion_id")["margin"].mean().sort_values()
     ranked = all_hardest.rename("mean_margin").reset_index()
     ranked.insert(1, "label", ranked["assertion_id"].map(labels).str.replace("\n", " "))
     ranked.to_csv(os.path.splitext(output)[0] + ".csv", index=False)
@@ -156,13 +201,9 @@ def plot_hardest_assertions(results, models, palette, labels, top_n, output):
 
     fig, ax = plt.subplots(figsize=(14, 0.95 * top_n + 1.5))
     ax.axvline(0, color=INK, lw=1)
-    sns.stripplot(
-        data=data, x="margin", y="label", hue="model", order=order, hue_order=models,
-        palette=palette, dodge=True, jitter=False, size=8, alpha=MODEL_ALPHA,
-        edgecolor=INK, linewidth=0.4, legend=False, orient="h", ax=ax,
-    )
+    draw_models(ax, data, models, palette, x="margin", y="label", order=order, orient="h")
     sns.pointplot(
-        data=data, x="margin", y="label", order=order, linestyle="none", color=INK,
+        data=data[~data["childes"]], x="margin", y="label", order=order, linestyle="none", color=INK,
         markersize=9, errorbar=("ci", 95), n_boot=N_BOOT, seed=SEED, capsize=0.12,
         err_kws={"linewidth": 1.6}, orient="h", ax=ax,
     )
@@ -173,8 +214,9 @@ def plot_hardest_assertions(results, models, palette, labels, top_n, output):
     ax.tick_params(axis="y", labelsize=8)
     ax.set_title(f"{top_n} hardest assertions (lowest mean margin)", loc="left", color=INK, pad=34)
     style_axes(ax)
-    add_legend(ax, models, palette, "mean across models (95% CI)", loc="lower right",
-               bbox_to_anchor=(1.0, 1.0), ncol=len(models) + 1)
+    has_childes = data["childes"].any()
+    add_legend(ax, models, palette, "mean across models (95% CI)", childes=has_childes,
+               loc="lower right", bbox_to_anchor=(1.0, 1.0), ncol=len(models) + 1 + has_childes)
     fig.tight_layout()
     fig.savefig(output, dpi=200)
     plt.close(fig)
@@ -187,12 +229,13 @@ def main():
     parser.add_argument("--output-dir", default="eval_output")
     parser.add_argument(
         "--condition", choices=["critical", "control", "all"], default="critical",
-        help="which assertions to plot (default: critical, matching eval.py's headline accuracy).",
+        help="which assertions the hardest-assertions plot uses (default: critical, matching "
+             "eval.py's headline accuracy); the accuracy plots always show both.",
     )
     parser.add_argument("--top-n", type=int, default=10, help="how many hardest assertions to plot.")
     args = parser.parse_args()
 
-    all_results = add_group_labels(load_results(args.eval_dir), args.pairs)
+    all_results = add_group_labels(load_results(args.eval_dir, args.pairs), args.pairs)
     results = (
         all_results if args.condition == "all"
         else all_results[all_results["condition_type"] == args.condition]
@@ -201,14 +244,21 @@ def main():
     palette = dict(zip(models, MODEL_COLORS))
     sns.set_theme(style="whitegrid", rc={"axes.edgecolor": MUTED, "grid.color": "#e4e3df"})
 
-    plot_accuracy(
-        results, models, palette, "phenomenon",
-        os.path.join(args.output_dir, "plot_accuracy_by_phenomenon.png"), figsize=(9, 5.5),
+    # order phenomena by mean critical accuracy, shared by the critical and control panels
+    critical = all_results[(all_results["condition_type"] == "critical") & ~all_results["childes"]]
+    phenomenon_order = (
+        critical.groupby(["phenomenon", "assertion_id"])["correct"].mean()
+        .groupby("phenomenon").mean().sort_values(ascending=False).index
+    )
+    plot_accuracy_by_condition(
+        all_results, models, palette, "phenomenon",
+        os.path.join(args.output_dir, "plot_accuracy_by_phenomenon.png"), figsize=(12, 10),
+        order=phenomenon_order,
     )
     group_order = all_results.sort_values("group")["group"].unique()
     plot_accuracy_by_condition(
         all_results, models, palette, "group",
-        os.path.join(args.output_dir, "plot_accuracy_by_group.png"), figsize=(15, 11),
+        os.path.join(args.output_dir, "plot_accuracy_by_group.png"), figsize=(18, 11),
         order=group_order,
     )
     plot_hardest_assertions(
