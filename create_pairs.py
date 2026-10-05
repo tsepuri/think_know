@@ -73,7 +73,7 @@ def comparison_grouping(rows, comparison_type, comparison):
     For "differences" comparisons: a group with exactly 1 grammatical row
     (mixed) is rank 1, ordered (grammatical, ungrammatical); a group that's
     uniformly grammatical or ungrammatical is rank 2, in its original row
-    order. This works for both a (1 ungrammatical, 3 grammatical) split and a
+    order (build_comparison then reorders it to line up with rank 1). This works for both a (1 ungrammatical, 3 grammatical) split and a
     (3 ungrammatical, 1 grammatical) split across the two groups, since it's
     driven by each group's own grammaticality count rather than assuming
     which group is which.
@@ -152,7 +152,20 @@ def build_comparison(set_rows, meta, condition, assertion_id):
                         f"expected equal rank-1/rank-2 counts for comparison_type="
                         f"{comparison_type!r}, got { {k: len(v) for k, v in by_rank.items()} }"
                     )
+                # the 2x2's other factor: what varies within each group when
+                # grouping by comparison_type
+                (other,) = [c for c in comparison_types if c != comparison_type]
                 for (r1a, r1b), (r2a, r2b) in zip(by_rank[1], by_rank[2]):
+                    # order rank 2 like rank 1, so both pairs make the same swap in the
+                    # same direction and the subtraction isolates the interaction
+                    # (otherwise the assertion reduces to a main effect of comparison_type)
+                    if r2a[other] != r1a[other]:
+                        r2a, r2b = r2b, r2a
+                    if (r2a[other], r2b[other]) != (r1a[other], r1b[other]):
+                        raise ValueError(
+                            f"rank-2 pair can't be aligned with rank 1 on {other!r}: "
+                            f"{r1a['sentence']!r} / {r2a['sentence']!r}"
+                        )
                     rows_out.append({
                         **base_row, "assertion_id": assertion_id, "rank": 1,
                         "sentence1": r1a["sentence"], "sentence2": r1b["sentence"],

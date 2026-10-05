@@ -197,7 +197,11 @@ def toggle_complementizer(sentence, complementizer):
     return result
 
 
-PREPOSITION_VERBS = ("think", "know")  # matches vocabulary.csv's preposition rows' `requires` column 
+# think/know take about/of grammatically (vocabulary.csv's preposition `requires`); the
+# control verb start takes neither, and is toggled too so the control's 'starts about'
+# row becomes 'starts of' - otherwise the 'of' copy would pit 'starts about' against
+# 'knows of', and the control 2x2 would no longer differ in one thing at a time
+PREPOSITION_VERBS = ("think", "know", "start")
 PREPOSITIONS = ("about", "of")
 
 def toggle_preposition(sentence, matrix_verb, person, tense, preposition):
@@ -205,15 +209,22 @@ def toggle_preposition(sentence, matrix_verb, person, tense, preposition):
     about the rumor' <-> 'John thinks of the rumor') - only meaningful for
     the PP-complement side of an NP-vs-PP comparison; the NP side has no
     preposition at all (always 'NA'), so this returns None for it rather
-    than guessing. Only applies for think/know (see PREPOSITION_VERBS) -
-    e.g. a control row's "start" doesn't take "of" naturally. Returns
-    (new_sentence, new_preposition), or None."""
+    than guessing. Only applies to PREPOSITION_VERBS. Returns
+    (new_sentence, new_preposition), or None.
+
+    The verb is bare after do-support ("John doesn't think about", "John didn't
+    think about"), so the bare form is tried when the conjugated one isn't found.
+    A PP row that still can't be toggled raises rather than returning None:
+    the caller would otherwise silently keep the unchanged 'about' sentence in
+    the 'of' copy."""
     if preposition not in PREPOSITIONS or matrix_verb not in PREPOSITION_VERBS:
         return None
     new_prep = "of" if preposition == "about" else "about"
-    verb_form = conjugate(matrix_verb, person, tense)
-    result = _splice(sentence, f"{verb_form} {preposition}", f"{verb_form} {new_prep}")
-    return (result, new_prep) if result is not None else None
+    for verb_form in dict.fromkeys([conjugate(matrix_verb, person, tense), matrix_verb]):
+        result = _splice(sentence, f"{verb_form} {preposition}", f"{verb_form} {new_prep}")
+        if result is not None:
+            return result, new_prep
+    raise ValueError(f"couldn't find {matrix_verb!r} + {preposition!r} to toggle in {sentence!r}")
 
 # CHILDES-style transcripts are all lowercase with punctuation split off as its own
 # token ("john thinks that it is raining ."). Apostrophes inside contractions stay put.

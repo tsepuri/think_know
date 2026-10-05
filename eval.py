@@ -45,6 +45,28 @@ def load_pairs(path):
     """Read pairs.csv (from create_pairs.py) into a DataFrame."""
     return pd.read_csv(path, keep_default_na=False, na_values=[])
 
+def token_logprobs(text, model, tokenizer, device):
+    """(token ids, log-probs) for every token of `text`, each conditioned on BOS plus the
+    tokens before it.
+
+    Tokenizers disagree on special tokens (gpt2 adds none, so its first word would only be
+    conditioned on and never scored; the BabyLM GPT-2 appends </s>, adding a large, noisy
+    term), so we tokenize without them and prepend BOS ourselves: every model then scores
+    exactly the sentence's own tokens. gpt2 has no separate BOS and uses <|endoftext|>,
+    which is its bos_token.
+    """
+    bos = tokenizer.bos_token_id if tokenizer.bos_token_id is not None else tokenizer.eos_token_id
+    if bos is None:
+        raise ValueError(f"{tokenizer.name_or_path} has no BOS or EOS token to condition on")
+    input_ids = torch.tensor([[bos] + tokenizer(text, add_special_tokens=False).input_ids], device=device)
+    with torch.no_grad():
+        # logits computed ourselves rather than via labels=: some remote-code models (e.g.
+        # BabyLM GPT-BERT) implement labels= without the causal shift
+        logits = model(input_ids, return_dict=True).logits[0, :-1].float()
+    targets = input_ids[0, 1:]
+    return targets, torch.log_softmax(logits, dim=-1).gather(1, targets[:, None])[:, 0]
+
+
 def sentence_logprob(text, model, tokenizer, device):
     """Mean log-probability per token, i.e. length-normalized.
 
@@ -54,17 +76,8 @@ def sentence_logprob(text, model, tokenizer, device):
     log-probability would then favor the shorter sentence regardless of grammaticality,
     so we normalize by token count.
     """
-    input_ids = tokenizer(text, return_tensors="pt").input_ids.to(device)
-    if input_ids.shape[1] < 2:
-        return 0.0
-    with torch.no_grad():
-        # Compute the shifted loss from logits ourselves rather than passing labels=:
-        # some remote-code models (e.g. BabyLM GPT-BERT) implement labels= without the
-        # causal shift. Mean cross-entropy over the (seq_len - 1) predicted tokens is the
-        # length-normalized negative log-probability.
-        logits = model(input_ids, return_dict=True).logits.float()
-        loss = torch.nn.functional.cross_entropy(logits[0, :-1], input_ids[0, 1:])
-    return -loss.item()
+    _, logprobs = token_logprobs(text, model, tokenizer, device)
+    return logprobs.mean().item()
 
 
 def build_logprob_cache(pairs_df, model, tokenizer, device):

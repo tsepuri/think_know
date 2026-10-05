@@ -34,7 +34,7 @@ import torch
 
 from eval import (
     apply_childes_format, default_device, insert_suffix, load_model, load_pairs, round_floats,
-    score_assertions, score_pairs, slugify_model_name, summarize_with_controls,
+    score_assertions, score_pairs, slugify_model_name, summarize_with_controls, token_logprobs,
 )
 
 
@@ -91,19 +91,12 @@ def load_unigram_logprobs(model_name, corpus, tokenizer, vocab_size, args):
 def sentence_slor(text, model, tokenizer, device, unigram_logprobs):
     """(log p_model - log p_unigram) / n_tokens for the whole sentence.
 
-    Both terms are summed over the same predicted tokens: the first token is only
-    conditioned on, never scored (BOS for Llama-style tokenizers, the first word for gpt2),
-    matching how eval.py's mean logprob is computed.
+    Both terms are summed over the same tokens - every token of the sentence, conditioned
+    on BOS (see eval.py's token_logprobs) - matching how eval.py's mean logprob is computed.
     """
-    input_ids = tokenizer(text, return_tensors="pt").input_ids.to(device)
-    if input_ids.shape[1] < 2:
-        return 0.0
-    with torch.no_grad():
-        logits = model(input_ids).logits[0, :-1].float()
-    targets = input_ids[0, 1:]
-    model_logprob = torch.log_softmax(logits, dim=-1).gather(1, targets[:, None]).sum().item()
+    targets, logprobs = token_logprobs(text, model, tokenizer, device)
     unigram_logprob = unigram_logprobs[targets.cpu()].sum().item()
-    return (model_logprob - unigram_logprob) / len(targets)
+    return (logprobs.sum().item() - unigram_logprob) / len(targets)
 
 
 def build_slor_cache(pairs_df, model, tokenizer, device, unigram_logprobs):

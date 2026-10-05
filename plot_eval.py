@@ -2,8 +2,8 @@
 
 Three figures:
   1. accuracy by phenomenon: a dark dot per phenomenon (mean across models, 95% bootstrap
-     CI over assertions) plus a lighter colored dot per model, in separate critical and
-     control panels (always both, regardless of --condition).
+     CI over assertions) plus a lighter colored dot per model, with critical and control
+     panels side by side (always both, regardless of --condition).
   2. the same, broken down by group_id (each group is one phenomenon/subtype from pairs.csv).
   3. the hardest assertions (lowest mean margin across models): a dark dot per assertion
      (mean margin across models, 95% bootstrap CI over models) plus a lighter colored dot
@@ -166,21 +166,32 @@ def draw_accuracy(ax, results, models, palette, by, order=None):
     )
     ax.set_xlabel("")
     ax.set_ylabel("accuracy")
-    ax.set_ylim(top=1.03)
+    # full 0-1 range, padded so dots at exactly 0 or 1 aren't clipped
+    ax.set_ylim(-0.03, 1.03)
+    ax.set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
     ax.grid(axis="x", visible=False)
     style_axes(ax)
 
 
 def plot_accuracy_by_condition(results, models, palette, by, output, figsize, order):
-    """Stacked panels, critical on top and control below, sharing the same `by` order."""
-    fig, axes = plt.subplots(2, 1, figsize=figsize)
-    for ax, condition, title in zip(
-        axes, ["critical", "control"], ["critical assertions", "control assertions"]
+    """Side-by-side panels, critical on the left and control on the right, sharing the y
+    axis. The control panel only shows the `by` values that have control assertions, in
+    the same order, and each panel's width is proportional to how many values it shows."""
+    control = results[results["condition_type"] == "control"]
+    control_order = [k for k in order if k in set(control[by])]
+    fig, axes = plt.subplots(
+        1, 2, figsize=figsize, sharey=True,
+        gridspec_kw={"width_ratios": [len(order), max(len(control_order), 1)]},
+    )
+    for ax, condition, title, panel_order in zip(
+        axes, ["critical", "control"], ["critical assertions", "control assertions"],
+        [order, control_order],
     ):
-        draw_accuracy(ax, results[results["condition_type"] == condition], models, palette, by, order)
+        draw_accuracy(ax, results[results["condition_type"] == condition], models, palette, by, panel_order)
         ax.set_title(title, loc="left", color=INK)
-    add_legend(axes[0], models, palette, "mean across models (95% CI)",
-               childes=results["childes"].any(), loc="upper left", bbox_to_anchor=(1.01, 1.0))
+    axes[1].set_ylabel("")
+    add_legend(axes[1], models, palette, "mean across models (95% CI)",
+               childes=results["childes"].any(), loc="upper left", bbox_to_anchor=(1.02, 1.0))
     fig.tight_layout()
     fig.savefig(output, dpi=200)
     plt.close(fig)
@@ -252,13 +263,13 @@ def main():
     )
     plot_accuracy_by_condition(
         all_results, models, palette, "phenomenon",
-        os.path.join(args.output_dir, "plot_accuracy_by_phenomenon.png"), figsize=(12, 10),
+        os.path.join(args.output_dir, "plot_accuracy_by_phenomenon.png"), figsize=(15, 5.5),
         order=phenomenon_order,
     )
     group_order = all_results.sort_values("group")["group"].unique()
     plot_accuracy_by_condition(
         all_results, models, palette, "group",
-        os.path.join(args.output_dir, "plot_accuracy_by_group.png"), figsize=(18, 11),
+        os.path.join(args.output_dir, "plot_accuracy_by_group.png"), figsize=(24, 6.5),
         order=group_order,
     )
     plot_hardest_assertions(
