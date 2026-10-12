@@ -96,15 +96,92 @@ def comparison_grouping(rows, comparison_type, comparison):
                 sorted_groups.append((2, variant_group.iloc[0], variant_group.iloc[1]))
     return sorted_groups
 
-def build_comparison(set_rows, meta, condition, assertion_id):
+def _difference_signature(r1a, r1b, r2a, r2b):
+    """The signed sentence weights a differences assertion reduces to:
+    (r1a - r1b) - (r2a - r2b). Two assertions with the same signature test the
+    exact same inequality, just grouped differently."""
+    weights = {}
+    for row, sign in ((r1a, 1), (r1b, -1), (r2a, -1), (r2b, 1)):
+        weights[row["sentence"]] = weights.get(row["sentence"], 0) + sign
+    return frozenset((k, v) for k, v in weights.items() if v)
+
+
+def _difference_assertions(group_rows, comparison_type, comparison_types):
+    """The (r1a, r1b, r2a, r2b) tuples for one comparison_type's differences
+    assertions, rank 2 aligned to rank 1 on the 2x2's other factor."""
+    assertions = comparison_grouping(group_rows, comparison_type, "differences")
+    # a differences assertion needs one rank-1 (genuine contrast)
+    # group paired with one rank-2 (no contrast) group; pair them up
+    # in order rather than assuming there's only ever one of each,
+    # so this still works if a comparison_type ever produces more
+    by_rank = {}
+    for rank, row1, row2 in assertions:
+        by_rank.setdefault(rank, []).append((row1, row2))
+    if by_rank.keys() != {1, 2} or len(by_rank[1]) != len(by_rank[2]):
+        raise ValueError(
+            f"expected equal rank-1/rank-2 counts for comparison_type="
+            f"{comparison_type!r}, got { {k: len(v) for k, v in by_rank.items()} }"
+        )
+    # the 2x2's other factor: what varies within each group when
+    # grouping by comparison_type
+    (other,) = [c for c in comparison_types if c != comparison_type]
+    out = []
+    for (r1a, r1b), (r2a, r2b) in zip(by_rank[1], by_rank[2]):
+        # order rank 2 like rank 1, so both pairs make the same swap in the
+        # same direction and the subtraction isolates the interaction
+        # (otherwise the assertion reduces to a main effect of comparison_type)
+        if r2a[other] != r1a[other]:
+            r2a, r2b = r2b, r2a
+        if (r2a[other], r2b[other]) != (r1a[other], r1b[other]):
+            raise ValueError(
+                f"rank-2 pair can't be aligned with rank 1 on {other!r}: "
+                f"{r1a['sentence']!r} / {r2a['sentence']!r}"
+            )
+        out.append((r1a, r1b, r2a, r2b))
+    return out
+
+
+def _pairwise_assertions(group_rows, comparison_types):
+    """The minimal (grammatical, ungrammatical) pairs among a 2x2's rows: those
+    differing on exactly one comparison_types column, tagged with that column.
+    With exactly one grammatical or exactly one ungrammatical row there are 3
+    gram/ungram pairs, of which 2 are minimal - the third differs on both
+    factors, so it isn't a minimal pair and is skipped."""
+    gram = group_rows[group_rows["grammaticality"] == "grammatical"]
+    ungram = group_rows[group_rows["grammaticality"] == "ungrammatical"]
+    out = []
+    for _, g in gram.iterrows():
+        for _, u in ungram.iterrows():
+            differs = [c for c in comparison_types if g[c] != u[c]]
+            if len(differs) == 1:
+                out.append((differs[0], g, u))
+    if len(out) != 2:
+        print(group_rows)
+        raise ValueError(
+            f"expected 2 minimal grammatical > ungrammatical pairs, got {len(out)} "
+            f"({len(gram)} grammatical, {len(ungram)} ungrammatical)"
+        )
+    return out
+
+
+def build_comparison(set_rows, meta, condition, assertion_id, mode="differences"):
     """Build every pair row for one condition's one set, returning
     (rows, next_assertion_id).
 
     Builds a "critical" group (set_rows where condition == "critical") and,
     when the condition has control: true, an additional "control" group
     (the group's control rows plus optionally the critical rows for
-    control_comparison_verb. Each group gets one comparison_grouping
-    assertion per entry in the condition's comparison_types.
+    control_comparison_verb.
+
+    "direct" conditions get one comparison_grouping assertion per entry in
+    comparison_types regardless of mode. "differences" conditions depend on mode:
+    - "differences": one difference-of-differences assertion per
+      comparison_type, except that one equivalent to an already-built
+      assertion (same signed sentences - always the case for a clean 2x2
+      interaction) is dropped. matrix_verb goes first, so it's the one kept.
+    - "pairwise": each minimal grammatical > ungrammatical pair among the 4
+      sentences (differing on one comparison_type) as its own single-pair
+      assertion (always 2).
     """
     comparison = condition["comparison"]
     comparison_types = condition.get("comparison_types", [])
@@ -124,64 +201,53 @@ def build_comparison(set_rows, meta, condition, assertion_id):
         groups.append(("control", combined))
 
     for condition_type, group_rows in groups:
-        for comparison_type in comparison_types:
-            assertions = comparison_grouping(group_rows, comparison_type, comparison)
-            base_row = {**meta, "comparison_type": comparison_type, "condition_type": condition_type}
+        base_row = {**meta, "condition_type": condition_type}
 
-            if comparison == "direct":
+        if comparison == "differences" and mode == "pairwise":
+            for differs, g, u in _pairwise_assertions(group_rows, comparison_types):
+                rows_out.append({
+                    **base_row, "comparison": "pairwise", "comparison_type": differs,
+                    "assertion_id": assertion_id, "rank": 1,
+                    "sentence1": g["sentence"], "sentence2": u["sentence"],
+                })
+                assertion_id += 1
+            continue
+
+        if comparison == "direct":
+            for comparison_type in comparison_types:
                 # every rank-1 tuple is a complete, independent assertion on its
                 # own - one comparison_type can produce more than one (e.g.
                 # Factive island's matrix_type has 2 values), so each needs its
                 # own assertion_id rather than sharing one across all of them
-                for rank, row1, row2 in assertions:
+                for rank, row1, row2 in comparison_grouping(group_rows, comparison_type, comparison):
                     rows_out.append({
-                        **base_row, "assertion_id": assertion_id, "rank": rank,
+                        **base_row, "comparison_type": comparison_type,
+                        "assertion_id": assertion_id, "rank": rank,
                         "sentence1": row1["sentence"], "sentence2": row2["sentence"],
                     })
                     assertion_id += 1
-            else:
-                # a differences assertion needs one rank-1 (genuine contrast)
-                # group paired with one rank-2 (no contrast) group; pair them up
-                # in order rather than assuming there's only ever one of each,
-                # so this still works if a comparison_type ever produces more
-                by_rank = {}
-                for rank, row1, row2 in assertions:
-                    by_rank.setdefault(rank, []).append((row1, row2))
-                if by_rank.keys() != {1, 2} or len(by_rank[1]) != len(by_rank[2]):
-                    raise ValueError(
-                        f"expected equal rank-1/rank-2 counts for comparison_type="
-                        f"{comparison_type!r}, got { {k: len(v) for k, v in by_rank.items()} }"
-                    )
-                # the 2x2's other factor: what varies within each group when
-                # grouping by comparison_type
-                (other,) = [c for c in comparison_types if c != comparison_type]
-                for (r1a, r1b), (r2a, r2b) in zip(by_rank[1], by_rank[2]):
-                    # order rank 2 like rank 1, so both pairs make the same swap in the
-                    # same direction and the subtraction isolates the interaction
-                    # (otherwise the assertion reduces to a main effect of comparison_type)
-                    if r2a[other] != r1a[other]:
-                        r2a, r2b = r2b, r2a
-                    if (r2a[other], r2b[other]) != (r1a[other], r1b[other]):
-                        raise ValueError(
-                            f"rank-2 pair can't be aligned with rank 1 on {other!r}: "
-                            f"{r1a['sentence']!r} / {r2a['sentence']!r}"
-                        )
-                    rows_out.append({
-                        **base_row, "assertion_id": assertion_id, "rank": 1,
-                        "sentence1": r1a["sentence"], "sentence2": r1b["sentence"],
-                    })
-                    rows_out.append({
-                        **base_row, "assertion_id": assertion_id, "rank": 2,
-                        "sentence1": r2a["sentence"], "sentence2": r2b["sentence"],
-                    })
-                    assertion_id += 1
+            continue
+
+        seen = set()
+        ordered_types = sorted(comparison_types, key=lambda c: c != "matrix_verb")
+        for comparison_type in ordered_types:
+            for r1a, r1b, r2a, r2b in _difference_assertions(group_rows, comparison_type, comparison_types):
+                signature = _difference_signature(r1a, r1b, r2a, r2b)
+                if signature in seen:
+                    continue
+                seen.add(signature)
+                row = {**base_row, "comparison_type": comparison_type, "assertion_id": assertion_id}
+                rows_out.append({**row, "rank": 1, "sentence1": r1a["sentence"], "sentence2": r1b["sentence"]})
+                rows_out.append({**row, "rank": 2, "sentence1": r2a["sentence"], "sentence2": r2b["sentence"]})
+                assertion_id += 1
     return rows_out, assertion_id
 
 def _invalid_phenomena_or_subtype(condition, phenomena, subtypes):
     return (phenomena and condition["phenomenon"] not in phenomena) or subtypes and condition.get("subtype") not in subtypes
 
-def build_pairs(config, sentences_df, phenomena=None, subtypes=None):
-    """Build the full list of pair rows for every matching condition/set."""
+def build_pairs(config, sentences_df, phenomena=None, subtypes=None, mode="differences"):
+    """Build the full list of pair rows for every matching condition/set
+    (see build_comparison for `mode`)."""
     rows_out = []
     assertion_id = 0
 
@@ -206,7 +272,7 @@ def build_pairs(config, sentences_df, phenomena=None, subtypes=None):
                 "matrix_type": set_rows["matrix_type"].iloc[0],
                 "unique_id": set_rows["unique_id"].iloc[0],
             }
-            new_rows, assertion_id = build_comparison(set_rows, meta, condition, assertion_id)
+            new_rows, assertion_id = build_comparison(set_rows, meta, condition, assertion_id, mode)
             rows_out.extend(new_rows)
 
     return rows_out
@@ -224,7 +290,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="benchmark_data/config.json")
     parser.add_argument("--sentences", default="benchmark_data/sentences_with_variants.csv")
-    parser.add_argument("--output", default="benchmark_data/pairs.csv")
+    parser.add_argument("--output", default="benchmark_data/pairs.csv",
+                        help="differences-of-differences version")
+    parser.add_argument("--pairwise-output", default="benchmark_data/pairs_pairwise.csv",
+                        help="version with each minimal grammatical > ungrammatical pair per 2x2")
     parser.add_argument("--phenomena", nargs="*", default=None, help="restrict to these phenomenon names")
     parser.add_argument("--subtypes", nargs="*", default=None, help="restrict to these subtypes")
     args = parser.parse_args()
@@ -233,16 +302,17 @@ def main():
         config = json.load(f)
     sentences_df = load_sentences(args.sentences)
 
-    rows = build_pairs(
-        config,
-        sentences_df,
-        phenomena=args.phenomena,
-        subtypes=args.subtypes,
-    )
-    write_pairs(rows, args.output)
-    n_assertions = len({row["assertion_id"] for row in rows})
-    print(f"Wrote {len(rows)} pairs ({n_assertions} assertions) to {args.output}")
-
+    for mode, output in (("differences", args.output), ("pairwise", args.pairwise_output)):
+        rows = build_pairs(
+            config,
+            sentences_df,
+            phenomena=args.phenomena,
+            subtypes=args.subtypes,
+            mode=mode,
+        )
+        write_pairs(rows, output)
+        n_assertions = len({row["assertion_id"] for row in rows})
+        print(f"[{mode}] Wrote {len(rows)} pairs ({n_assertions} assertions) to {output}")
 
 if __name__ == "__main__":
     main()
