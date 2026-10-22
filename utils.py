@@ -19,6 +19,8 @@ VERB_FORMS = {
     "know": {"present": ("know", "knows"), "past": "knew", "bare": "know"},
     "wonder": {"present": ("wonder", "wonders"), "past": "wondered", "bare": "wonder"},
     "start": {"present": ("start", "starts"), "past": "started", "bare": "start"},
+    # not in sentences.csv: swapped in for start by generate_variants.py (vocabulary.csv control_verb)
+    "investigate": {"present": ("investigate", "investigates"), "past": "investigated", "bare": "investigate"},
     "guess": {"present": ("guess", "guesses"), "past": "guessed", "bare": "guess"},
 }
 
@@ -231,7 +233,7 @@ def toggle_preposition(sentence, matrix_verb, person, tense, preposition):
 PUNCTUATION = ".,?!;"
 # dialogue speaker labels -> CHILDES speaker tiers (A is the mother, B the father)
 CHILDES_SPEAKERS = {"A": "*MOT", "B": "*FAT"}
-VOCABULARY_PATH =os.path.join(os.path.dirname(os.path.abspath(__file__)), "benchmark_data", "vocabulary.csv")
+VOCABULARY_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "benchmark", "data", "vocabulary.csv")
 
 
 @functools.lru_cache(maxsize=None)
@@ -275,3 +277,9 @@ def childes_to_normative_formatting(sentence):
     for name in proper_nouns():
         sentence = re.sub(rf"\b{name.lower()}\b", name, sentence)
     return re.sub(r"(^|[.?!:]\s+)([a-z])", lambda m: m.group(1) + m.group(2).upper(), sentence)
+
+def save_figure(fig, path):
+    """Save `fig` to `path` (creating its directory) and return it, so a marimo cell can end on it."""
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    fig.savefig(path, dpi=200, bbox_inches="tight")
+    return fig

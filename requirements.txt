@@ -4,3 +4,9 @@ pandas
 numpy
 seaborn
 datasets
+matplotlib
+marimo
+spacy
+redivis
+pyarrow
+better-profanity

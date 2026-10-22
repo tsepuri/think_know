@@ -1,0 +1,733 @@
+assertion_id,phenomenon,subtype,comparison_type,condition_type,tense,negation,matrix_subj_category,matrix_subj,matrix_type,unique_id,margin,correct
+0,CP + Q,,embedded_type,critical,present,no,third_person,John,declarative,cpq_pres_aff_3p_decl_that_base,0.6111993549946342,1
+1,CP + Q,,matrix_verb,critical,present,no,third_person,John,declarative,cpq_pres_aff_3p_decl_that_base,0.42253479489898016,1
+2,CP + Q,,embedded_type,control,present,no,third_person,John,declarative,cpq_pres_aff_3p_decl_that_base,0.893650760100233,1
+3,CP + Q,,matrix_verb,control,present,no,third_person,John,declarative,cpq_pres_aff_3p_decl_that_base,0.6431743088982893,1
+4,CP + Q,,embedded_type,critical,present,no,third_person,Christopher,declarative,cpq_pres_aff_3p_decl_that_variant_1,0.6516754728099252,1
+5,CP + Q,,matrix_verb,critical,present,no,third_person,Christopher,declarative,cpq_pres_aff_3p_decl_that_variant_1,0.26870930748966115,1
+6,CP + Q,,embedded_type,control,present,no,third_person,Christopher,declarative,cpq_pres_aff_3p_decl_that_variant_1,0.9784493004880681,1
+7,CP + Q,,matrix_verb,control,present,no,third_person,Christopher,declarative,cpq_pres_aff_3p_decl_that_variant_1,0.6465197984002424,1
+8,CP + Q,,embedded_type,critical,present,no,third_person,the teacher,declarative,cpq_pres_aff_3p_decl_that_variant_2,0.558091977124211,1
+9,CP + Q,,matrix_verb,critical,present,no,third_person,the teacher,declarative,cpq_pres_aff_3p_decl_that_variant_2,0.48948131986522014,1
+10,CP + Q,,embedded_type,control,present,no,third_person,the teacher,declarative,cpq_pres_aff_3p_decl_that_variant_2,0.8333002538633387,1
+11,CP + Q,,matrix_verb,control,present,no,third_person,the teacher,declarative,cpq_pres_aff_3p_decl_that_variant_2,0.3981733332742845,1
+12,CP + Q,,embedded_type,critical,present,yes,third_person,John,declarative,cpq_pres_neg_3p_decl_that_base,0.12476378801557386,1
+13,CP + Q,,matrix_verb,critical,present,yes,third_person,John,declarative,cpq_pres_neg_3p_decl_that_base,0.7485272542309676,1
+14,CP + Q,,embedded_type,control,present,yes,third_person,John,declarative,cpq_pres_neg_3p_decl_that_base,0.4571233511988355,1
+15,CP + Q,,matrix_verb,control,present,yes,third_person,John,declarative,cpq_pres_neg_3p_decl_that_base,0.5820402113461078,1
+16,CP + Q,,embedded_type,critical,present,yes,third_person,they,declarative,cpq_pres_neg_3p_decl_that_variant_1,-0.03228046187973321,0
+17,CP + Q,,matrix_verb,critical,present,yes,third_person,they,declarative,cpq_pres_neg_3p_decl_that_variant_1,0.6650472094719335,1
+18,CP + Q,,embedded_type,control,present,yes,third_person,they,declarative,cpq_pres_neg_3p_decl_that_variant_1,0.5121934104881318,1
+19,CP + Q,,matrix_verb,control,present,yes,third_person,they,declarative,cpq_pres_neg_3p_decl_that_variant_1,0.4689659662124739,1
+20,CP + Q,,embedded_type,critical,present,yes,third_person,they,declarative,cpq_pres_neg_3p_decl_that_variant_2,0.2511637519874541,1
+21,CP + Q,,matrix_verb,critical,present,yes,third_person,they,declarative,cpq_pres_neg_3p_decl_that_variant_2,0.8249314715568943,1
+22,CP + Q,,embedded_type,control,present,yes,third_person,they,declarative,cpq_pres_neg_3p_decl_that_variant_2,0.4508664298973115,1
+23,CP + Q,,matrix_verb,control,present,yes,third_person,they,declarative,cpq_pres_neg_3p_decl_that_variant_2,0.4446430749771224,1
+24,CP + Q,,embedded_type,critical,past,no,third_person,John,declarative,cpq_past_aff_3p_decl_that_base,0.6575735397393319,1
+25,CP + Q,,matrix_verb,critical,past,no,third_person,John,declarative,cpq_past_aff_3p_decl_that_base,0.6603588204319382,1
+26,CP + Q,,embedded_type,control,past,no,third_person,John,declarative,cpq_past_aff_3p_decl_that_base,0.8171971424593281,1
+27,CP + Q,,matrix_verb,control,past,no,third_person,John,declarative,cpq_past_aff_3p_decl_that_base,0.43326445863112895,1
+28,CP + Q,,embedded_type,critical,past,no,third_person,the doctor,declarative,cpq_past_aff_3p_decl_that_variant_1,0.4498904733705489,1
+29,CP + Q,,matrix_verb,critical,past,no,third_person,the doctor,declarative,cpq_past_aff_3p_decl_that_variant_1,0.38298355024488906,1
+30,CP + Q,,embedded_type,control,past,no,third_person,the doctor,declarative,cpq_past_aff_3p_decl_that_variant_1,1.078549525256161,1
+31,CP + Q,,matrix_verb,control,past,no,third_person,the doctor,declarative,cpq_past_aff_3p_decl_that_variant_1,0.3723477114218685,1
+32,CP + Q,,embedded_type,critical,past,no,third_person,he,declarative,cpq_past_aff_3p_decl_that_variant_2,0.7186484778322457,1
+33,CP + Q,,matrix_verb,critical,past,no,third_person,he,declarative,cpq_past_aff_3p_decl_that_variant_2,0.7956007376333889,1
+34,CP + Q,,embedded_type,control,past,no,third_person,he,declarative,cpq_past_aff_3p_decl_that_variant_2,0.9303386110523806,1
+35,CP + Q,,matrix_verb,control,past,no,third_person,he,declarative,cpq_past_aff_3p_decl_that_variant_2,0.6363608484016376,1
+36,CP + Q,,embedded_type,critical,past,yes,third_person,John,declarative,cpq_past_neg_3p_decl_that_base,0.20194952477772699,1
+37,CP + Q,,matrix_verb,critical,past,yes,third_person,John,declarative,cpq_past_neg_3p_decl_that_base,0.8083277201326604,1
+38,CP + Q,,embedded_type,control,past,yes,third_person,John,declarative,cpq_past_neg_3p_decl_that_base,0.4076276541773498,1
+39,CP + Q,,matrix_verb,control,past,yes,third_person,John,declarative,cpq_past_neg_3p_decl_that_base,0.568194555692898,1
+40,CP + Q,,embedded_type,critical,past,yes,third_person,he,declarative,cpq_past_neg_3p_decl_that_variant_1,0.09802530331505332,1
+41,CP + Q,,matrix_verb,critical,past,yes,third_person,he,declarative,cpq_past_neg_3p_decl_that_variant_1,0.8044655510788408,1
+42,CP + Q,,embedded_type,control,past,yes,third_person,he,declarative,cpq_past_neg_3p_decl_that_variant_1,0.3353009940211016,1
+43,CP + Q,,matrix_verb,control,past,yes,third_person,he,declarative,cpq_past_neg_3p_decl_that_variant_1,0.39468813682896586,1
+44,CP + Q,,embedded_type,critical,past,yes,third_person,the woman,declarative,cpq_past_neg_3p_decl_that_variant_2,0.10409305801772772,1
+45,CP + Q,,matrix_verb,critical,past,yes,third_person,the woman,declarative,cpq_past_neg_3p_decl_that_variant_2,0.5530049731438083,1
+46,CP + Q,,embedded_type,control,past,yes,third_person,the woman,declarative,cpq_past_neg_3p_decl_that_variant_2,0.48653194198227245,1
+47,CP + Q,,matrix_verb,control,past,yes,third_person,the woman,declarative,cpq_past_neg_3p_decl_that_variant_2,0.5482315606948971,1
+48,CP + Q,,embedded_type,critical,present,no,third_person,John,polar_question,cpq_pres_aff_3p_pol_that_base,0.4435184984254814,1
+49,CP + Q,,matrix_verb,critical,present,no,third_person,John,polar_question,cpq_pres_aff_3p_pol_that_base,0.8612753662100339,1
+50,CP + Q,,embedded_type,control,present,no,third_person,John,polar_question,cpq_pres_aff_3p_pol_that_base,0.5005971403074287,1
+51,CP + Q,,matrix_verb,control,present,no,third_person,John,polar_question,cpq_pres_aff_3p_pol_that_base,0.9344511711444987,1
+52,CP + Q,,embedded_type,critical,present,no,third_person,John,polar_question,cpq_pres_aff_3p_pol_that_variant_1,0.3405827074098564,1
+53,CP + Q,,matrix_verb,critical,present,no,third_person,John,polar_question,cpq_pres_aff_3p_pol_that_variant_1,0.620881727599194,1
+54,CP + Q,,embedded_type,control,present,no,third_person,John,polar_question,cpq_pres_aff_3p_pol_that_variant_1,0.6137830228757881,1
+55,CP + Q,,matrix_verb,control,present,no,third_person,John,polar_question,cpq_pres_aff_3p_pol_that_variant_1,0.8340860092487468,1
+56,CP + Q,,embedded_type,critical,present,no,third_person,John,polar_question,cpq_pres_aff_3p_pol_that_variant_2,0.3007463692601484,1
+57,CP + Q,,matrix_verb,critical,present,no,third_person,John,polar_question,cpq_pres_aff_3p_pol_that_variant_2,0.7037198201489363,1
+58,CP + Q,,embedded_type,control,present,no,third_person,John,polar_question,cpq_pres_aff_3p_pol_that_variant_2,0.575430252918671,1
+59,CP + Q,,matrix_verb,control,present,no,third_person,John,polar_question,cpq_pres_aff_3p_pol_that_variant_2,0.8608394802805701,1
+60,CP + Q,,embedded_type,critical,past,no,third_person,John,polar_question,cpq_past_aff_3p_pol_that_base,0.5037425546693779,1
+61,CP + Q,,matrix_verb,critical,past,no,third_person,John,polar_question,cpq_past_aff_3p_pol_that_base,0.5631105216970944,1
+62,CP + Q,,embedded_type,control,past,no,third_person,John,polar_question,cpq_past_aff_3p_pol_that_base,0.4652048559141182,1
+63,CP + Q,,matrix_verb,control,past,no,third_person,John,polar_question,cpq_past_aff_3p_pol_that_base,0.8644319259967936,1
+64,CP + Q,,embedded_type,critical,past,no,third_person,he,polar_question,cpq_past_aff_3p_pol_that_variant_1,0.4971512346315352,1
+65,CP + Q,,matrix_verb,critical,past,no,third_person,he,polar_question,cpq_past_aff_3p_pol_that_variant_1,0.6667176994314694,1
+66,CP + Q,,embedded_type,control,past,no,third_person,he,polar_question,cpq_past_aff_3p_pol_that_variant_1,0.44889082622051557,1
+67,CP + Q,,matrix_verb,control,past,no,third_person,he,polar_question,cpq_past_aff_3p_pol_that_variant_1,0.6348906242694987,1
+68,CP + Q,,embedded_type,critical,past,no,third_person,Mary,polar_question,cpq_past_aff_3p_pol_that_variant_2,0.5277675180482841,1
+69,CP + Q,,matrix_verb,critical,past,no,third_person,Mary,polar_question,cpq_past_aff_3p_pol_that_variant_2,0.5392758163443112,1
+70,CP + Q,,embedded_type,control,past,no,third_person,Mary,polar_question,cpq_past_aff_3p_pol_that_variant_2,0.4815751523923897,1
+71,CP + Q,,matrix_verb,control,past,no,third_person,Mary,polar_question,cpq_past_aff_3p_pol_that_variant_2,0.5921955787983073,1
+72,CP + Q,,embedded_type,critical,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_that_base,0.6438646076801808,1
+73,CP + Q,,matrix_verb,critical,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_that_base,0.7109643973203961,1
+74,CP + Q,,embedded_type,control,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_that_base,0.7391124692589934,1
+75,CP + Q,,matrix_verb,control,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_that_base,0.7404758684801536,1
+76,CP + Q,,embedded_type,critical,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_that_variant_1,0.5606170142091986,1
+77,CP + Q,,matrix_verb,critical,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_that_variant_1,0.6106988943907095,1
+78,CP + Q,,embedded_type,control,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_that_variant_1,0.8895314320101095,1
+79,CP + Q,,matrix_verb,control,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_that_variant_1,0.8068832083936572,1
+80,CP + Q,,embedded_type,critical,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_that_variant_2,1.2606848268556554,1
+81,CP + Q,,matrix_verb,critical,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_that_variant_2,0.5884658607473883,1
+82,CP + Q,,embedded_type,control,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_that_variant_2,0.7147976369810145,1
+83,CP + Q,,matrix_verb,control,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_that_variant_2,0.7272878372516773,1
+84,CP + Q,,embedded_type,critical,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_that_base,0.350566103621587,1
+85,CP + Q,,matrix_verb,critical,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_that_base,0.8722158460820961,1
+86,CP + Q,,embedded_type,control,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_that_base,0.364297355647619,1
+87,CP + Q,,matrix_verb,control,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_that_base,0.32230531585185895,1
+88,CP + Q,,embedded_type,critical,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_that_variant_1,0.3082189373482569,1
+89,CP + Q,,matrix_verb,critical,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_that_variant_1,0.7383089518221144,1
+90,CP + Q,,embedded_type,control,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_that_variant_1,0.48289586978065024,1
+91,CP + Q,,matrix_verb,control,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_that_variant_1,0.4053319899105614,1
+92,CP + Q,,embedded_type,critical,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_that_variant_2,0.4642092536964384,1
+93,CP + Q,,matrix_verb,critical,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_that_variant_2,0.8801396777336521,1
+94,CP + Q,,embedded_type,control,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_that_variant_2,0.37228824386215553,1
+95,CP + Q,,matrix_verb,control,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_that_variant_2,0.30112920473786486,1
+96,CP + Q,,embedded_type,critical,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_that_base,0.8894221202359835,1
+97,CP + Q,,matrix_verb,critical,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_that_base,0.7493546177254649,1
+98,CP + Q,,embedded_type,control,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_that_base,0.8344311272702938,1
+99,CP + Q,,matrix_verb,control,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_that_base,0.7932604368502987,1
+100,CP + Q,,embedded_type,critical,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_that_variant_1,0.5277129201936681,1
+101,CP + Q,,matrix_verb,critical,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_that_variant_1,0.5396917907539214,1
+102,CP + Q,,embedded_type,control,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_that_variant_1,0.8503867597532295,1
+103,CP + Q,,matrix_verb,control,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_that_variant_1,0.6636847246664956,1
+104,CP + Q,,embedded_type,critical,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_that_variant_2,0.7946535960660623,1
+105,CP + Q,,matrix_verb,critical,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_that_variant_2,0.6448853184090584,1
+106,CP + Q,,embedded_type,control,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_that_variant_2,0.9793054275458244,1
+107,CP + Q,,matrix_verb,control,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_that_variant_2,0.8826374313920116,1
+108,CP + Q,,embedded_type,critical,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_that_base,0.21398807356516159,1
+109,CP + Q,,matrix_verb,critical,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_that_base,0.7363729929598088,1
+110,CP + Q,,embedded_type,control,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_that_base,0.40346030934228017,1
+111,CP + Q,,matrix_verb,control,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_that_base,0.5192846266293127,1
+112,CP + Q,,embedded_type,critical,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_that_variant_1,0.11430385818862732,1
+113,CP + Q,,matrix_verb,critical,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_that_variant_1,0.6623679568474214,1
+114,CP + Q,,embedded_type,control,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_that_variant_1,0.44187022933578657,1
+115,CP + Q,,matrix_verb,control,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_that_variant_1,0.6146050042984115,1
+116,CP + Q,,embedded_type,critical,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_that_variant_2,0.1647931018447859,1
+117,CP + Q,,matrix_verb,critical,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_that_variant_2,0.5460028571226778,1
+118,CP + Q,,embedded_type,control,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_that_variant_2,0.4873942455673239,1
+119,CP + Q,,matrix_verb,control,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_that_variant_2,0.4974772739274882,1
+120,CP + Q,,embedded_type,critical,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_that_base,0.4223321466493566,1
+121,CP + Q,,matrix_verb,critical,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_that_base,1.0234572204580807,1
+122,CP + Q,,embedded_type,control,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_that_base,0.5247928113889735,1
+123,CP + Q,,matrix_verb,control,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_that_base,0.6891635143604411,1
+124,CP + Q,,embedded_type,critical,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_that_variant_1,0.7950391582955221,1
+125,CP + Q,,matrix_verb,critical,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_that_variant_1,0.754193351236176,1
+126,CP + Q,,embedded_type,control,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_that_variant_1,0.5678966496743132,1
+127,CP + Q,,matrix_verb,control,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_that_variant_1,0.4966753397912038,1
+128,CP + Q,,embedded_type,critical,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_that_variant_2,0.3849926868057234,1
+129,CP + Q,,matrix_verb,critical,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_that_variant_2,0.9261115844718546,1
+130,CP + Q,,embedded_type,control,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_that_variant_2,0.5883408838865511,1
+131,CP + Q,,matrix_verb,control,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_that_variant_2,0.6626015313330882,1
+132,CP + Q,,embedded_type,critical,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_that_base,0.6297968416261632,1
+133,CP + Q,,matrix_verb,critical,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_that_base,0.6168615135183835,1
+134,CP + Q,,embedded_type,control,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_that_base,0.35034813594341685,1
+135,CP + Q,,matrix_verb,control,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_that_base,0.5311849796619548,1
+136,CP + Q,,embedded_type,critical,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_that_variant_1,0.8579028261015114,1
+137,CP + Q,,matrix_verb,critical,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_that_variant_1,0.3366488803431653,1
+138,CP + Q,,embedded_type,control,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_that_variant_1,0.36372006479475605,1
+139,CP + Q,,matrix_verb,control,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_that_variant_1,0.4546077060563962,1
+140,CP + Q,,embedded_type,critical,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_that_variant_2,0.49738583851337026,1
+141,CP + Q,,matrix_verb,critical,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_that_variant_2,0.38277452316193816,1
+142,CP + Q,,embedded_type,control,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_that_variant_2,0.4233538122129481,1
+143,CP + Q,,matrix_verb,control,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_that_variant_2,0.4447508537616862,1
+144,CP + Q,,embedded_type,critical,present,no,third_person,John,declarative,cpq_pres_aff_3p_decl_none_base,0.504398890160088,1
+145,CP + Q,,matrix_verb,critical,present,no,third_person,John,declarative,cpq_pres_aff_3p_decl_none_base,0.42253479489898016,1
+146,CP + Q,,embedded_type,control,present,no,third_person,John,declarative,cpq_pres_aff_3p_decl_none_base,1.097295514197173,1
+147,CP + Q,,matrix_verb,control,present,no,third_person,John,declarative,cpq_pres_aff_3p_decl_none_base,0.6972153995659081,1
+148,CP + Q,,embedded_type,critical,present,no,third_person,the woman,declarative,cpq_pres_aff_3p_decl_none_variant_1,0.33858401300067875,1
+149,CP + Q,,matrix_verb,critical,present,no,third_person,the woman,declarative,cpq_pres_aff_3p_decl_none_variant_1,0.35831397540536924,1
+150,CP + Q,,embedded_type,control,present,no,third_person,the woman,declarative,cpq_pres_aff_3p_decl_none_variant_1,0.9861133900225569,1
+151,CP + Q,,matrix_verb,control,present,no,third_person,the woman,declarative,cpq_pres_aff_3p_decl_none_variant_1,0.4204850207437669,1
+152,CP + Q,,embedded_type,critical,present,no,third_person,the student,declarative,cpq_pres_aff_3p_decl_none_variant_2,0.7662173494733358,1
+153,CP + Q,,matrix_verb,critical,present,no,third_person,the student,declarative,cpq_pres_aff_3p_decl_none_variant_2,0.21498350733353755,1
+154,CP + Q,,embedded_type,control,present,no,third_person,the student,declarative,cpq_pres_aff_3p_decl_none_variant_2,1.0110391008250175,1
+155,CP + Q,,matrix_verb,control,present,no,third_person,the student,declarative,cpq_pres_aff_3p_decl_none_variant_2,0.3817415248026048,1
+156,CP + Q,,embedded_type,critical,present,yes,third_person,John,declarative,cpq_pres_neg_3p_decl_none_base,0.16420608467361264,1
+157,CP + Q,,matrix_verb,critical,present,yes,third_person,John,declarative,cpq_pres_neg_3p_decl_none_base,0.7485272542309676,1
+158,CP + Q,,embedded_type,control,present,yes,third_person,John,declarative,cpq_pres_neg_3p_decl_none_base,0.638707728687975,1
+159,CP + Q,,matrix_verb,control,present,yes,third_person,John,declarative,cpq_pres_neg_3p_decl_none_base,0.6713839256611003,1
+160,CP + Q,,embedded_type,critical,present,yes,third_person,they,declarative,cpq_pres_neg_3p_decl_none_variant_1,0.2333451548863632,1
+161,CP + Q,,matrix_verb,critical,present,yes,third_person,they,declarative,cpq_pres_neg_3p_decl_none_variant_1,0.6650472094719335,1
+162,CP + Q,,embedded_type,control,present,yes,third_person,they,declarative,cpq_pres_neg_3p_decl_none_variant_1,0.5523046230842663,1
+163,CP + Q,,matrix_verb,control,present,yes,third_person,they,declarative,cpq_pres_neg_3p_decl_none_variant_1,0.6354889943729098,1
+164,CP + Q,,embedded_type,critical,present,yes,third_person,he,declarative,cpq_pres_neg_3p_decl_none_variant_2,0.39771251278940234,1
+165,CP + Q,,matrix_verb,critical,present,yes,third_person,he,declarative,cpq_pres_neg_3p_decl_none_variant_2,0.6795018603508391,1
+166,CP + Q,,embedded_type,control,present,yes,third_person,he,declarative,cpq_pres_neg_3p_decl_none_variant_2,0.6548309487207229,1
+167,CP + Q,,matrix_verb,control,present,yes,third_person,he,declarative,cpq_pres_neg_3p_decl_none_variant_2,0.31540050187345203,1
+168,CP + Q,,embedded_type,critical,past,no,third_person,John,declarative,cpq_past_aff_3p_decl_none_base,0.6463426376085513,1
+169,CP + Q,,matrix_verb,critical,past,no,third_person,John,declarative,cpq_past_aff_3p_decl_none_base,0.6603588204319382,1
+170,CP + Q,,embedded_type,control,past,no,third_person,John,declarative,cpq_past_aff_3p_decl_none_base,1.011105179997751,1
+171,CP + Q,,matrix_verb,control,past,no,third_person,John,declarative,cpq_past_aff_3p_decl_none_base,0.596477348139314,1
+172,CP + Q,,embedded_type,critical,past,no,third_person,he,declarative,cpq_past_aff_3p_decl_none_variant_1,0.6492227777626325,1
+173,CP + Q,,matrix_verb,critical,past,no,third_person,he,declarative,cpq_past_aff_3p_decl_none_variant_1,0.5867894737068031,1
+174,CP + Q,,embedded_type,control,past,no,third_person,he,declarative,cpq_past_aff_3p_decl_none_variant_1,0.9794186933740492,1
+175,CP + Q,,matrix_verb,control,past,no,third_person,he,declarative,cpq_past_aff_3p_decl_none_variant_1,0.7425513936199692,1
+176,CP + Q,,embedded_type,critical,past,no,third_person,she,declarative,cpq_past_aff_3p_decl_none_variant_2,0.9826017082383032,1
+177,CP + Q,,matrix_verb,critical,past,no,third_person,she,declarative,cpq_past_aff_3p_decl_none_variant_2,0.8077205758030315,1
+178,CP + Q,,embedded_type,control,past,no,third_person,she,declarative,cpq_past_aff_3p_decl_none_variant_2,1.1698535789085496,1
+179,CP + Q,,matrix_verb,control,past,no,third_person,she,declarative,cpq_past_aff_3p_decl_none_variant_2,0.6669761325224524,1
+180,CP + Q,,embedded_type,critical,past,yes,third_person,John,declarative,cpq_past_neg_3p_decl_none_base,0.32969509813930475,1
+181,CP + Q,,matrix_verb,critical,past,yes,third_person,John,declarative,cpq_past_neg_3p_decl_none_base,0.8083277201326604,1
+182,CP + Q,,embedded_type,control,past,yes,third_person,John,declarative,cpq_past_neg_3p_decl_none_base,0.559677186308571,1
+183,CP + Q,,matrix_verb,control,past,yes,third_person,John,declarative,cpq_past_neg_3p_decl_none_base,0.6565223419513844,1
+184,CP + Q,,embedded_type,critical,past,yes,third_person,he,declarative,cpq_past_neg_3p_decl_none_variant_1,0.36697090132451127,1
+185,CP + Q,,matrix_verb,critical,past,yes,third_person,he,declarative,cpq_past_neg_3p_decl_none_variant_1,0.8044655510788408,1
+186,CP + Q,,embedded_type,control,past,yes,third_person,he,declarative,cpq_past_neg_3p_decl_none_variant_1,0.3955170021470069,1
+187,CP + Q,,matrix_verb,control,past,yes,third_person,he,declarative,cpq_past_neg_3p_decl_none_variant_1,0.5626230919208668,1
+188,CP + Q,,embedded_type,critical,past,yes,third_person,John,declarative,cpq_past_neg_3p_decl_none_variant_2,0.2756329577365757,1
+189,CP + Q,,matrix_verb,critical,past,yes,third_person,John,declarative,cpq_past_neg_3p_decl_none_variant_2,0.7212300708000585,1
+190,CP + Q,,embedded_type,control,past,yes,third_person,John,declarative,cpq_past_neg_3p_decl_none_variant_2,0.5813735300322302,1
+191,CP + Q,,matrix_verb,control,past,yes,third_person,John,declarative,cpq_past_neg_3p_decl_none_variant_2,0.7303814962039641,1
+192,CP + Q,,embedded_type,critical,present,no,third_person,John,polar_question,cpq_pres_aff_3p_pol_none_base,0.3596971623511833,1
+193,CP + Q,,matrix_verb,critical,present,no,third_person,John,polar_question,cpq_pres_aff_3p_pol_none_base,0.8612753662100339,1
+194,CP + Q,,embedded_type,control,present,no,third_person,John,polar_question,cpq_pres_aff_3p_pol_none_base,0.719167669959488,1
+195,CP + Q,,matrix_verb,control,present,no,third_person,John,polar_question,cpq_pres_aff_3p_pol_none_base,0.8948899091818836,1
+196,CP + Q,,embedded_type,critical,present,no,third_person,John,polar_question,cpq_pres_aff_3p_pol_none_variant_1,0.44226575767325116,1
+197,CP + Q,,matrix_verb,critical,present,no,third_person,John,polar_question,cpq_pres_aff_3p_pol_none_variant_1,0.890790030923676,1
+198,CP + Q,,embedded_type,control,present,no,third_person,John,polar_question,cpq_pres_aff_3p_pol_none_variant_1,0.8309404119674977,1
+199,CP + Q,,matrix_verb,control,present,no,third_person,John,polar_question,cpq_pres_aff_3p_pol_none_variant_1,0.5111866676654948,1
+200,CP + Q,,embedded_type,critical,present,no,third_person,Theresa,polar_question,cpq_pres_aff_3p_pol_none_variant_2,0.7210719347332493,1
+201,CP + Q,,matrix_verb,critical,present,no,third_person,Theresa,polar_question,cpq_pres_aff_3p_pol_none_variant_2,0.677825231254622,1
+202,CP + Q,,embedded_type,control,present,no,third_person,Theresa,polar_question,cpq_pres_aff_3p_pol_none_variant_2,0.8227999864706779,1
+203,CP + Q,,matrix_verb,control,present,no,third_person,Theresa,polar_question,cpq_pres_aff_3p_pol_none_variant_2,0.539817877992645,1
+204,CP + Q,,embedded_type,critical,past,no,third_person,John,polar_question,cpq_past_aff_3p_pol_none_base,0.6143198028439087,1
+205,CP + Q,,matrix_verb,critical,past,no,third_person,John,polar_question,cpq_past_aff_3p_pol_none_base,0.5631105216970944,1
+206,CP + Q,,embedded_type,control,past,no,third_person,John,polar_question,cpq_past_aff_3p_pol_none_base,0.5820408387493381,1
+207,CP + Q,,matrix_verb,control,past,no,third_person,John,polar_question,cpq_past_aff_3p_pol_none_base,0.8711842904597855,1
+208,CP + Q,,embedded_type,critical,past,no,third_person,they,polar_question,cpq_past_aff_3p_pol_none_variant_1,0.7840968753633137,1
+209,CP + Q,,matrix_verb,critical,past,no,third_person,they,polar_question,cpq_past_aff_3p_pol_none_variant_1,0.6606013092031979,1
+210,CP + Q,,embedded_type,control,past,no,third_person,they,polar_question,cpq_past_aff_3p_pol_none_variant_1,0.36013640493232524,1
+211,CP + Q,,matrix_verb,control,past,no,third_person,they,polar_question,cpq_past_aff_3p_pol_none_variant_1,0.8301940059487634,1
+212,CP + Q,,embedded_type,critical,past,no,third_person,John,polar_question,cpq_past_aff_3p_pol_none_variant_2,0.4787980826244993,1
+213,CP + Q,,matrix_verb,critical,past,no,third_person,John,polar_question,cpq_past_aff_3p_pol_none_variant_2,0.49683564792128876,1
+214,CP + Q,,embedded_type,control,past,no,third_person,John,polar_question,cpq_past_aff_3p_pol_none_variant_2,0.7707232144949552,1
+215,CP + Q,,matrix_verb,control,past,no,third_person,John,polar_question,cpq_past_aff_3p_pol_none_variant_2,0.49654395221139325,1
+216,CP + Q,,embedded_type,critical,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_none_base,0.7411051318034214,1
+217,CP + Q,,matrix_verb,critical,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_none_base,0.7109643973203961,1
+218,CP + Q,,embedded_type,control,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_none_base,0.874524862331929,1
+219,CP + Q,,matrix_verb,control,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_none_base,0.8329398743108292,1
+220,CP + Q,,embedded_type,critical,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_none_variant_1,1.4138785832110523,1
+221,CP + Q,,matrix_verb,critical,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_none_variant_1,0.5884658607473883,1
+222,CP + Q,,embedded_type,control,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_none_variant_1,0.8701815398013488,1
+223,CP + Q,,matrix_verb,control,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_none_variant_1,1.014172495415839,1
+224,CP + Q,,embedded_type,critical,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_none_variant_2,0.6675354964859372,1
+225,CP + Q,,matrix_verb,critical,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_none_variant_2,0.4252015861502194,1
+226,CP + Q,,embedded_type,control,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_none_variant_2,0.8718722871361182,1
+227,CP + Q,,matrix_verb,control,present,no,first_person,I,declarative,cpq_pres_aff_1p_decl_none_variant_2,0.6724298436126861,1
+228,CP + Q,,embedded_type,critical,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_none_base,0.5264904223918649,1
+229,CP + Q,,matrix_verb,critical,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_none_base,0.8722158460820961,1
+230,CP + Q,,embedded_type,control,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_none_base,0.47138840913615887,1
+231,CP + Q,,matrix_verb,control,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_none_base,0.2737708771076335,1
+232,CP + Q,,embedded_type,critical,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_none_variant_1,0.6069318466563565,1
+233,CP + Q,,matrix_verb,critical,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_none_variant_1,0.8801396777336521,1
+234,CP + Q,,embedded_type,control,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_none_variant_1,0.659439044731156,1
+235,CP + Q,,matrix_verb,control,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_none_variant_1,0.38470295480856453,1
+236,CP + Q,,embedded_type,critical,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_none_variant_2,0.8062806403940503,1
+237,CP + Q,,matrix_verb,critical,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_none_variant_2,0.9462438612188162,1
+238,CP + Q,,embedded_type,control,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_none_variant_2,0.6990463080722464,1
+239,CP + Q,,matrix_verb,control,present,yes,first_person,I,declarative,cpq_pres_neg_1p_decl_none_variant_2,0.36600739596749676,1
+240,CP + Q,,embedded_type,critical,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_none_base,1.1558514146893044,1
+241,CP + Q,,matrix_verb,critical,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_none_base,0.7493546177254649,1
+242,CP + Q,,embedded_type,control,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_none_base,0.9136912457369362,1
+243,CP + Q,,matrix_verb,control,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_none_base,1.0465257947945865,1
+244,CP + Q,,embedded_type,critical,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_none_variant_1,1.1255662647504383,1
+245,CP + Q,,matrix_verb,critical,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_none_variant_1,0.6448853184090584,1
+246,CP + Q,,embedded_type,control,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_none_variant_1,1.0592166743739535,1
+247,CP + Q,,matrix_verb,control,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_none_variant_1,1.0924506172840072,1
+248,CP + Q,,embedded_type,critical,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_none_variant_2,0.8395912272136341,1
+249,CP + Q,,matrix_verb,critical,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_none_variant_2,0.435491904431899,1
+250,CP + Q,,embedded_type,control,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_none_variant_2,1.1766283226017227,1
+251,CP + Q,,matrix_verb,control,past,no,first_person,I,declarative,cpq_past_aff_1p_decl_none_variant_2,0.7181269769416776,1
+252,CP + Q,,embedded_type,critical,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_none_base,0.45698582872590787,1
+253,CP + Q,,matrix_verb,critical,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_none_base,0.7363729929598088,1
+254,CP + Q,,embedded_type,control,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_none_base,0.4331474878264596,1
+255,CP + Q,,matrix_verb,control,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_none_base,0.6334374630298756,1
+256,CP + Q,,embedded_type,critical,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_none_variant_1,0.41532213145593433,1
+257,CP + Q,,matrix_verb,critical,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_none_variant_1,0.5460028571226778,1
+258,CP + Q,,embedded_type,control,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_none_variant_1,0.5491675820894382,1
+259,CP + Q,,matrix_verb,control,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_none_variant_1,0.6565886223163746,1
+260,CP + Q,,embedded_type,critical,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_none_variant_2,0.3935284270664283,1
+261,CP + Q,,matrix_verb,critical,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_none_variant_2,0.6623679568474214,1
+262,CP + Q,,embedded_type,control,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_none_variant_2,0.4234303091697167,1
+263,CP + Q,,matrix_verb,control,past,yes,first_person,I,declarative,cpq_past_neg_1p_decl_none_variant_2,0.7257248104807652,1
+264,CP + Q,,embedded_type,critical,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_none_base,0.5423038486741403,1
+265,CP + Q,,matrix_verb,critical,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_none_base,1.0234572204580807,1
+266,CP + Q,,embedded_type,control,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_none_base,0.6101374339844323,1
+267,CP + Q,,matrix_verb,control,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_none_base,0.721330992817486,1
+268,CP + Q,,embedded_type,critical,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_none_variant_1,0.5032878774553415,1
+269,CP + Q,,matrix_verb,critical,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_none_variant_1,0.8602520736685317,1
+270,CP + Q,,embedded_type,control,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_none_variant_1,0.8276787849290952,1
+271,CP + Q,,matrix_verb,control,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_none_variant_1,0.7433821228398076,1
+272,CP + Q,,embedded_type,critical,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_none_variant_2,0.5991198191359874,1
+273,CP + Q,,matrix_verb,critical,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_none_variant_2,0.9261115844718546,1
+274,CP + Q,,embedded_type,control,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_none_variant_2,0.6566727343243417,1
+275,CP + Q,,matrix_verb,control,present,no,first_person,I,polar_question,cpq_pres_aff_1p_pol_none_variant_2,0.7584248268451823,1
+276,CP + Q,,embedded_type,critical,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_none_base,0.9480729185099936,1
+277,CP + Q,,matrix_verb,critical,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_none_base,0.6168615135183835,1
+278,CP + Q,,embedded_type,control,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_none_base,0.29370571308656634,1
+279,CP + Q,,matrix_verb,control,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_none_base,0.6217878300628814,1
+280,CP + Q,,embedded_type,critical,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_none_variant_1,0.9617905362694477,1
+281,CP + Q,,matrix_verb,critical,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_none_variant_1,0.28441592610596933,1
+282,CP + Q,,embedded_type,control,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_none_variant_1,0.4761896803751533,1
+283,CP + Q,,matrix_verb,control,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_none_variant_1,0.4931669914570005,1
+284,CP + Q,,embedded_type,critical,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_none_variant_2,0.7217422754142977,1
+285,CP + Q,,matrix_verb,critical,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_none_variant_2,0.459079893662391,1
+286,CP + Q,,embedded_type,control,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_none_variant_2,0.5529627523604028,1
+287,CP + Q,,matrix_verb,control,past,no,first_person,I,polar_question,cpq_past_aff_1p_pol_none_variant_2,0.3591604912128581,1
+288,NP complement,NP vs CP copula deletion,embedded_type,critical,present,no,third_person,John,declarative,npcop_pres_aff_3p_base,0.26696588993085557,1
+289,NP complement,NP vs CP copula deletion,matrix_verb,critical,present,no,third_person,John,declarative,npcop_pres_aff_3p_base,-0.19949192106084213,0
+290,NP complement,NP vs CP copula deletion,embedded_type,control,present,no,third_person,John,declarative,npcop_pres_aff_3p_base,0.5999799307231599,1
+291,NP complement,NP vs CP copula deletion,matrix_verb,control,present,no,third_person,John,declarative,npcop_pres_aff_3p_base,0.8729093538210462,1
+292,NP complement,NP vs CP copula deletion,embedded_type,critical,present,no,third_person,the woman,declarative,npcop_pres_aff_3p_variant_1,0.28186079646061857,1
+293,NP complement,NP vs CP copula deletion,matrix_verb,critical,present,no,third_person,the woman,declarative,npcop_pres_aff_3p_variant_1,0.13884469304317304,1
+294,NP complement,NP vs CP copula deletion,embedded_type,control,present,no,third_person,the woman,declarative,npcop_pres_aff_3p_variant_1,0.7223339773928299,1
+295,NP complement,NP vs CP copula deletion,matrix_verb,control,present,no,third_person,the woman,declarative,npcop_pres_aff_3p_variant_1,0.593337096093947,1
+296,NP complement,NP vs CP copula deletion,embedded_type,critical,present,no,third_person,they,declarative,npcop_pres_aff_3p_variant_2,0.40921304544962056,1
+297,NP complement,NP vs CP copula deletion,matrix_verb,critical,present,no,third_person,they,declarative,npcop_pres_aff_3p_variant_2,0.1624466690054449,1
+298,NP complement,NP vs CP copula deletion,embedded_type,control,present,no,third_person,they,declarative,npcop_pres_aff_3p_variant_2,0.45911466340437945,1
+299,NP complement,NP vs CP copula deletion,matrix_verb,control,present,no,third_person,they,declarative,npcop_pres_aff_3p_variant_2,0.8666575263514491,1
+300,NP complement,NP vs CP copula deletion,embedded_type,critical,present,yes,third_person,John,declarative,npcop_pres_neg_3p_base,0.089639091540894,1
+301,NP complement,NP vs CP copula deletion,matrix_verb,critical,present,yes,third_person,John,declarative,npcop_pres_neg_3p_base,0.09899959852350237,1
+302,NP complement,NP vs CP copula deletion,embedded_type,control,present,yes,third_person,John,declarative,npcop_pres_neg_3p_base,0.6515103327580172,1
+303,NP complement,NP vs CP copula deletion,matrix_verb,control,present,yes,third_person,John,declarative,npcop_pres_neg_3p_base,0.7939180890239212,1
+304,NP complement,NP vs CP copula deletion,embedded_type,critical,present,yes,third_person,the doctor,declarative,npcop_pres_neg_3p_variant_1,0.0967262767929351,1
+305,NP complement,NP vs CP copula deletion,matrix_verb,critical,present,yes,third_person,the doctor,declarative,npcop_pres_neg_3p_variant_1,0.06642851135181749,1
+306,NP complement,NP vs CP copula deletion,embedded_type,control,present,yes,third_person,the doctor,declarative,npcop_pres_neg_3p_variant_1,0.6902089996376204,1
+307,NP complement,NP vs CP copula deletion,matrix_verb,control,present,yes,third_person,the doctor,declarative,npcop_pres_neg_3p_variant_1,0.6137721790975634,1
+308,NP complement,NP vs CP copula deletion,embedded_type,critical,present,yes,third_person,Christopher,declarative,npcop_pres_neg_3p_variant_2,0.12426740365123745,1
+309,NP complement,NP vs CP copula deletion,matrix_verb,critical,present,yes,third_person,Christopher,declarative,npcop_pres_neg_3p_variant_2,0.08482926974746041,1
+310,NP complement,NP vs CP copula deletion,embedded_type,control,present,yes,third_person,Christopher,declarative,npcop_pres_neg_3p_variant_2,0.654768364709631,1
+311,NP complement,NP vs CP copula deletion,matrix_verb,control,present,yes,third_person,Christopher,declarative,npcop_pres_neg_3p_variant_2,0.6670824566997027,1
+312,NP complement,NP vs CP copula deletion,embedded_type,critical,past,no,third_person,John,declarative,npcop_past_aff_3p_base,0.4808674392256431,1
+313,NP complement,NP vs CP copula deletion,matrix_verb,critical,past,no,third_person,John,declarative,npcop_past_aff_3p_base,0.2998819178789245,1
+314,NP complement,NP vs CP copula deletion,embedded_type,control,past,no,third_person,John,declarative,npcop_past_aff_3p_base,0.49957397448220675,1
+315,NP complement,NP vs CP copula deletion,matrix_verb,control,past,no,third_person,John,declarative,npcop_past_aff_3p_base,0.7185101589591287,1
+316,NP complement,NP vs CP copula deletion,embedded_type,critical,past,no,third_person,she,declarative,npcop_past_aff_3p_variant_1,0.41693889030009323,1
+317,NP complement,NP vs CP copula deletion,matrix_verb,critical,past,no,third_person,she,declarative,npcop_past_aff_3p_variant_1,0.24221836012037734,1
+318,NP complement,NP vs CP copula deletion,embedded_type,control,past,no,third_person,she,declarative,npcop_past_aff_3p_variant_1,0.4934474443036252,1
+319,NP complement,NP vs CP copula deletion,matrix_verb,control,past,no,third_person,she,declarative,npcop_past_aff_3p_variant_1,0.6510136993753446,1
+320,NP complement,NP vs CP copula deletion,embedded_type,critical,past,no,third_person,Bob,declarative,npcop_past_aff_3p_variant_2,0.5555578429757342,1
+321,NP complement,NP vs CP copula deletion,matrix_verb,critical,past,no,third_person,Bob,declarative,npcop_past_aff_3p_variant_2,0.41697536390455703,1
+322,NP complement,NP vs CP copula deletion,embedded_type,control,past,no,third_person,Bob,declarative,npcop_past_aff_3p_variant_2,0.40309670384044005,1
+323,NP complement,NP vs CP copula deletion,matrix_verb,control,past,no,third_person,Bob,declarative,npcop_past_aff_3p_variant_2,0.5770073008564636,1
+324,NP complement,NP vs CP copula deletion,embedded_type,critical,past,yes,third_person,John,declarative,npcop_past_neg_3p_base,0.2852225449294967,1
+325,NP complement,NP vs CP copula deletion,matrix_verb,critical,past,yes,third_person,John,declarative,npcop_past_neg_3p_base,0.2759286485452037,1
+326,NP complement,NP vs CP copula deletion,embedded_type,control,past,yes,third_person,John,declarative,npcop_past_neg_3p_base,0.5395260971021616,1
+327,NP complement,NP vs CP copula deletion,matrix_verb,control,past,yes,third_person,John,declarative,npcop_past_neg_3p_base,0.8927076855815386,1
+328,NP complement,NP vs CP copula deletion,embedded_type,critical,past,yes,third_person,Christopher,declarative,npcop_past_neg_3p_variant_1,0.35915778536949006,1
+329,NP complement,NP vs CP copula deletion,matrix_verb,critical,past,yes,third_person,Christopher,declarative,npcop_past_neg_3p_variant_1,0.2514018405482421,1
+330,NP complement,NP vs CP copula deletion,embedded_type,control,past,yes,third_person,Christopher,declarative,npcop_past_neg_3p_variant_1,0.5476350766328717,1
+331,NP complement,NP vs CP copula deletion,matrix_verb,control,past,yes,third_person,Christopher,declarative,npcop_past_neg_3p_variant_1,0.7036924878276323,1
+332,NP complement,NP vs CP copula deletion,embedded_type,critical,past,yes,third_person,the doctor,declarative,npcop_past_neg_3p_variant_2,0.271628611501316,1
+333,NP complement,NP vs CP copula deletion,matrix_verb,critical,past,yes,third_person,the doctor,declarative,npcop_past_neg_3p_variant_2,0.33354823608332707,1
+334,NP complement,NP vs CP copula deletion,embedded_type,control,past,yes,third_person,the doctor,declarative,npcop_past_neg_3p_variant_2,0.6298276064525457,1
+335,NP complement,NP vs CP copula deletion,matrix_verb,control,past,yes,third_person,the doctor,declarative,npcop_past_neg_3p_variant_2,0.5262653463016727,1
+336,NP complement,NP vs CP copula deletion,embedded_type,critical,present,no,first_person,I,declarative,npcop_pres_aff_1p_base,0.15401460563177616,1
+337,NP complement,NP vs CP copula deletion,matrix_verb,critical,present,no,first_person,I,declarative,npcop_pres_aff_1p_base,0.061718726456837514,1
+338,NP complement,NP vs CP copula deletion,embedded_type,control,present,no,first_person,I,declarative,npcop_pres_aff_1p_base,0.5769629787648085,1
+339,NP complement,NP vs CP copula deletion,matrix_verb,control,present,no,first_person,I,declarative,npcop_pres_aff_1p_base,1.6037982155279487,1
+340,NP complement,NP vs CP copula deletion,embedded_type,critical,present,no,first_person,I,declarative,npcop_pres_aff_1p_variant_1,0.38928642324850293,1
+341,NP complement,NP vs CP copula deletion,matrix_verb,critical,present,no,first_person,I,declarative,npcop_pres_aff_1p_variant_1,0.043074777983716395,1
+342,NP complement,NP vs CP copula deletion,embedded_type,control,present,no,first_person,I,declarative,npcop_pres_aff_1p_variant_1,0.32970425879750004,1
+343,NP complement,NP vs CP copula deletion,matrix_verb,control,present,no,first_person,I,declarative,npcop_pres_aff_1p_variant_1,1.4620037652294875,1
+344,NP complement,NP vs CP copula deletion,embedded_type,critical,present,no,first_person,I,declarative,npcop_pres_aff_1p_variant_2,0.34211030633054396,1
+345,NP complement,NP vs CP copula deletion,matrix_verb,critical,present,no,first_person,I,declarative,npcop_pres_aff_1p_variant_2,0.18102618611573495,1
+346,NP complement,NP vs CP copula deletion,embedded_type,control,present,no,first_person,I,declarative,npcop_pres_aff_1p_variant_2,0.41358074394493105,1
+347,NP complement,NP vs CP copula deletion,matrix_verb,control,present,no,first_person,I,declarative,npcop_pres_aff_1p_variant_2,1.2831438580668917,1
+348,NP complement,NP vs CP copula deletion,embedded_type,critical,past,no,first_person,I,declarative,npcop_past_aff_1p_base,0.3871040815127338,1
+349,NP complement,NP vs CP copula deletion,matrix_verb,critical,past,no,first_person,I,declarative,npcop_past_aff_1p_base,0.061366336475464855,1
+350,NP complement,NP vs CP copula deletion,embedded_type,control,past,no,first_person,I,declarative,npcop_past_aff_1p_base,0.47148227761224804,1
+351,NP complement,NP vs CP copula deletion,matrix_verb,control,past,no,first_person,I,declarative,npcop_past_aff_1p_base,0.963364609184957,1
+352,NP complement,NP vs CP copula deletion,embedded_type,critical,past,no,first_person,I,declarative,npcop_past_aff_1p_variant_1,0.4688240654422664,1
+353,NP complement,NP vs CP copula deletion,matrix_verb,critical,past,no,first_person,I,declarative,npcop_past_aff_1p_variant_1,0.10975846962957148,1
+354,NP complement,NP vs CP copula deletion,embedded_type,control,past,no,first_person,I,declarative,npcop_past_aff_1p_variant_1,0.36671016601837914,1
+355,NP complement,NP vs CP copula deletion,matrix_verb,control,past,no,first_person,I,declarative,npcop_past_aff_1p_variant_1,0.7199211185003092,1
+356,NP complement,NP vs CP copula deletion,embedded_type,critical,past,no,first_person,I,declarative,npcop_past_aff_1p_variant_2,0.49429657292579554,1
+357,NP complement,NP vs CP copula deletion,matrix_verb,critical,past,no,first_person,I,declarative,npcop_past_aff_1p_variant_2,0.12045226972731093,1
+358,NP complement,NP vs CP copula deletion,embedded_type,control,past,no,first_person,I,declarative,npcop_past_aff_1p_variant_2,0.32721372619954225,1
+359,NP complement,NP vs CP copula deletion,matrix_verb,control,past,no,first_person,I,declarative,npcop_past_aff_1p_variant_2,0.8407868350904044,1
+360,NP complement,NP vs CP copula deletion,embedded_type,critical,past,yes,first_person,I,declarative,npcop_past_neg_1p_base,0.2128325145102341,1
+361,NP complement,NP vs CP copula deletion,matrix_verb,critical,past,yes,first_person,I,declarative,npcop_past_neg_1p_base,0.1028503234855247,1
+362,NP complement,NP vs CP copula deletion,embedded_type,control,past,yes,first_person,I,declarative,npcop_past_neg_1p_base,0.5670057389987457,1
+363,NP complement,NP vs CP copula deletion,matrix_verb,control,past,yes,first_person,I,declarative,npcop_past_neg_1p_base,0.8646822491801713,1
+364,NP complement,NP vs CP copula deletion,embedded_type,critical,past,yes,first_person,I,declarative,npcop_past_neg_1p_variant_1,0.3764806971341468,1
+365,NP complement,NP vs CP copula deletion,matrix_verb,critical,past,yes,first_person,I,declarative,npcop_past_neg_1p_variant_1,0.2434686114494724,1
+366,NP complement,NP vs CP copula deletion,embedded_type,control,past,yes,first_person,I,declarative,npcop_past_neg_1p_variant_1,0.44726810718392596,1
+367,NP complement,NP vs CP copula deletion,matrix_verb,control,past,yes,first_person,I,declarative,npcop_past_neg_1p_variant_1,0.7744902299675922,1
+368,NP complement,NP vs CP copula deletion,embedded_type,critical,past,yes,first_person,I,declarative,npcop_past_neg_1p_variant_2,0.10080633765526326,1
+369,NP complement,NP vs CP copula deletion,matrix_verb,critical,past,yes,first_person,I,declarative,npcop_past_neg_1p_variant_2,0.06212715860922291,1
+370,NP complement,NP vs CP copula deletion,embedded_type,control,past,yes,first_person,I,declarative,npcop_past_neg_1p_variant_2,0.5247662789857701,1
+371,NP complement,NP vs CP copula deletion,matrix_verb,control,past,yes,first_person,I,declarative,npcop_past_neg_1p_variant_2,0.7843470135844681,1
+372,NP complement,NP vs. new sentence,embedded_type,critical,present,no,third_person,John,declarative,npnew_pres_aff_3p_base,0.9575598624895871,1
+373,NP complement,NP vs. new sentence,matrix_verb,critical,present,no,third_person,John,declarative,npnew_pres_aff_3p_base,0.1590074873682612,1
+374,NP complement,NP vs. new sentence,embedded_type,control,present,no,third_person,John,declarative,npnew_pres_aff_3p_base,1.2613384708954012,1
+375,NP complement,NP vs. new sentence,matrix_verb,control,present,no,third_person,John,declarative,npnew_pres_aff_3p_base,2.0703907542553037,1
+376,NP complement,NP vs. new sentence,embedded_type,critical,present,no,third_person,she,declarative,npnew_pres_aff_3p_variant_1,0.8033302085540308,1
+377,NP complement,NP vs. new sentence,matrix_verb,critical,present,no,third_person,she,declarative,npnew_pres_aff_3p_variant_1,0.366717753481542,1
+378,NP complement,NP vs. new sentence,embedded_type,control,present,no,third_person,she,declarative,npnew_pres_aff_3p_variant_1,0.7918686338447815,1
+379,NP complement,NP vs. new sentence,matrix_verb,control,present,no,third_person,she,declarative,npnew_pres_aff_3p_variant_1,1.3134561795831496,1
+380,NP complement,NP vs. new sentence,embedded_type,critical,present,no,third_person,she,declarative,npnew_pres_aff_3p_variant_2,0.6596767162159023,1
+381,NP complement,NP vs. new sentence,matrix_verb,critical,present,no,third_person,she,declarative,npnew_pres_aff_3p_variant_2,0.3428114695731228,1
+382,NP complement,NP vs. new sentence,embedded_type,control,present,no,third_person,she,declarative,npnew_pres_aff_3p_variant_2,0.8973558378373327,1
+383,NP complement,NP vs. new sentence,matrix_verb,control,present,no,third_person,she,declarative,npnew_pres_aff_3p_variant_2,1.469581929443641,1
+384,NP complement,NP vs. new sentence,embedded_type,critical,present,yes,third_person,John,declarative,npnew_pres_neg_3p_base,0.7589639570065416,1
+385,NP complement,NP vs. new sentence,matrix_verb,critical,present,yes,third_person,John,declarative,npnew_pres_neg_3p_base,0.1990555353331498,1
+386,NP complement,NP vs. new sentence,embedded_type,control,present,yes,third_person,John,declarative,npnew_pres_neg_3p_base,0.6252906741509783,1
+387,NP complement,NP vs. new sentence,matrix_verb,control,present,yes,third_person,John,declarative,npnew_pres_neg_3p_base,1.2719419840879942,1
+388,NP complement,NP vs. new sentence,embedded_type,critical,present,yes,third_person,she,declarative,npnew_pres_neg_3p_variant_1,0.7564873160360204,1
+389,NP complement,NP vs. new sentence,matrix_verb,critical,present,yes,third_person,she,declarative,npnew_pres_neg_3p_variant_1,0.3005146917163173,1
+390,NP complement,NP vs. new sentence,embedded_type,control,present,yes,third_person,she,declarative,npnew_pres_neg_3p_variant_1,0.5572775280293869,1
+391,NP complement,NP vs. new sentence,matrix_verb,control,present,yes,third_person,she,declarative,npnew_pres_neg_3p_variant_1,1.2007232815597826,1
+392,NP complement,NP vs. new sentence,embedded_type,critical,present,yes,third_person,Jane,declarative,npnew_pres_neg_3p_variant_2,0.7559153833808057,1
+393,NP complement,NP vs. new sentence,matrix_verb,critical,present,yes,third_person,Jane,declarative,npnew_pres_neg_3p_variant_2,0.2147797174620556,1
+394,NP complement,NP vs. new sentence,embedded_type,control,present,yes,third_person,Jane,declarative,npnew_pres_neg_3p_variant_2,0.5866709242213359,1
+395,NP complement,NP vs. new sentence,matrix_verb,control,present,yes,third_person,Jane,declarative,npnew_pres_neg_3p_variant_2,1.2635666043136886,1
+396,NP complement,NP vs. new sentence,embedded_type,critical,past,no,third_person,John,declarative,npnew_past_aff_3p_base,0.5780450741444247,1
+397,NP complement,NP vs. new sentence,matrix_verb,critical,past,no,third_person,John,declarative,npnew_past_aff_3p_base,0.4733631211866478,1
+398,NP complement,NP vs. new sentence,embedded_type,control,past,no,third_person,John,declarative,npnew_past_aff_3p_base,1.0908505017898833,1
+399,NP complement,NP vs. new sentence,matrix_verb,control,past,no,third_person,John,declarative,npnew_past_aff_3p_base,1.747649065770531,1
+400,NP complement,NP vs. new sentence,embedded_type,critical,past,no,third_person,they,declarative,npnew_past_aff_3p_variant_1,0.6529042731022434,1
+401,NP complement,NP vs. new sentence,matrix_verb,critical,past,no,third_person,they,declarative,npnew_past_aff_3p_variant_1,0.3669254380811773,1
+402,NP complement,NP vs. new sentence,embedded_type,control,past,no,third_person,they,declarative,npnew_past_aff_3p_variant_1,0.9101592180552023,1
+403,NP complement,NP vs. new sentence,matrix_verb,control,past,no,third_person,they,declarative,npnew_past_aff_3p_variant_1,1.7405580885104877,1
+404,NP complement,NP vs. new sentence,embedded_type,critical,past,no,third_person,Bob,declarative,npnew_past_aff_3p_variant_2,0.4353102416369048,1
+405,NP complement,NP vs. new sentence,matrix_verb,critical,past,no,third_person,Bob,declarative,npnew_past_aff_3p_variant_2,0.5162784654249275,1
+406,NP complement,NP vs. new sentence,embedded_type,control,past,no,third_person,Bob,declarative,npnew_past_aff_3p_variant_2,1.0655248499107768,1
+407,NP complement,NP vs. new sentence,matrix_verb,control,past,no,third_person,Bob,declarative,npnew_past_aff_3p_variant_2,1.0205737614666819,1
+408,NP complement,NP vs. new sentence,embedded_type,critical,past,yes,third_person,John,declarative,npnew_past_neg_3p_base,0.5495793501429538,1
+409,NP complement,NP vs. new sentence,matrix_verb,critical,past,yes,third_person,John,declarative,npnew_past_neg_3p_base,0.30674305197910146,1
+410,NP complement,NP vs. new sentence,embedded_type,control,past,yes,third_person,John,declarative,npnew_past_neg_3p_base,0.6840057207266277,1
+411,NP complement,NP vs. new sentence,matrix_verb,control,past,yes,third_person,John,declarative,npnew_past_neg_3p_base,1.2228646321999732,1
+412,NP complement,NP vs. new sentence,embedded_type,critical,past,yes,third_person,they,declarative,npnew_past_neg_3p_variant_1,0.6814901774569933,1
+413,NP complement,NP vs. new sentence,matrix_verb,critical,past,yes,third_person,they,declarative,npnew_past_neg_3p_variant_1,0.29786382390736854,1
+414,NP complement,NP vs. new sentence,embedded_type,control,past,yes,third_person,they,declarative,npnew_past_neg_3p_variant_1,0.48535788218705145,1
+415,NP complement,NP vs. new sentence,matrix_verb,control,past,yes,third_person,they,declarative,npnew_past_neg_3p_variant_1,1.0019877265467616,1
+416,NP complement,NP vs. new sentence,embedded_type,critical,past,yes,third_person,the doctor,declarative,npnew_past_neg_3p_variant_2,0.454749982699314,1
+417,NP complement,NP vs. new sentence,matrix_verb,critical,past,yes,third_person,the doctor,declarative,npnew_past_neg_3p_variant_2,0.2831991058343588,1
+418,NP complement,NP vs. new sentence,embedded_type,control,past,yes,third_person,the doctor,declarative,npnew_past_neg_3p_variant_2,0.6882009195079184,1
+419,NP complement,NP vs. new sentence,matrix_verb,control,past,yes,third_person,the doctor,declarative,npnew_past_neg_3p_variant_2,0.6703516522563433,1
+420,NP complement,NP vs. new sentence,embedded_type,critical,present,no,first_person,I,declarative,npnew_pres_aff_1p_base,0.9037706428473942,1
+421,NP complement,NP vs. new sentence,matrix_verb,critical,present,no,first_person,I,declarative,npnew_pres_aff_1p_base,0.3904127997496323,1
+422,NP complement,NP vs. new sentence,embedded_type,control,present,no,first_person,I,declarative,npnew_pres_aff_1p_base,1.2889705427184666,1
+423,NP complement,NP vs. new sentence,matrix_verb,control,present,no,first_person,I,declarative,npnew_pres_aff_1p_base,2.577081481547148,1
+424,NP complement,NP vs. new sentence,embedded_type,critical,present,no,first_person,I,declarative,npnew_pres_aff_1p_variant_1,0.5864285090795613,1
+425,NP complement,NP vs. new sentence,matrix_verb,critical,present,no,first_person,I,declarative,npnew_pres_aff_1p_variant_1,0.35605678846490996,1
+426,NP complement,NP vs. new sentence,embedded_type,control,present,no,first_person,I,declarative,npnew_pres_aff_1p_variant_1,1.0443031981140587,1
+427,NP complement,NP vs. new sentence,matrix_verb,control,present,no,first_person,I,declarative,npnew_pres_aff_1p_variant_1,2.1474185046009984,1
+428,NP complement,NP vs. new sentence,embedded_type,critical,present,no,first_person,I,declarative,npnew_pres_aff_1p_variant_2,0.8265248446580955,1
+429,NP complement,NP vs. new sentence,matrix_verb,critical,present,no,first_person,I,declarative,npnew_pres_aff_1p_variant_2,0.3311103637687296,1
+430,NP complement,NP vs. new sentence,embedded_type,control,present,no,first_person,I,declarative,npnew_pres_aff_1p_variant_2,0.9130189524858427,1
+431,NP complement,NP vs. new sentence,matrix_verb,control,present,no,first_person,I,declarative,npnew_pres_aff_1p_variant_2,2.0147773934995756,1
+432,NP complement,NP vs. new sentence,embedded_type,critical,past,no,first_person,I,declarative,npnew_past_aff_1p_base,0.7764429487743878,1
+433,NP complement,NP vs. new sentence,matrix_verb,critical,past,no,first_person,I,declarative,npnew_past_aff_1p_base,0.4183187350646844,1
+434,NP complement,NP vs. new sentence,embedded_type,control,past,no,first_person,I,declarative,npnew_past_aff_1p_base,1.0536588271692215,1
+435,NP complement,NP vs. new sentence,matrix_verb,control,past,no,first_person,I,declarative,npnew_past_aff_1p_base,1.9012118840252756,1
+436,NP complement,NP vs. new sentence,embedded_type,critical,past,no,first_person,I,declarative,npnew_past_aff_1p_variant_1,0.7104742687089911,1
+437,NP complement,NP vs. new sentence,matrix_verb,critical,past,no,first_person,I,declarative,npnew_past_aff_1p_variant_1,0.4786021840257306,1
+438,NP complement,NP vs. new sentence,embedded_type,control,past,no,first_person,I,declarative,npnew_past_aff_1p_variant_1,1.063735743638311,1
+439,NP complement,NP vs. new sentence,matrix_verb,control,past,no,first_person,I,declarative,npnew_past_aff_1p_variant_1,1.8380290532147285,1
+440,NP complement,NP vs. new sentence,embedded_type,critical,past,no,first_person,I,declarative,npnew_past_aff_1p_variant_2,0.5792080116327645,1
+441,NP complement,NP vs. new sentence,matrix_verb,critical,past,no,first_person,I,declarative,npnew_past_aff_1p_variant_2,0.363008591699884,1
+442,NP complement,NP vs. new sentence,embedded_type,control,past,no,first_person,I,declarative,npnew_past_aff_1p_variant_2,1.0075026970481662,1
+443,NP complement,NP vs. new sentence,matrix_verb,control,past,no,first_person,I,declarative,npnew_past_aff_1p_variant_2,1.5248053506477655,1
+444,NP complement,NP vs. new sentence,embedded_type,critical,past,yes,first_person,I,declarative,npnew_past_neg_1p_base,0.4695507847712501,1
+445,NP complement,NP vs. new sentence,matrix_verb,critical,past,yes,first_person,I,declarative,npnew_past_neg_1p_base,0.24088923950129582,1
+446,NP complement,NP vs. new sentence,embedded_type,control,past,yes,first_person,I,declarative,npnew_past_neg_1p_base,0.7506857355908152,1
+447,NP complement,NP vs. new sentence,matrix_verb,control,past,yes,first_person,I,declarative,npnew_past_neg_1p_base,1.1228818407231942,1
+448,NP complement,NP vs. new sentence,embedded_type,critical,past,yes,first_person,I,declarative,npnew_past_neg_1p_variant_1,0.7072685577068687,1
+449,NP complement,NP vs. new sentence,matrix_verb,critical,past,yes,first_person,I,declarative,npnew_past_neg_1p_variant_1,0.24585528175981874,1
+450,NP complement,NP vs. new sentence,embedded_type,control,past,yes,first_person,I,declarative,npnew_past_neg_1p_variant_1,0.7016377068192488,1
+451,NP complement,NP vs. new sentence,matrix_verb,control,past,yes,first_person,I,declarative,npnew_past_neg_1p_variant_1,1.2827439351784893,1
+452,NP complement,NP vs. new sentence,embedded_type,critical,past,yes,first_person,I,declarative,npnew_past_neg_1p_variant_2,0.6424107978734122,1
+453,NP complement,NP vs. new sentence,matrix_verb,critical,past,yes,first_person,I,declarative,npnew_past_neg_1p_variant_2,0.23075185491322747,1
+454,NP complement,NP vs. new sentence,embedded_type,control,past,yes,first_person,I,declarative,npnew_past_neg_1p_variant_2,0.7761784398786169,1
+455,NP complement,NP vs. new sentence,matrix_verb,control,past,yes,first_person,I,declarative,npnew_past_neg_1p_variant_2,1.0358965705409022,1
+456,NP complement,NP vs. PP,embedded_type,critical,present,no,third_person,John,declarative,nppp_pres_aff_3p_about_base,0.5867949174340215,1
+457,NP complement,NP vs. PP,matrix_verb,critical,present,no,third_person,John,declarative,nppp_pres_aff_3p_about_base,0.22070520699919727,1
+458,NP complement,NP vs. PP,embedded_type,control,present,no,third_person,John,declarative,nppp_pres_aff_3p_about_base,0.47415696800979057,1
+459,NP complement,NP vs. PP,matrix_verb,control,present,no,third_person,John,declarative,nppp_pres_aff_3p_about_base,1.747370145915042,1
+460,NP complement,NP vs. PP,embedded_type,critical,present,no,third_person,he,declarative,nppp_pres_aff_3p_about_variant_1,0.6470377957994586,1
+461,NP complement,NP vs. PP,matrix_verb,critical,present,no,third_person,he,declarative,nppp_pres_aff_3p_about_variant_1,0.569436820158377,1
+462,NP complement,NP vs. PP,embedded_type,control,present,no,third_person,he,declarative,nppp_pres_aff_3p_about_variant_1,0.6169476640665542,1
+463,NP complement,NP vs. PP,matrix_verb,control,present,no,third_person,he,declarative,nppp_pres_aff_3p_about_variant_1,1.8096542976280956,1
+464,NP complement,NP vs. PP,embedded_type,critical,present,no,third_person,the doctor,declarative,nppp_pres_aff_3p_about_variant_2,0.4370618772889654,1
+465,NP complement,NP vs. PP,matrix_verb,critical,present,no,third_person,the doctor,declarative,nppp_pres_aff_3p_about_variant_2,0.44342977455011123,1
+466,NP complement,NP vs. PP,embedded_type,control,present,no,third_person,the doctor,declarative,nppp_pres_aff_3p_about_variant_2,0.8761771868580273,1
+467,NP complement,NP vs. PP,matrix_verb,control,present,no,third_person,the doctor,declarative,nppp_pres_aff_3p_about_variant_2,1.6613184232354947,1
+468,NP complement,NP vs. PP,embedded_type,critical,present,yes,third_person,John,declarative,nppp_pres_neg_3p_about_base,0.5584687035615921,1
+469,NP complement,NP vs. PP,matrix_verb,critical,present,yes,third_person,John,declarative,nppp_pres_neg_3p_about_base,0.39498811819790713,1
+470,NP complement,NP vs. PP,embedded_type,control,present,yes,third_person,John,declarative,nppp_pres_neg_3p_about_base,0.03529387959248931,1
+471,NP complement,NP vs. PP,matrix_verb,control,present,yes,third_person,John,declarative,nppp_pres_neg_3p_about_base,1.3284924675421088,1
+472,NP complement,NP vs. PP,embedded_type,critical,present,yes,third_person,Mary,declarative,nppp_pres_neg_3p_about_variant_1,0.5960177717746675,1
+473,NP complement,NP vs. PP,matrix_verb,critical,present,yes,third_person,Mary,declarative,nppp_pres_neg_3p_about_variant_1,0.3823865382592908,1
+474,NP complement,NP vs. PP,embedded_type,control,present,yes,third_person,Mary,declarative,nppp_pres_neg_3p_about_variant_1,0.12304971468228776,1
+475,NP complement,NP vs. PP,matrix_verb,control,present,yes,third_person,Mary,declarative,nppp_pres_neg_3p_about_variant_1,1.412101571698603,1
+476,NP complement,NP vs. PP,embedded_type,critical,present,yes,third_person,Christopher,declarative,nppp_pres_neg_3p_about_variant_2,0.4822987432721648,1
+477,NP complement,NP vs. PP,matrix_verb,critical,present,yes,third_person,Christopher,declarative,nppp_pres_neg_3p_about_variant_2,0.3834007027751949,1
+478,NP complement,NP vs. PP,embedded_type,control,present,yes,third_person,Christopher,declarative,nppp_pres_neg_3p_about_variant_2,0.12836328936660535,1
+479,NP complement,NP vs. PP,matrix_verb,control,present,yes,third_person,Christopher,declarative,nppp_pres_neg_3p_about_variant_2,1.3376734901861518,1
+480,NP complement,NP vs. PP,embedded_type,critical,past,no,third_person,John,declarative,nppp_past_aff_3p_about_base,0.9185734616119423,1
+481,NP complement,NP vs. PP,matrix_verb,critical,past,no,third_person,John,declarative,nppp_past_aff_3p_about_base,0.7858319994836194,1
+482,NP complement,NP vs. PP,embedded_type,control,past,no,third_person,John,declarative,nppp_past_aff_3p_about_base,1.1600044321515015,1
+483,NP complement,NP vs. PP,matrix_verb,control,past,no,third_person,John,declarative,nppp_past_aff_3p_about_base,2.1880518702706993,1
+484,NP complement,NP vs. PP,embedded_type,critical,past,no,third_person,Olivia,declarative,nppp_past_aff_3p_about_variant_1,0.45328221508262123,1
+485,NP complement,NP vs. PP,matrix_verb,critical,past,no,third_person,Olivia,declarative,nppp_past_aff_3p_about_variant_1,0.6626628975803754,1
+486,NP complement,NP vs. PP,embedded_type,control,past,no,third_person,Olivia,declarative,nppp_past_aff_3p_about_variant_1,1.2386552111766718,1
+487,NP complement,NP vs. PP,matrix_verb,control,past,no,third_person,Olivia,declarative,nppp_past_aff_3p_about_variant_1,1.914151676598287,1
+488,NP complement,NP vs. PP,embedded_type,critical,past,no,third_person,she,declarative,nppp_past_aff_3p_about_variant_2,0.6715361093988472,1
+489,NP complement,NP vs. PP,matrix_verb,critical,past,no,third_person,she,declarative,nppp_past_aff_3p_about_variant_2,0.9309438464074473,1
+490,NP complement,NP vs. PP,embedded_type,control,past,no,third_person,she,declarative,nppp_past_aff_3p_about_variant_2,1.5623658301816536,1
+491,NP complement,NP vs. PP,matrix_verb,control,past,no,third_person,she,declarative,nppp_past_aff_3p_about_variant_2,2.611224503123889,1
+492,NP complement,NP vs. PP,embedded_type,critical,past,yes,third_person,John,declarative,nppp_past_neg_3p_about_base,0.6466192438554459,1
+493,NP complement,NP vs. PP,matrix_verb,critical,past,yes,third_person,John,declarative,nppp_past_neg_3p_about_base,0.5559051278240235,1
+494,NP complement,NP vs. PP,embedded_type,control,past,yes,third_person,John,declarative,nppp_past_neg_3p_about_base,0.45789649405327415,1
+495,NP complement,NP vs. PP,matrix_verb,control,past,yes,third_person,John,declarative,nppp_past_neg_3p_about_base,1.4274962593511908,1
+496,NP complement,NP vs. PP,embedded_type,critical,past,yes,third_person,Sarah,declarative,nppp_past_neg_3p_about_variant_1,0.6311864118825419,1
+497,NP complement,NP vs. PP,matrix_verb,critical,past,yes,third_person,Sarah,declarative,nppp_past_neg_3p_about_variant_1,0.489381712122293,1
+498,NP complement,NP vs. PP,embedded_type,control,past,yes,third_person,Sarah,declarative,nppp_past_neg_3p_about_variant_1,0.6139271463081606,1
+499,NP complement,NP vs. PP,matrix_verb,control,past,yes,third_person,Sarah,declarative,nppp_past_neg_3p_about_variant_1,1.4848998238043158,1
+500,NP complement,NP vs. PP,embedded_type,critical,past,yes,third_person,she,declarative,nppp_past_neg_3p_about_variant_2,0.5060278070772077,1
+501,NP complement,NP vs. PP,matrix_verb,critical,past,yes,third_person,she,declarative,nppp_past_neg_3p_about_variant_2,0.5494130580346814,1
+502,NP complement,NP vs. PP,embedded_type,control,past,yes,third_person,she,declarative,nppp_past_neg_3p_about_variant_2,0.826242285308441,1
+503,NP complement,NP vs. PP,matrix_verb,control,past,yes,third_person,she,declarative,nppp_past_neg_3p_about_variant_2,1.4183087994055121,1
+504,NP complement,NP vs. PP,embedded_type,critical,present,no,first_person,I,declarative,nppp_pres_aff_1p_about_base,0.22011145562261203,1
+505,NP complement,NP vs. PP,matrix_verb,critical,present,no,first_person,I,declarative,nppp_pres_aff_1p_about_base,0.48506420654152294,1
+506,NP complement,NP vs. PP,embedded_type,control,present,no,first_person,I,declarative,nppp_pres_aff_1p_about_base,0.45902275070511084,1
+507,NP complement,NP vs. PP,matrix_verb,control,present,no,first_person,I,declarative,nppp_pres_aff_1p_about_base,2.0806151296557545,1
+508,NP complement,NP vs. PP,embedded_type,critical,present,yes,first_person,I,declarative,nppp_pres_neg_1p_about_base,-0.012725700681505803,0
+509,NP complement,NP vs. PP,matrix_verb,critical,present,yes,first_person,I,declarative,nppp_pres_neg_1p_about_base,0.2973686527786823,1
+510,NP complement,NP vs. PP,embedded_type,control,present,yes,first_person,I,declarative,nppp_pres_neg_1p_about_base,-0.003220774653531322,0
+511,NP complement,NP vs. PP,matrix_verb,control,present,yes,first_person,I,declarative,nppp_pres_neg_1p_about_base,1.1427822758154242,1
+512,NP complement,NP vs. PP,embedded_type,critical,past,no,first_person,I,declarative,nppp_past_aff_1p_about_base,0.5347642966643784,1
+513,NP complement,NP vs. PP,matrix_verb,critical,past,no,first_person,I,declarative,nppp_past_aff_1p_about_base,0.5020993945031507,1
+514,NP complement,NP vs. PP,embedded_type,control,past,no,first_person,I,declarative,nppp_past_aff_1p_about_base,1.405134728487409,1
+515,NP complement,NP vs. PP,matrix_verb,control,past,no,first_person,I,declarative,nppp_past_aff_1p_about_base,2.5381600169381797,1
+516,NP complement,NP vs. PP,embedded_type,critical,past,yes,first_person,I,declarative,nppp_past_neg_1p_about_base,0.4758714125053638,1
+517,NP complement,NP vs. PP,matrix_verb,critical,past,yes,first_person,I,declarative,nppp_past_neg_1p_about_base,0.45754152395962544,1
+518,NP complement,NP vs. PP,embedded_type,control,past,yes,first_person,I,declarative,nppp_past_neg_1p_about_base,0.6498321076909539,1
+519,NP complement,NP vs. PP,matrix_verb,control,past,yes,first_person,I,declarative,nppp_past_neg_1p_about_base,1.366531675000605,1
+520,NP complement,NP vs. PP,embedded_type,critical,present,no,third_person,John,declarative,nppp_pres_aff_3p_of_base,-0.007711625527968224,0
+521,NP complement,NP vs. PP,matrix_verb,critical,present,no,third_person,John,declarative,nppp_pres_aff_3p_of_base,0.22070520699919727,1
+522,NP complement,NP vs. PP,embedded_type,control,present,no,third_person,John,declarative,nppp_pres_aff_3p_of_base,0.4761087827816761,1
+523,NP complement,NP vs. PP,matrix_verb,control,present,no,third_person,John,declarative,nppp_pres_aff_3p_of_base,0.6719211560468779,1
+524,NP complement,NP vs. PP,embedded_type,critical,present,no,third_person,Theresa,declarative,nppp_pres_aff_3p_of_variant_1,0.06502740128577911,1
+525,NP complement,NP vs. PP,matrix_verb,critical,present,no,third_person,Theresa,declarative,nppp_pres_aff_3p_of_variant_1,0.43244281064223355,1
+526,NP complement,NP vs. PP,embedded_type,control,present,no,third_person,Theresa,declarative,nppp_pres_aff_3p_of_variant_1,0.4909010680300194,1
+527,NP complement,NP vs. PP,matrix_verb,control,present,no,third_person,Theresa,declarative,nppp_pres_aff_3p_of_variant_1,0.41375492487472443,1
+528,NP complement,NP vs. PP,embedded_type,critical,present,no,third_person,she,declarative,nppp_pres_aff_3p_of_variant_2,-0.07255979927426637,0
+529,NP complement,NP vs. PP,matrix_verb,critical,present,no,third_person,she,declarative,nppp_pres_aff_3p_of_variant_2,0.6911168891281037,1
+530,NP complement,NP vs. PP,embedded_type,control,present,no,third_person,she,declarative,nppp_pres_aff_3p_of_variant_2,0.6959753179374796,1
+531,NP complement,NP vs. PP,matrix_verb,control,present,no,third_person,she,declarative,nppp_pres_aff_3p_of_variant_2,0.7506507855634793,1
+532,NP complement,NP vs. PP,embedded_type,critical,present,yes,third_person,John,declarative,nppp_pres_neg_3p_of_base,-0.1160756018532596,0
+533,NP complement,NP vs. PP,matrix_verb,critical,present,yes,third_person,John,declarative,nppp_pres_neg_3p_of_base,0.39498811819790713,1
+534,NP complement,NP vs. PP,embedded_type,control,present,yes,third_person,John,declarative,nppp_pres_neg_3p_of_base,0.5373185011694503,1
+535,NP complement,NP vs. PP,matrix_verb,control,present,yes,third_person,John,declarative,nppp_pres_neg_3p_of_base,0.9785879303411811,1
+536,NP complement,NP vs. PP,embedded_type,critical,present,yes,third_person,Theresa,declarative,nppp_pres_neg_3p_of_variant_1,-0.11451878885166189,0
+537,NP complement,NP vs. PP,matrix_verb,critical,present,yes,third_person,Theresa,declarative,nppp_pres_neg_3p_of_variant_1,0.43158309783845183,1
+538,NP complement,NP vs. PP,embedded_type,control,present,yes,third_person,Theresa,declarative,nppp_pres_neg_3p_of_variant_1,0.5636789790899384,1
+539,NP complement,NP vs. PP,matrix_verb,control,present,yes,third_person,Theresa,declarative,nppp_pres_neg_3p_of_variant_1,0.832235817502708,1
+540,NP complement,NP vs. PP,embedded_type,critical,present,yes,third_person,he,declarative,nppp_pres_neg_3p_of_variant_2,-0.1876464565043796,0
+541,NP complement,NP vs. PP,matrix_verb,critical,present,yes,third_person,he,declarative,nppp_pres_neg_3p_of_variant_2,0.5162726030611884,1
+542,NP complement,NP vs. PP,embedded_type,control,present,yes,third_person,he,declarative,nppp_pres_neg_3p_of_variant_2,0.7081994814440011,1
+543,NP complement,NP vs. PP,matrix_verb,control,present,yes,third_person,he,declarative,nppp_pres_neg_3p_of_variant_2,0.998752896924433,1
+544,NP complement,NP vs. PP,embedded_type,critical,past,no,third_person,John,declarative,nppp_past_aff_3p_of_base,0.43312402721114934,1
+545,NP complement,NP vs. PP,matrix_verb,critical,past,no,third_person,John,declarative,nppp_past_aff_3p_of_base,0.7858319994836194,1
+546,NP complement,NP vs. PP,embedded_type,control,past,no,third_person,John,declarative,nppp_past_aff_3p_of_base,0.7414634388992984,1
+547,NP complement,NP vs. PP,matrix_verb,control,past,no,third_person,John,declarative,nppp_past_aff_3p_of_base,1.1806914118966745,1
+548,NP complement,NP vs. PP,embedded_type,critical,past,no,third_person,they,declarative,nppp_past_aff_3p_of_variant_1,-0.061903868439759924,0
+549,NP complement,NP vs. PP,matrix_verb,critical,past,no,third_person,they,declarative,nppp_past_aff_3p_of_variant_1,0.6618455645470958,1
+550,NP complement,NP vs. PP,embedded_type,control,past,no,third_person,they,declarative,nppp_past_aff_3p_of_variant_1,1.2540878972536569,1
+551,NP complement,NP vs. PP,matrix_verb,control,past,no,third_person,they,declarative,nppp_past_aff_3p_of_variant_1,1.5257978546660442,1
+552,NP complement,NP vs. PP,embedded_type,critical,past,no,third_person,she,declarative,nppp_past_aff_3p_of_variant_2,0.16159822590137574,1
+553,NP complement,NP vs. PP,matrix_verb,critical,past,no,third_person,she,declarative,nppp_past_aff_3p_of_variant_2,0.9309438464074473,1
+554,NP complement,NP vs. PP,embedded_type,control,past,no,third_person,she,declarative,nppp_past_aff_3p_of_variant_2,1.1201648129222894,1
+555,NP complement,NP vs. PP,matrix_verb,control,past,no,third_person,she,declarative,nppp_past_aff_3p_of_variant_2,1.464557658438017,1
+556,NP complement,NP vs. PP,embedded_type,critical,past,yes,third_person,John,declarative,nppp_past_neg_3p_of_base,0.3206400400641294,1
+557,NP complement,NP vs. PP,matrix_verb,critical,past,yes,third_person,John,declarative,nppp_past_neg_3p_of_base,0.5559051278240235,1
+558,NP complement,NP vs. PP,embedded_type,control,past,yes,third_person,John,declarative,nppp_past_neg_3p_of_base,0.7642619550162215,1
+559,NP complement,NP vs. PP,matrix_verb,control,past,yes,third_person,John,declarative,nppp_past_neg_3p_of_base,1.060602491040644,1
+560,NP complement,NP vs. PP,embedded_type,critical,past,yes,third_person,Sarah,declarative,nppp_past_neg_3p_of_variant_1,0.25173087447305953,1
+561,NP complement,NP vs. PP,matrix_verb,critical,past,yes,third_person,Sarah,declarative,nppp_past_neg_3p_of_variant_1,0.489381712122293,1
+562,NP complement,NP vs. PP,embedded_type,control,past,yes,third_person,Sarah,declarative,nppp_past_neg_3p_of_variant_1,0.7491781625384437,1
+563,NP complement,NP vs. PP,matrix_verb,control,past,yes,third_person,Sarah,declarative,nppp_past_neg_3p_of_variant_1,0.9493158508734076,1
+564,NP complement,NP vs. PP,embedded_type,critical,past,yes,third_person,the cashier,declarative,nppp_past_neg_3p_of_variant_2,0.1772592816592633,1
+565,NP complement,NP vs. PP,matrix_verb,critical,past,yes,third_person,the cashier,declarative,nppp_past_neg_3p_of_variant_2,0.5599943189824867,1
+566,NP complement,NP vs. PP,embedded_type,control,past,yes,third_person,the cashier,declarative,nppp_past_neg_3p_of_variant_2,0.7335778376130637,1
+567,NP complement,NP vs. PP,matrix_verb,control,past,yes,third_person,the cashier,declarative,nppp_past_neg_3p_of_variant_2,0.7083197156108354,1
+568,NP complement,NP vs. PP,embedded_type,critical,present,no,first_person,I,declarative,nppp_pres_aff_1p_of_base,-0.25732584295461214,0
+569,NP complement,NP vs. PP,matrix_verb,critical,present,no,first_person,I,declarative,nppp_pres_aff_1p_of_base,0.48506420654152294,1
+570,NP complement,NP vs. PP,embedded_type,control,present,no,first_person,I,declarative,nppp_pres_aff_1p_of_base,0.4176860166895615,1
+571,NP complement,NP vs. PP,matrix_verb,control,present,no,first_person,I,declarative,nppp_pres_aff_1p_of_base,0.8700676824511646,1
+572,NP complement,NP vs. PP,embedded_type,critical,present,yes,first_person,I,declarative,nppp_pres_neg_1p_of_base,-0.6486385668873731,0
+573,NP complement,NP vs. PP,matrix_verb,critical,present,yes,first_person,I,declarative,nppp_pres_neg_1p_of_base,0.2973686527786823,1
+574,NP complement,NP vs. PP,embedded_type,control,present,yes,first_person,I,declarative,nppp_pres_neg_1p_of_base,0.6529686380306075,1
+575,NP complement,NP vs. PP,matrix_verb,control,present,yes,first_person,I,declarative,nppp_pres_neg_1p_of_base,0.9119852234320014,1
+576,NP complement,NP vs. PP,embedded_type,critical,past,no,first_person,I,declarative,nppp_past_aff_1p_of_base,-0.03799465718628303,0
+577,NP complement,NP vs. PP,matrix_verb,critical,past,no,first_person,I,declarative,nppp_past_aff_1p_of_base,0.5020993945031507,1
+578,NP complement,NP vs. PP,embedded_type,control,past,no,first_person,I,declarative,nppp_past_aff_1p_of_base,0.9314395706030445,1
+579,NP complement,NP vs. PP,matrix_verb,control,past,no,first_person,I,declarative,nppp_past_aff_1p_of_base,1.4024747320057251,1
+580,NP complement,NP vs. PP,embedded_type,critical,past,yes,first_person,I,declarative,nppp_past_neg_1p_of_base,0.11838614716009221,1
+581,NP complement,NP vs. PP,matrix_verb,critical,past,yes,first_person,I,declarative,nppp_past_neg_1p_of_base,0.45754152395962544,1
+582,NP complement,NP vs. PP,embedded_type,control,past,yes,first_person,I,declarative,nppp_past_neg_1p_of_base,0.8482554643143017,1
+583,NP complement,NP vs. PP,matrix_verb,control,past,yes,first_person,I,declarative,nppp_past_neg_1p_of_base,0.7414301086859076,1
+584,Factive island,,matrix_type,critical,present,no,third_person,John,wh_question,fact_pres_3p_base,0.23141414795012238,1
+585,Factive island,,matrix_type,critical,present,no,third_person,John,wh_question,fact_pres_3p_base,0.9952065261831793,1
+586,Factive island,,matrix_verb,critical,present,no,third_person,John,wh_question,fact_pres_3p_base,0.566413467015443,1
+587,Factive island,,matrix_verb,critical,present,no,third_person,John,wh_question,fact_pres_3p_base,0.6602072071178586,1
+588,Factive island,,matrix_type,critical,present,no,third_person,John,wh_question,fact_pres_3p_variant_1,0.027446595595421286,1
+589,Factive island,,matrix_type,critical,present,no,third_person,John,wh_question,fact_pres_3p_variant_1,0.9998920681415577,1
+590,Factive island,,matrix_verb,critical,present,no,third_person,John,wh_question,fact_pres_3p_variant_1,0.3796734853017054,1
+591,Factive island,,matrix_verb,critical,present,no,third_person,John,wh_question,fact_pres_3p_variant_1,0.6476651784352736,1
+592,Factive island,,matrix_type,critical,present,no,third_person,she,wh_question,fact_pres_3p_variant_2,0.5491111961373782,1
+593,Factive island,,matrix_type,critical,present,no,third_person,she,wh_question,fact_pres_3p_variant_2,0.970505407713941,1
+594,Factive island,,matrix_verb,critical,present,no,third_person,she,wh_question,fact_pres_3p_variant_2,0.9470210719959127,1
+595,Factive island,,matrix_verb,critical,present,no,third_person,she,wh_question,fact_pres_3p_variant_2,0.5725955318554066,1
+596,Factive island,,matrix_type,critical,past,no,third_person,John,wh_question,fact_past_3p_base,0.29590780410856965,1
+597,Factive island,,matrix_type,critical,past,no,third_person,John,wh_question,fact_past_3p_base,0.6653868469229254,1
+598,Factive island,,matrix_verb,critical,past,no,third_person,John,wh_question,fact_past_3p_base,0.42494781684548855,1
+599,Factive island,,matrix_verb,critical,past,no,third_person,John,wh_question,fact_past_3p_base,0.5363468341860065,1
+600,Factive island,,matrix_type,critical,past,no,third_person,John,wh_question,fact_past_3p_variant_1,0.2605617729196048,1
+601,Factive island,,matrix_type,critical,past,no,third_person,John,wh_question,fact_past_3p_variant_1,0.6846324714651608,1
+602,Factive island,,matrix_verb,critical,past,no,third_person,John,wh_question,fact_past_3p_variant_1,0.5699535198179007,1
+603,Factive island,,matrix_verb,critical,past,no,third_person,John,wh_question,fact_past_3p_variant_1,0.37524072456686497,1
+604,Factive island,,matrix_type,critical,past,no,third_person,she,wh_question,fact_past_3p_variant_2,0.065535076226932,1
+605,Factive island,,matrix_type,critical,past,no,third_person,she,wh_question,fact_past_3p_variant_2,0.7165698398158216,1
+606,Factive island,,matrix_verb,critical,past,no,third_person,she,wh_question,fact_past_3p_variant_2,0.28794062465801407,1
+607,Factive island,,matrix_verb,critical,past,no,third_person,she,wh_question,fact_past_3p_variant_2,0.4941642913847395,1
+608,Factive island,,matrix_type,critical,present,no,first_person,I,wh_question,fact_pres_1p_base,0.21859676513762238,1
+609,Factive island,,matrix_type,critical,present,no,first_person,I,wh_question,fact_pres_1p_base,1.1541775974264645,1
+610,Factive island,,matrix_verb,critical,present,no,first_person,I,wh_question,fact_pres_1p_base,0.7821163172823997,1
+611,Factive island,,matrix_verb,critical,present,no,first_person,I,wh_question,fact_pres_1p_base,0.5906580452816872,1
+612,Factive island,,matrix_type,critical,present,no,first_person,I,wh_question,fact_pres_1p_variant_1,0.2870185187453762,1
+613,Factive island,,matrix_type,critical,present,no,first_person,I,wh_question,fact_pres_1p_variant_1,0.8734941935213336,1
+614,Factive island,,matrix_verb,critical,present,no,first_person,I,wh_question,fact_pres_1p_variant_1,0.48432813891698334,1
+615,Factive island,,matrix_verb,critical,present,no,first_person,I,wh_question,fact_pres_1p_variant_1,0.6761845733497265,1
+616,Factive island,,matrix_type,critical,present,no,first_person,I,wh_question,fact_pres_1p_variant_2,0.17345363769621525,1
+617,Factive island,,matrix_type,critical,present,no,first_person,I,wh_question,fact_pres_1p_variant_2,1.293942383193066,1
+618,Factive island,,matrix_verb,critical,present,no,first_person,I,wh_question,fact_pres_1p_variant_2,0.8581065173251243,1
+619,Factive island,,matrix_verb,critical,present,no,first_person,I,wh_question,fact_pres_1p_variant_2,0.609289503564157,1
+620,Factive island,,matrix_type,critical,past,no,first_person,I,wh_question,fact_past_1p_base,0.4469440666207767,1
+621,Factive island,,matrix_type,critical,past,no,first_person,I,wh_question,fact_past_1p_base,0.5850502761831784,1
+622,Factive island,,matrix_verb,critical,past,no,first_person,I,wh_question,fact_past_1p_base,0.3677092380491018,1
+623,Factive island,,matrix_verb,critical,past,no,first_person,I,wh_question,fact_past_1p_base,0.6642851047548533,1
+624,Factive island,,matrix_type,critical,past,no,first_person,I,wh_question,fact_past_1p_variant_1,-0.09821843329455415,0
+625,Factive island,,matrix_type,critical,past,no,first_person,I,wh_question,fact_past_1p_variant_1,0.5995387424037122,1
+626,Factive island,,matrix_verb,critical,past,no,first_person,I,wh_question,fact_past_1p_variant_1,-0.1373591257760154,0
+627,Factive island,,matrix_verb,critical,past,no,first_person,I,wh_question,fact_past_1p_variant_1,0.6386794348851734,1
+628,Factive island,,matrix_type,critical,past,no,first_person,I,wh_question,fact_past_1p_variant_2,-0.2592613884811845,0
+629,Factive island,,matrix_type,critical,past,no,first_person,I,wh_question,fact_past_1p_variant_2,0.4040787407761077,1
+630,Factive island,,matrix_verb,critical,past,no,first_person,I,wh_question,fact_past_1p_variant_2,-0.28125562658840586,0
+631,Factive island,,matrix_verb,critical,past,no,first_person,I,wh_question,fact_past_1p_variant_2,0.42607297888332907,1
+632,Ellipsis,Standalone,embedded_type,critical,present,no,first_person,I,declarative,ellsa_pres_aff_1p_base,1.0926345760363523,1
+633,Ellipsis,Standalone,embedded_type,critical,present,no,first_person,I,declarative,ellsa_pres_aff_1p_base,0.8213260737077139,1
+634,Ellipsis,Standalone,matrix_verb,critical,present,no,first_person,I,declarative,ellsa_pres_aff_1p_base,1.3757573121479731,1
+635,Ellipsis,Standalone,matrix_verb,critical,present,no,first_person,I,declarative,ellsa_pres_aff_1p_base,0.5382033375960931,1
+636,Ellipsis,Standalone,embedded_type,critical,present,yes,first_person,I,declarative,ellsa_pres_neg_1p_base,1.1362116452547046,1
+637,Ellipsis,Standalone,embedded_type,critical,present,yes,first_person,I,declarative,ellsa_pres_neg_1p_base,0.9233855108628122,1
+638,Ellipsis,Standalone,matrix_verb,critical,present,yes,first_person,I,declarative,ellsa_pres_neg_1p_base,1.086800596280038,1
+639,Ellipsis,Standalone,matrix_verb,critical,present,yes,first_person,I,declarative,ellsa_pres_neg_1p_base,0.9727965598374788,1
+640,Ellipsis,Standalone,embedded_type,critical,past,no,first_person,I,declarative,ellsa_past_aff_1p_base,1.3960879150741876,1
+641,Ellipsis,Standalone,embedded_type,critical,past,no,first_person,I,declarative,ellsa_past_aff_1p_base,0.23777512660111677,1
+642,Ellipsis,Standalone,matrix_verb,critical,past,no,first_person,I,declarative,ellsa_past_aff_1p_base,1.4968267055798272,1
+643,Ellipsis,Standalone,matrix_verb,critical,past,no,first_person,I,declarative,ellsa_past_aff_1p_base,0.13703633609547716,1
+644,Ellipsis,Standalone,embedded_type,critical,past,yes,first_person,I,declarative,ellsa_past_neg_1p_base,1.0622653282177574,1
+645,Ellipsis,Standalone,embedded_type,critical,past,yes,first_person,I,declarative,ellsa_past_neg_1p_base,0.6334271292099798,1
+646,Ellipsis,Standalone,matrix_verb,critical,past,yes,first_person,I,declarative,ellsa_past_neg_1p_base,1.3672843369974146,1
+647,Ellipsis,Standalone,matrix_verb,critical,past,yes,first_person,I,declarative,ellsa_past_neg_1p_base,0.32840812043032264,1
+648,Ellipsis,Standalone,embedded_type,critical,present,no,third_person,John,declarative,ellsa_pres_aff_3p_base,1.174149294931424,1
+649,Ellipsis,Standalone,embedded_type,critical,present,no,third_person,John,declarative,ellsa_pres_aff_3p_base,-0.01060965357718402,0
+650,Ellipsis,Standalone,matrix_verb,critical,present,no,third_person,John,declarative,ellsa_pres_aff_3p_base,1.2031213857082743,1
+651,Ellipsis,Standalone,matrix_verb,critical,present,no,third_person,John,declarative,ellsa_pres_aff_3p_base,-0.03958174435403422,0
+652,Ellipsis,Standalone,embedded_type,critical,present,no,third_person,they,declarative,ellsa_pres_aff_3p_variant_1,1.1120530540484372,1
+653,Ellipsis,Standalone,embedded_type,critical,present,no,third_person,they,declarative,ellsa_pres_aff_3p_variant_1,0.4330595102921878,1
+654,Ellipsis,Standalone,matrix_verb,critical,present,no,third_person,they,declarative,ellsa_pres_aff_3p_variant_1,1.1551621309228515,1
+655,Ellipsis,Standalone,matrix_verb,critical,present,no,third_person,they,declarative,ellsa_pres_aff_3p_variant_1,0.38995043341777347,1
+656,Ellipsis,Standalone,embedded_type,critical,present,no,third_person,Sarah,declarative,ellsa_pres_aff_3p_variant_2,1.2099893294162865,1
+657,Ellipsis,Standalone,embedded_type,critical,present,no,third_person,Sarah,declarative,ellsa_pres_aff_3p_variant_2,0.05999085606637067,1
+658,Ellipsis,Standalone,matrix_verb,critical,present,no,third_person,Sarah,declarative,ellsa_pres_aff_3p_variant_2,1.141664876733731,1
+659,Ellipsis,Standalone,matrix_verb,critical,present,no,third_person,Sarah,declarative,ellsa_pres_aff_3p_variant_2,0.12831530874892627,1
+660,Ellipsis,Standalone,embedded_type,critical,present,yes,third_person,John,declarative,ellsa_pres_neg_3p_base,1.0012776967378585,1
+661,Ellipsis,Standalone,embedded_type,critical,present,yes,third_person,John,declarative,ellsa_pres_neg_3p_base,0.6331461767563669,1
+662,Ellipsis,Standalone,matrix_verb,critical,present,yes,third_person,John,declarative,ellsa_pres_neg_3p_base,1.0783637143538898,1
+663,Ellipsis,Standalone,matrix_verb,critical,present,yes,third_person,John,declarative,ellsa_pres_neg_3p_base,0.5560601591403356,1
+664,Ellipsis,Standalone,embedded_type,critical,present,yes,third_person,Jane,declarative,ellsa_pres_neg_3p_variant_1,1.0683454788220055,1
+665,Ellipsis,Standalone,embedded_type,critical,present,yes,third_person,Jane,declarative,ellsa_pres_neg_3p_variant_1,0.49798000854347624,1
+666,Ellipsis,Standalone,matrix_verb,critical,present,yes,third_person,Jane,declarative,ellsa_pres_neg_3p_variant_1,1.0175565729335156,1
+667,Ellipsis,Standalone,matrix_verb,critical,present,yes,third_person,Jane,declarative,ellsa_pres_neg_3p_variant_1,0.5487689144319661,1
+668,Ellipsis,Standalone,embedded_type,critical,present,yes,third_person,Sarah,declarative,ellsa_pres_neg_3p_variant_2,1.154094151307357,1
+669,Ellipsis,Standalone,embedded_type,critical,present,yes,third_person,Sarah,declarative,ellsa_pres_neg_3p_variant_2,0.5092924932846867,1
+670,Ellipsis,Standalone,matrix_verb,critical,present,yes,third_person,Sarah,declarative,ellsa_pres_neg_3p_variant_2,1.0576715933487058,1
+671,Ellipsis,Standalone,matrix_verb,critical,present,yes,third_person,Sarah,declarative,ellsa_pres_neg_3p_variant_2,0.605715051243338,1
+672,Ellipsis,Standalone,embedded_type,critical,past,no,third_person,John,declarative,ellsa_past_aff_3p_base,1.1126635376327805,1
+673,Ellipsis,Standalone,embedded_type,critical,past,no,third_person,John,declarative,ellsa_past_aff_3p_base,0.19676299840694256,1
+674,Ellipsis,Standalone,matrix_verb,critical,past,no,third_person,John,declarative,ellsa_past_aff_3p_base,1.2898678051537267,1
+675,Ellipsis,Standalone,matrix_verb,critical,past,no,third_person,John,declarative,ellsa_past_aff_3p_base,0.01955873088599644,1
+676,Ellipsis,Standalone,embedded_type,critical,past,no,third_person,she,declarative,ellsa_past_aff_3p_variant_1,0.8046043220871271,1
+677,Ellipsis,Standalone,embedded_type,critical,past,no,third_person,she,declarative,ellsa_past_aff_3p_variant_1,0.8833735381611745,1
+678,Ellipsis,Standalone,matrix_verb,critical,past,no,third_person,she,declarative,ellsa_past_aff_3p_variant_1,0.9734164814040298,1
+679,Ellipsis,Standalone,matrix_verb,critical,past,no,third_person,she,declarative,ellsa_past_aff_3p_variant_1,0.7145613788442717,1
+680,Ellipsis,Standalone,embedded_type,critical,past,no,third_person,Olivia,declarative,ellsa_past_aff_3p_variant_2,0.5432992182647896,1
+681,Ellipsis,Standalone,embedded_type,critical,past,no,third_person,Olivia,declarative,ellsa_past_aff_3p_variant_2,0.3327604052453381,1
+682,Ellipsis,Standalone,matrix_verb,critical,past,no,third_person,Olivia,declarative,ellsa_past_aff_3p_variant_2,0.19500159495811653,1
+683,Ellipsis,Standalone,matrix_verb,critical,past,no,third_person,Olivia,declarative,ellsa_past_aff_3p_variant_2,0.6810580285520111,1
+684,Ellipsis,Standalone,embedded_type,critical,past,yes,third_person,John,declarative,ellsa_past_neg_3p_base,0.9705840067557618,1
+685,Ellipsis,Standalone,embedded_type,critical,past,yes,third_person,John,declarative,ellsa_past_neg_3p_base,0.697994885862812,1
+686,Ellipsis,Standalone,matrix_verb,critical,past,yes,third_person,John,declarative,ellsa_past_neg_3p_base,1.2418089420593157,1
+687,Ellipsis,Standalone,matrix_verb,critical,past,yes,third_person,John,declarative,ellsa_past_neg_3p_base,0.42676995055925815,1
+688,Ellipsis,Standalone,embedded_type,critical,past,yes,third_person,Christopher,declarative,ellsa_past_neg_3p_variant_1,0.9233873006196944,1
+689,Ellipsis,Standalone,embedded_type,critical,past,yes,third_person,Christopher,declarative,ellsa_past_neg_3p_variant_1,0.6588213781723824,1
+690,Ellipsis,Standalone,matrix_verb,critical,past,yes,third_person,Christopher,declarative,ellsa_past_neg_3p_variant_1,1.2227186212272194,1
+691,Ellipsis,Standalone,matrix_verb,critical,past,yes,third_person,Christopher,declarative,ellsa_past_neg_3p_variant_1,0.3594900575648574,1
+692,Ellipsis,Standalone,embedded_type,critical,past,yes,third_person,the student,declarative,ellsa_past_neg_3p_variant_2,0.7057427777981871,1
+693,Ellipsis,Standalone,embedded_type,critical,past,yes,third_person,the student,declarative,ellsa_past_neg_3p_variant_2,0.6511626922595373,1
+694,Ellipsis,Standalone,matrix_verb,critical,past,yes,third_person,the student,declarative,ellsa_past_neg_3p_variant_2,0.9606056363654447,1
+695,Ellipsis,Standalone,matrix_verb,critical,past,yes,third_person,the student,declarative,ellsa_past_neg_3p_variant_2,0.3962998336922796,1
+696,Ellipsis,Response to polar Q,matrix_verb,critical,present,no,first_person,I,declarative,ellpolq_base,0.33840827424774167,1
+697,Ellipsis,Response to polar Q,negation,critical,present,no,first_person,I,declarative,ellpolq_base,0.7847809140456605,1
+698,Ellipsis,Response to polar Q,matrix_verb,critical,present,no,first_person,I,declarative,ellpolq_variant_1,0.3120384904242681,1
+699,Ellipsis,Response to polar Q,negation,critical,present,no,first_person,I,declarative,ellpolq_variant_1,0.7189185717858959,1
+700,Ellipsis,Response to polar Q,matrix_verb,critical,present,no,first_person,I,declarative,ellpolq_variant_2,0.36201474466178407,1
+701,Ellipsis,Response to polar Q,negation,critical,present,no,first_person,I,declarative,ellpolq_variant_2,0.7910320200587369,1
+702,Ellipsis,Response to wh Q,negation,critical,present,no,first_person,I,declarative,ellwhq_base,0.7442827447073799,1
+703,Ellipsis,Response to wh Q,matrix_verb,critical,present,no,first_person,I,declarative,ellwhq_base,0.1603171382071098,1
+704,Ellipsis,Response to wh Q,negation,critical,present,no,first_person,I,declarative,ellwhq_variant_1,0.7450163190085912,1
+705,Ellipsis,Response to wh Q,matrix_verb,critical,present,no,first_person,I,declarative,ellwhq_variant_1,0.04276889984713117,1
+706,Ellipsis,Response to wh Q,negation,critical,present,no,first_person,I,declarative,ellwhq_variant_2,0.7350598136353774,1
+707,Ellipsis,Response to wh Q,matrix_verb,critical,present,no,first_person,I,declarative,ellwhq_variant_2,0.03945960463452991,1
+708,Ellipsis,Response to declarative,negation,critical,present,no,first_person,I,declarative,elldecl_base,-0.02308643298890045,0
+709,Ellipsis,Response to declarative,negation,critical,present,no,first_person,I,declarative,elldecl_base,0.03402558377273479,1
+710,Ellipsis,Response to declarative,matrix_verb,critical,present,no,first_person,I,declarative,elldecl_base,0.6571038610882143,1
+711,Ellipsis,Response to declarative,matrix_verb,critical,present,no,first_person,I,declarative,elldecl_base,-0.6461647103043799,0
+712,Ellipsis,Response to declarative,negation,critical,present,no,first_person,I,declarative,elldecl_variant_1,-0.15424054983660618,0
+713,Ellipsis,Response to declarative,negation,critical,present,no,first_person,I,declarative,elldecl_variant_1,0.12351766803516373,1
+714,Ellipsis,Response to declarative,matrix_verb,critical,present,no,first_person,I,declarative,elldecl_variant_1,0.6900565309818467,1
+715,Ellipsis,Response to declarative,matrix_verb,critical,present,no,first_person,I,declarative,elldecl_variant_1,-0.7207794127832892,0
+716,Ellipsis,Response to declarative,negation,critical,present,no,first_person,I,declarative,elldecl_variant_2,-0.13493122346745245,0
+717,Ellipsis,Response to declarative,negation,critical,present,no,first_person,I,declarative,elldecl_variant_2,0.12726123835750602,1
+718,Ellipsis,Response to declarative,matrix_verb,critical,present,no,first_person,I,declarative,elldecl_variant_2,0.6938062545164585,1
+719,Ellipsis,Response to declarative,matrix_verb,critical,present,no,first_person,I,declarative,elldecl_variant_2,-0.7014762396264049,0
+720,Parenthetical,Slifting,matrix_subj_category,critical,present,no,first_person,I,declarative,slift_base,0.017929700144029503,1
+721,Parenthetical,Slifting,matrix_subj_category,critical,present,no,first_person,I,declarative,slift_base,0.19746254882709335,1
+722,Parenthetical,Slifting,matrix_verb,critical,present,no,first_person,I,declarative,slift_base,-0.06923940568288778,0
+723,Parenthetical,Slifting,matrix_verb,critical,present,no,first_person,I,declarative,slift_base,0.28463165465401064,1
+724,Parenthetical,Slifting,matrix_subj_category,critical,present,no,first_person,I,declarative,slift_variant_1,0.04603559646696809,1
+725,Parenthetical,Slifting,matrix_subj_category,critical,present,no,first_person,I,declarative,slift_variant_1,0.15243046607880828,1
+726,Parenthetical,Slifting,matrix_verb,critical,present,no,first_person,I,declarative,slift_variant_1,-0.0414454285351491,0
+727,Parenthetical,Slifting,matrix_verb,critical,present,no,first_person,I,declarative,slift_variant_1,0.23991149108092547,1
+728,Parenthetical,Slifting,matrix_subj_category,critical,present,no,first_person,I,declarative,slift_variant_2,0.08479562116453643,1
+729,Parenthetical,Slifting,matrix_subj_category,critical,present,no,first_person,I,declarative,slift_variant_2,0.2175482923224883,1
+730,Parenthetical,Slifting,matrix_verb,critical,present,no,first_person,I,declarative,slift_variant_2,0.13360630398159312,1
+731,Parenthetical,Slifting,matrix_verb,critical,present,no,first_person,I,declarative,slift_variant_2,0.1687376095054316,1

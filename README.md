@@ -14,18 +14,18 @@ pip install -r requirements.txt
 # expand sentences.csv into sentences_with_variants.csv (tense/person/negation/
 # matrix_type/complementizer/preposition siblings, plus 2 lexically-varied
 # copies per assertion set)
-python generate_variants.py
+python -m benchmark.scripts.generate_variants
 
-# expand config.json + sentences_with_variants.csv into benchmark_data/pairs.csv
-python create_pairs.py
+# expand config.json + sentences_with_variants.csv into benchmark/data/pairs.csv
+python -m benchmark.scripts.create_pairs
 
 # score pairs.csv with gpt2, Llama-3.1-8B, Llama-3.1-8B-Instruct, and Mistral 8B (the
 # defaults) and compare all three
-python eval.py
+python -m scripts.eval
 
 # score with specific model(s) instead; repeat --model to compare several
-python eval.py --model gpt2
-python eval.py --model meta-llama/Llama-3.1-8B --model meta-llama/Llama-3.1-8B-Instruct
+python -m scripts.eval --model gpt2
+python -m scripts.eval --model meta-llama/Llama-3.1-8B --model meta-llama/Llama-3.1-8B-Instruct
 
 # Llama weights are gated on HF - log in first or add HF_TOKEN; weights land in
 # huggingface_hub's usual cache unless you point --cache-dir elsewhere
@@ -33,16 +33,28 @@ huggingface-cli login
 # OR
 HF_TOKEN=xxxx
 # THEN
-python eval.py --cache-dir /path/to/scratch/hf_cache
+python -m scripts.eval --cache-dir /path/to/scratch/hf_cache
 ```
 
-Running more than one `--model` writes separate `pairs_scored-<model>.csv` /
-`eval_results-<model>.csv` / `eval_summary-<model>.json` files per model (instead
-of the single `pairs_scored.csv` / `eval_results.csv` / `eval_summary.json`
-produced for one model), plus an `eval_summary-comparison.json` with each
-model's overall accuracy side by side. `pairs_scored.csv` is `pairs.csv` with
-each sentence's logprob and the pair's margin attached, one row per pair, for
-inspecting individual sentence scores rather than only assertion-level results.
+Each model gets its own folder, `eval_output/<model>/` (`--output-dir` to change the
+parent), holding `pairs_scored.csv`, `eval_results.csv` and `eval_summary.json`.
+`pairs_scored.csv` is `pairs.csv` with each sentence's logprob and the pair's margin
+attached, one row per pair, for inspecting individual sentence scores rather than only
+assertion-level results.
+
+File names get a prefix for the run's inputs, so runs on the same model never collide:
+`childes_formatted_` for `--childes-format`, then the pairs file's tag (`--pairs
+benchmark/data/pairs_pairwise.csv` gives `pairwise_`):
+
+```
+eval_output/
+  gpt2/
+    eval_results.csv  pairs_scored.csv  eval_summary.json
+    pairwise_eval_results.csv  ...             # --pairs benchmark/data/pairs_pairwise.csv
+    childes_formatted_eval_results.csv  ...    # --childes-format
+  gpt2-slor/  ...                              # eval_slor_manual.py
+  unigram/                                     # cached unigram counts for SLOR
+```
 
 ### SLOR scoring
 
@@ -53,12 +65,36 @@ close to what that model was trained on (`hf:` corpora are streamed and only a ~
 `.npy` of counts is cached but this can be changed):
 
 ```
-python eval_slor_manual.py \
+python -m scripts.eval_slor_manual \
   --model gpt2=hf:Skylion007/openwebtext
 ```
 
-Outputs are `*-<model>-slor.*` in `eval_output/`, so they sit beside (and never
-overwrite) the plain-logprob results, and `plot_eval.py` shows them as `<model>-slor`.
+Outputs go in `eval_output/<model>-slor/`, so they never overwrite the plain-logprob
+results, and `plot_eval.py` shows them as `<model>-slor`. Unigram counts are cached in
+`eval_output/unigram/`.
+
+## layout
+
+Run everything from the repo root as modules (`python -m scripts.eval`), so `utils.py`
+and `scripts/` import.
+
+- `benchmark/data/`: benchmark inputs and generated pairs; `benchmark/scripts/`: their generators
+- `scripts/`: scoring, plotting, and `childes.py` (behind the CHILDES notebook); `figures/`: plots from `plot_eval.py`
+- `notebooks/`: marimo notebooks
+- `cache/` (gitignored): downloaded CHILDES tables, parses, and notebook figures
+
+## CHILDES think/know analysis
+
+`notebooks/childes_think_know.py` pulls every Eng-NA and Eng-UK utterance from
+childes-db 2026.1 on Redivis, checks benchmark vocabulary frequency (threshold 10)
+with same-tag alternatives for rare words, and classifies think/know complements
+with spaCy (declarative vs. interrogative ratios, categorical check, ablation sweep).
+
+```bash
+python -m spacy download en_core_web_md   # parsing
+python -m spacy download en_core_web_lg   # word vectors for alternatives
+marimo edit notebooks/childes_think_know.py   # first run opens a Redivis login in the browser
+```
 
 ## generated files
 
@@ -87,11 +123,12 @@ first gets a different `embedded_clause` - or, in a mini-discourse, a different 
 (with probability `embedded_clause_swap_prob`). Then a random `min_slots_modified` to
 `max_slots_modified` of the other slots that match text in the set are modified:
 person/pronoun swaps (with reconjugation when needed), weather predicate, rumor
-content, judgment adjectives, objects, hiding verbs, mishap object/verb pairs,
+content, judgment adjectives, objects, hiding verbs, mishap object/verb pairs, the
+control rows' matrix verb (start/investigate, reinflected),
 determiners (a determiner's `number` must match its noun's: `a` needs a singular noun, `all of the`
 a plural one, blank takes either), and the wh-complementizer (where/when/why). Because the clause goes first, those
 slots vary the clause that's actually there, including a swapped-in one. Set the
-options in `benchmark_data/variant_config.json` (`--variant-config` to use another),
+options in `benchmark/data/variant_config.json` (`--variant-config` to use another),
 for every condition or overridden per condition `code` under `"conditions"`:
 
 ```json

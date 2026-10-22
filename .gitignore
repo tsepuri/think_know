@@ -10,3 +10,5 @@ eval_results-*.csv
 eval_summary.json
 eval_summary-*.json
 *npy
+cache/
+SKILLS.md
