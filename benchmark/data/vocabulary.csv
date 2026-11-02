@@ -72,3 +72,39 @@ the,determiner,pl,,,,,,,
 <person>'s,determiner,pl,,,,,,,
 some of the,determiner,pl,,,,,,countable:1,
 all of the,determiner,pl,,,,,,,
+Mary parked the car,embedded_clause,,,,,,,"complementizer:where,when,why",factive island clause
+the store is open,embedded_clause,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement
+Mary is coming to the party,embedded_clause,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement
+the meeting is today,embedded_clause,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement
+dinner is ready,embedded_clause,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement
+the store's open,embedded_clause,,,,,,,phenomenon:Parenthetical,
+Mary's coming,embedded_clause,,,,,,,phenomenon:Parenthetical,
+dinner's ready,embedded_clause,,,,,,,phenomenon:Parenthetical,
+the meeting's today,embedded_clause,,,,,,,phenomenon:Parenthetical,
+where is Mary,wh_question,,,,,,,paradigm:mini-discourse,for mini-discourses
+when is the party,wh_question,,,,,,,paradigm:mini-discourse,for mini-discourses
+why did Mary leave,wh_question,,,,,,,paradigm:mini-discourse,for mini-discourses
+who broke the vase,wh_question,,,,,,,paradigm:mini-discourse,for mini-discourses
+who ate the cookies,wh_question,,,,,,,paradigm:mini-discourse,for mini-discourses
+what time is it,wh_question,,,,,,,paradigm:mini-discourse,for mini-discourses
+where is the store,wh_question,,,,,,,paradigm:mini-discourse,for mini-discourses
+is it raining outside,polar_question,,,,,,,paradigm:mini-discourse,for mini-discourses
+is the store open,polar_question,,,,,,,paradigm:mini-discourse,for mini-discourses
+is Mary coming to the party,polar_question,,,,,,,paradigm:mini-discourse,for mini-discourses
+is Mary at home,polar_question,,,,,,,paradigm:mini-discourse,for mini-discourses
+did Mary hide the keys,polar_question,,,,,,,paradigm:mini-discourse,for mini-discourses
+is the rumor true,polar_question,,,,,,,paradigm:mini-discourse,for mini-discourses
+is the meeting today,polar_question,,,,,,,paradigm:mini-discourse,for mini-discourses
+will it rain tomorrow,polar_question,,,,,,,paradigm:mini-discourse,for mini-discourses
+is dinner ready,polar_question,,,,,,,paradigm:mini-discourse,for mini-discourses
+might,modal,,,,,,,subtype:Standalone;matrix_subj_category:third_person;tense:present,"'I might think so' isn't a standalone ellipsis, so third person only"
+may,modal,,,,,,,subtype:Standalone;matrix_subj_category:third_person;tense:present,"'I may think so' isn't a standalone ellipsis, so third person only"
+Mary broke the vase,embedded_clause,,,,,,,"phenomenon:CP + Q,Ellipsis,Parenthetical",free declarative complement; also slifting
+Mary spilled the coffee,embedded_clause,,,,,,,"phenomenon:CP + Q,Ellipsis,Parenthetical",free declarative complement; also slifting
+the cookies are gone,embedded_clause,,,,,,,"phenomenon:CP + Q,Ellipsis,Parenthetical",free declarative complement; also slifting
+Mary is sick,embedded_clause,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement
+Mary is late,embedded_clause,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement
+Mary is at home,embedded_clause,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement
+Mary's sick,embedded_clause,,,,,,,phenomenon:Parenthetical,
+Mary's late,embedded_clause,,,,,,,phenomenon:Parenthetical,
+Mary's at home,embedded_clause,,,,,,,phenomenon:Parenthetical,

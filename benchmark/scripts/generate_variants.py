@@ -28,7 +28,14 @@ Two independent expansion passes, per condition in config.json:
    for every condition or overridden per condition code.
 
    The control_verb slot (start, investigate) swaps a control row's matrix verb,
-   reinflecting each of its forms and updating matrix_verb.
+   reinflecting each of its forms and updating matrix_verb. The modal slot
+   (might, may) puts a modal before the matrix verb of every row in the set
+   ('John thinks so.' -> 'John might think so.'), where its `requires` allow.
+
+   A condition with few structural manipulations has few sets to vary, so
+   variant_config.json's min_sets keeps adding variants, round-robin over a
+   condition's sets, past --n-variants until the condition has that many sets
+   in total (base copies included) or none of its sets can be varied further.
 
    A vocabulary entry's `requires` (<column>:<value>[,<value>..], see
    parse_requires) restricts where it may be swapped in; a substitution is
@@ -52,9 +59,11 @@ PERSONS = ["first_person", "third_person"]
 SIMPLE_SLOTS = ["weather_predicate", "content_noun", "judgment", "object", "hiding_verb", "mishap_object", "mishap_verb"]
 # the "content" a free_embedded_clause condition swaps first, before any of the above: a clause
 # ("John knows where Mary hid the keys") or, in a mini-discourse, its wh-question ("A: Where are my keys?")
-CLAUSE_SLOTS = ["embedded_clause", "wh_question"]
+CLAUSE_SLOTS = ["embedded_clause", "wh_question", "polar_question"]
 # matrix verbs of control rows, swapped with reinflection (utils.VERB_FORMS) rather than as plain words
 CONTROL_VERB_SLOT = "control_verb"
+# modals put before the matrix verb of a whole set, which goes bare (utils.add_modal)
+MODAL_SLOT = "modal"
 
 def load_config(path):
     with open(path, encoding="utf-8") as f:
@@ -268,7 +277,7 @@ class Vocabulary:
         for entry in self.records:
             self._pools.setdefault(entry["slot"], []).append(entry)
         self.wh_complementizers = {e["word"] for e in self.pool("complementizer")} - NON_WH_COMPLEMENTIZERS
-        for slot in SIMPLE_SLOTS + CLAUSE_SLOTS + [DETERMINER_SLOT, CONTROL_VERB_SLOT, "person", "pronoun", "complementizer"]:
+        for slot in SIMPLE_SLOTS + CLAUSE_SLOTS + [DETERMINER_SLOT, CONTROL_VERB_SLOT, MODAL_SLOT, "person", "pronoun", "complementizer"]:
             if not self.pool(slot):
                 self.warnings.append(f"vocabulary.csv has no {slot!r} entries (a renamed slot?) - that slot won't be varied")
         for entry in self.pool(DETERMINER_SLOT):
@@ -385,6 +394,7 @@ DEFAULT_VARIATION = {
     "embedded_clause_swap_prob": 0.5,  # chance a variant first gets a different embedded clause
     "min_slots_modified": 1,           # then this many..
     "max_slots_modified": 2,           # ..to this many other slots modified
+    "min_sets": 0,                     # keep adding variants until a condition has this many sets
 }
 
 
@@ -398,6 +408,8 @@ def variation_settings(variant_config, condition):
     unknown = settings.keys() - DEFAULT_VARIATION.keys()
     if unknown:
         raise ValueError(f"variant_config.json: unknown setting(s) {sorted(unknown)}")
+    if settings["min_sets"] < 0:
+        raise ValueError(f"variant_config.json needs min_sets >= 0, got {settings['min_sets']}")
     if not 0 <= settings["min_slots_modified"] <= settings["max_slots_modified"]:
         raise ValueError(f"variant_config.json needs 0 <= min_slots_modified <= max_slots_modified, got {settings}")
     return settings
@@ -449,6 +461,23 @@ def find_control_verb_candidate(rows, vocab):
     before = requires_violations(rows, vocab)
     alternatives = [a for a in pool if a != old and requires_violations(_apply_control_verb(rows, old, a), vocab) <= before]
     return (old, alternatives) if alternatives else None
+
+
+def find_modal_candidate(rows, vocab):
+    """Modals from the modal slot that can go before every row's matrix verb
+    without newly breaking a `requires` (e.g. a modal that needs
+    matrix_subj_category:third_person, since 'I might think so' isn't a
+    standalone ellipsis), or [] - also when a modal is already there."""
+    pool = [e["word"] for e in vocab.pool(MODAL_SLOT)]
+    if any(_contains(r["sentence"], m) for r in rows for m in pool):
+        return []
+    before = requires_violations(rows, vocab)
+    alternatives = []
+    for modal in pool:
+        applied = _apply_modal(rows, modal)
+        if applied is not None and requires_violations(applied, vocab) <= before:
+            alternatives.append(modal)
+    return alternatives
 
 
 def find_person_rename_candidates(rows, person_pool):
@@ -593,9 +622,10 @@ def find_embedded_clause_swap(rows, vocab):
     swappable clause, or None - an embedded_clause is swapped for another
     embedded_clause, a mini-discourse's wh_question for another wh_question.
     A clause whose `requires` the rows
-    already satisfy is swapped as-is; one that lists other complementizers
-    (e.g. 'Mary ate the cookies' can't ask 'where') is also swapped in if
-    the rows' wh-complementizer can change to one it allows."""
+    already satisfy can be swapped as-is; one that lists complementizers
+    (e.g. 'Mary hid the keys' can ask where/when/why, 'Mary ate the cookies'
+    only when/why) can also be swapped in with the rows' wh-complementizer
+    changed to any other one it allows, each equally likely."""
     present = _present_clauses(rows, vocab)
     if not present:
         return None
@@ -610,7 +640,9 @@ def find_embedded_clause_swap(rows, vocab):
         swapped = _apply_embedded_clause(rows, old, new)
         if requires_violations(swapped, vocab) <= before:
             options.setdefault(new, []).append(None)
-            continue
+        # even a clause that fits the current wh-word is offered with the others it
+        # allows, or 'Mary hid the keys' swapped in for 'the keys are' would always
+        # keep 'where' and 'Does John know why Mary hid the keys?' would rarely occur
         allowed = parse_requires(entry["requires"]).get("complementizer") or set()
         for comp in sorted((allowed - {current}) & vocab.wh_complementizers) if current else []:
             adapted = _apply_complementizer(swapped, current, comp, vocab)
@@ -660,6 +692,14 @@ def gather_candidates(rows, vocab):
             f"{CONTROL_VERB_SLOT}: {old}->{new}",
         )
 
+    modal_choices = find_modal_candidate(rows, vocab)
+    if modal_choices:
+        modal = random.choice(modal_choices)
+        candidates[MODAL_SLOT] = (
+            lambda rs, m=modal: _apply_modal(rs, m) or rs,
+            f"{MODAL_SLOT}: {modal}",
+        )
+
     person_pool = vocab.pool("person")
     pronoun_pool = vocab.pool("pronoun")
     rename_present = find_person_rename_candidates(rows, person_pool)
@@ -704,6 +744,19 @@ def _apply_control_verb(rows, old, new):
         for old_form, new_form in dict(pairs).items():
             sentence = _replace_all(sentence, old_form, new_form)
         new_rows.append({**r, "sentence": sentence, "matrix_verb": new})
+    return new_rows
+
+
+def _apply_modal(rows, modal):
+    """`modal` before the matrix verb of every row, or None if any row isn't a
+    shape utils.add_modal handles (e.g. its subject was already made 'they' -
+    'They think so' has no 'thinks' to find), so a set is never half-modalized."""
+    new_rows = []
+    for r in rows:
+        new_sentence = utils.add_modal(r["sentence"], r["matrix_verb"], r["matrix_subj_category"], r["tense"], r["matrix_type"], r["negation"], modal)
+        if new_sentence is None:
+            return None
+        new_rows.append({**r, "sentence": new_sentence})
     return new_rows
 
 
@@ -817,26 +870,51 @@ def make_lexical_variant(rows, vocab, condition, settings):
     return _capitalize_first(rows)
 
 
-# times make_lexical_variant is retried for each variant before giving up on it
-MAX_VARIANT_ATTEMPTS = 10
+# times make_lexical_variant is retried for each variant before giving up on that set
+MAX_VARIANT_ATTEMPTS = 50
 
 
-def make_distinct_variants(rows, vocab, condition, settings, n):
-    """Up to `n` lexical variants of `rows`, none identical (same sentences)
-    to the base copy or to each other. A set with too few slots to vary just
-    gets fewer variants - possibly none - instead of duplicates."""
-    seen = {tuple(r["sentence"] for r in rows)}
-    variants = []
-    for _ in range(n):
-        for _ in range(MAX_VARIANT_ATTEMPTS):
-            variant = make_lexical_variant(rows, vocab, condition, settings)
-            key = tuple(r["sentence"] for r in variant)
-            if key not in seen:
-                seen.add(key)
-                variants.append(variant)
+def _new_variant(rows, seen, vocab, condition, settings):
+    """A lexical variant of `rows` whose sentences aren't in `seen` (and adds
+    them), or None if MAX_VARIANT_ATTEMPTS tries only produced repeats."""
+    for _ in range(MAX_VARIANT_ATTEMPTS):
+        variant = make_lexical_variant(rows, vocab, condition, settings)
+        key = tuple(r["sentence"] for r in variant)
+        if key not in seen:
+            seen.add(key)
+            return variant
+    return None
+
+
+def make_distinct_variants(sets, vocab, condition, settings, n, kept=None):
+    """Lexical variants for each of a condition's assertion `sets`, none
+    identical (same sentences) to its base copy or to each other: `n` per set,
+    then more, one set at a time round-robin, until the condition has
+    settings["min_sets"] sets in total counting the base copies. Only sets
+    marked in `kept` (default: all) count toward that and get the extra
+    variants - the others are dropped by bad_substitutions anyway. A set with too
+    few slots to vary just gets fewer variants - possibly none - instead of
+    duplicates, and stops being drawn from once it can't produce a new one."""
+    kept = kept if kept is not None else [True] * len(sets)
+    seen = [{tuple(r["sentence"] for r in rows)} for rows in sets]
+    variants = [[] for _ in sets]
+    open_sets = list(range(len(sets)))
+    total = sum(kept)
+    round_ = 0
+    while open_sets and (round_ < n or total < settings["min_sets"]):
+        for i in list(open_sets):
+            if round_ >= n and (total >= settings["min_sets"] or not kept[i]):
+                if not kept[i]:
+                    open_sets.remove(i)
+                    continue
                 break
-        else:
-            break
+            variant = _new_variant(sets[i], seen[i], vocab, condition, settings)
+            if variant is None:
+                open_sets.remove(i)
+                continue
+            variants[i].append(variant)
+            total += kept[i]
+        round_ += 1
     return variants
 
 
@@ -939,21 +1017,24 @@ def build_variants(sentences_df, config, vocab, variant_config, n_lexical_varian
         for row in group_rows:
             structural_rows.extend(expand_structural(row, effective_manipulated_types, comparison_types))
 
-        for axis_tags, axis_rows in duplicate_for_axes(structural_rows, manipulated_types, comparison_types):
-            for part_rows in partition_by_dimensions(axis_rows, partition_dims):
-                # variants are still generated for excluded sets so the random draws,
-                # and so every other set's output, match a run without bad_substitutions
-                variant_sets = [("base", part_rows)] + [
-                    (f"variant_{i}", variant_rows)
-                    for i, variant_rows in enumerate(make_distinct_variants(part_rows, vocab, condition, settings, n_lexical_variants), start=1)
-                ]
-                for variant_id, variant_rows in variant_sets:
-                    for r in variant_rows:
-                        uid = make_unique_id(r, code, partition_dims, axis_tags, variant_id)
-                        if is_bad_substitution(uid, bad_substitutions):
-                            EXCLUDED[uid] += 1
-                            continue
-                        out_rows.append({**r, "unique_id": uid, "variant_id": variant_id})
+        sets = [
+            (axis_tags, part_rows)
+            for axis_tags, axis_rows in duplicate_for_axes(structural_rows, manipulated_types, comparison_types)
+            for part_rows in partition_by_dimensions(axis_rows, partition_dims)
+        ]
+        # variants are still generated for excluded sets so the random draws,
+        # and so every other set's output, match a run without bad_substitutions
+        kept = [not is_bad_substitution(make_unique_id(rows[0], code, partition_dims, axis_tags, "base"), bad_substitutions) for axis_tags, rows in sets]
+        all_variants = make_distinct_variants([rows for _, rows in sets], vocab, condition, settings, n_lexical_variants, kept)
+        for (axis_tags, part_rows), variants in zip(sets, all_variants):
+            variant_sets = [("base", part_rows)] + [(f"variant_{i}", v) for i, v in enumerate(variants, start=1)]
+            for variant_id, variant_rows in variant_sets:
+                for r in variant_rows:
+                    uid = make_unique_id(r, code, partition_dims, axis_tags, variant_id)
+                    if is_bad_substitution(uid, bad_substitutions):
+                        EXCLUDED[uid] += 1
+                        continue
+                    out_rows.append({**r, "unique_id": uid, "variant_id": variant_id})
 
     for i, row in enumerate(out_rows, start=1):
         row["sent_id"] = i
@@ -975,7 +1056,7 @@ def main():
     parser.add_argument("--vocabulary", default="benchmark/data/vocabulary.csv")
     parser.add_argument("--output", default="benchmark/data/sentences_with_variants.csv")
     parser.add_argument("--seed", type=int, default=0)
-    parser.add_argument("--n-variants", type=int, default=2, help="lexically-varied copies generated per assertion set, on top of the base copy")
+    parser.add_argument("--n-variants", type=int, default=2, help="lexically-varied copies generated per assertion set, on top of the base copy (more where variant_config.json's min_sets asks)")
     args = parser.parse_args()
 
     random.seed(args.seed)
@@ -993,7 +1074,7 @@ def main():
         print(f"Excluded {sum(EXCLUDED.values())} rows in {len(EXCLUDED)} sets matching bad_substitutions: {', '.join(sorted(EXCLUDED))}", file=sys.stderr)
     pd.DataFrame(rows).reindex(columns=OUTPUT_COLUMNS).to_csv(args.output, index=False)
     n_ids = len({row["variant_id"] for row in rows}) if rows else 0
-    print(f"Wrote {len(rows)} rows (up to {args.n_variants + 1} variant_ids per set, {n_ids} distinct variant_id labels) to {args.output}")
+    print(f"Wrote {len(rows)} rows ({n_ids} distinct variant_id labels) to {args.output}")
 
 
 if __name__ == "__main__":

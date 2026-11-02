@@ -142,6 +142,20 @@ def negate_clause(sentence, matrix_subj, matrix_verb, person, tense, matrix_type
     return _splice(sentence, old_verb_form, f"{aux}n't {bare}")
 
 
+def add_modal(sentence, matrix_verb, person, tense, matrix_type, negation, modal):
+    """Put a modal before the matrix verb, which goes bare: 'John thinks so.'
+    -> 'John might think so.', 'John doesn't know.' -> 'John might not know.'
+    Only a present-tense declarative is handled (a past one would need 'might
+    have' + participle); anything else, or a sentence whose expected verb/aux
+    text isn't found, is None."""
+    if matrix_type != "declarative" or tense != "present":
+        return None
+    bare = VERB_FORMS[matrix_verb]["bare"]
+    if negation == "yes":
+        return _splice(sentence, f"{do_form(person, tense)}n't {bare}", f"{modal} not {bare}")
+    return _splice(sentence, conjugate(matrix_verb, person, tense), f"{modal} {bare}")
+
+
 def make_polar_question(sentence, matrix_subj, matrix_verb, person, tense):
     """Front do-support: 'John thinks that X.' -> 'Does John think that X?'.
     Only valid (and only attempted) when matrix_subj + the conjugated verb

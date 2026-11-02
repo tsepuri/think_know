@@ -125,7 +125,8 @@
         "negation",
         "matrix_verb"
       ],
-      "manipulated_types": []
+      "manipulated_types": [],
+      "free_embedded_clause": true
     },
     {
       "phenomenon": "Ellipsis",

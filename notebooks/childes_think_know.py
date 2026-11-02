@@ -71,7 +71,7 @@ def _(mo):
 
 
 @app.cell
-def _(ROOT, THRESHOLD, ch, pd, utterances):
+def _(ROOT, ch, pd, utterances):
     counts = ch.word_counts(utterances.gloss)
     vocabulary = pd.read_csv(ROOT / "benchmark" / "data" / "vocabulary.csv")
     vocabulary = vocabulary[~vocabulary.word.str.contains("<")].assign(form=lambda v: v.word.str.lower())
@@ -81,7 +81,7 @@ def _(ROOT, THRESHOLD, ch, pd, utterances):
         count=lambda v: [_phrases[f] if f in _phrases else counts[f] for f in v.form],
         min_word_count=lambda v: [min(counts[w] for w in f.split()) for f in v.form],
         rarest_word=lambda v: [min(f.split(), key=counts.__getitem__) for f in v.form],
-    ).assign(below_threshold=lambda v: v.min_word_count < THRESHOLD).drop_duplicates(["form", "slot"])
+    ).assign(below_threshold=lambda v: v.min_word_count < 100).drop_duplicates(["form", "slot"])
     vocab_freq.sort_values("min_word_count")
     return counts, vocab_freq
 
@@ -144,9 +144,9 @@ def _(
     _rare_all = _rare_vocab | set(rare_benchmark_words.index)
     no_vector = sorted(w for w in _rare_all if vectors.vocab[w].vector_norm == 0)
     _rare = sorted(_rare_all - set(no_vector))
-    _alts = ch.alternatives(_rare, tags, {w: c for w, c in counts.items() if not profanity.contains_profanity(w)}, vectors, THRESHOLD)
+    alternative_words = ch.alternatives(_rare, tags, {w: c for w, c in counts.items() if not profanity.contains_profanity(w)}, vectors, THRESHOLD)
     rare_alternatives = pd.DataFrame(
-        [(w, counts[w], tag, ", ".join(f"{a} ({counts[a]:,})" for a in alts)) for w, (tag, alts) in _alts.items()],
+        [(w, counts[w], tag, ", ".join(f"{a} ({counts[a]:,})" for a in alts)) for w, (tag, alts) in alternative_words.items()],
         columns=["word", "childes_count", "tag", "alternatives"],
     ).sort_values("childes_count")
     rare_alternatives
@@ -158,6 +158,17 @@ def _(mo, no_vector):
     mo.md(f"""
     Rare words without a spaCy vector (no alternatives computed): {', '.join(no_vector) or 'none'}
     """)
+    return
+
+
+@app.cell
+def _(ROOT, counts, pd):
+    # rare_vocabulary.csv is hand-curated (started from alternative_words): one row per word, each
+    # rare word ("original") followed by the alternatives kept for it; this only refreshes the counts
+    _path = ROOT / "benchmark" / "data" / "rare_vocabulary.csv"
+    rare_vocabulary = pd.read_csv(_path, keep_default_na=False).assign(childes_count=lambda v: [counts[w] for w in v.word])
+    rare_vocabulary.to_csv(_path, index=False)
+    rare_vocabulary
     return
 
 

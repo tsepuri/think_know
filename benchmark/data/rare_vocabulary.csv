@@ -1,0 +1,24 @@
+word,childes_count,alternative_for,notes
+documents,5,original,variant for keys
+files,31,documents,
+papers,451,documents,
+reports,21,documents,
+letters,3243,documents,
+investigated,3,original,control verb for NP vs new sentence and NP vs PP
+identified,37,investigated,
+liked,3273,investigated,
+ignored,48,investigated,
+observed,22,investigated,
+discussed,28,investigated,
+discovered,154,investigated,
+investigates,1,original,control verb for NP vs new sentence and NP vs PP
+likes,10856,investigates,
+ignores,20,investigates,
+rumor,5,original,primary NP complement object
+news,580,rumor,
+announcement,25,rumor,
+fact,1008,rumor,can't use fact is false
+stashed,5,original,variant for hid
+stored,32,stashed,
+dropped,2987,stashed,
+investigate,29,original,control verb for NP vs new sentence and NP vs PP

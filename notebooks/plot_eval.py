@@ -125,9 +125,9 @@ def _(mo):
     ## Hardest assertions
 
     The assertions with the lowest mean margin across models (rank 1 diff $-$ rank 2 diff, in
-    log-prob per token; above 0 means correct), restricted to the condition picked above. Dark
-    dots carry a 95% bootstrap CI over models. The full ranking is written beside the figure as
-    `plot_hardest_assertions.csv`.
+    log-prob per token; above 0 means correct), restricted to the condition picked above, and at
+    most two per group. Dark dots carry a 95% bootstrap CI over models. The full ranking (with no
+    per-group cap) is written beside the figure as `plot_hardest_assertions.csv`.
     """)
     return
 
@@ -152,7 +152,14 @@ def _(
     hardest_ranking.insert(1, "label", hardest_ranking["assertion_id"].map(labels).str.replace("\n", " "))
     hardest_ranking.to_csv(FIGURES / "plot_hardest_assertions.csv", index=False)
 
-    _hardest = _ranking.head(top_n.value).index.tolist()
+    # at most MAX_PER_GROUP per group, so one hard condition doesn't fill the whole plot
+    MAX_PER_GROUP = 2
+    _group_of = _results.drop_duplicates("assertion_id").set_index("assertion_id")["group"]
+    _hardest = (
+        _ranking.to_frame().assign(group=_group_of)
+        .groupby("group", sort=False).head(MAX_PER_GROUP)
+        .head(top_n.value).index.tolist()
+    )
     _data = _results[_results["assertion_id"].isin(_hardest)].assign(label=lambda d: d["assertion_id"].map(labels))
     _order = [labels[a] for a in _hardest]
     _fig, _ax = plt.subplots(figsize=(14, 0.95 * top_n.value + 1.5))
