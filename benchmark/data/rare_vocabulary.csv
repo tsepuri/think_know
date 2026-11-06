@@ -18,6 +18,7 @@ rumor,5,original,primary NP complement object
 news,580,rumor,
 announcement,25,rumor,
 fact,1008,rumor,can't use fact is false
+story,11329,rumor,
 stashed,5,original,variant for hid
 stored,32,stashed,
 dropped,2987,stashed,

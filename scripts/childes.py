@@ -70,6 +70,34 @@ def load_verb_stems(cache_dir):
     return query_cached(sql, os.path.join(cache_dir, "childes_eng_verb_stems.parquet"))
 
 
+def load_target_tokens(cache_dir):
+    """Every token, with its %gra index, head and relation, of the Eng-NA/Eng-UK utterances
+    that have a think/know token tagged verb on the %mor tier."""
+    target = f"SELECT utterance_id FROM token WHERE stem IN ('think', 'know') AND part_of_speech = 'verb' AND {_collection_filter()}"
+    sql = (
+        "SELECT utterance_id, token_order, LOWER(gloss) AS gloss, LOWER(stem) AS stem, part_of_speech, "
+        f"gra_index, gra_head, gra_relation FROM token WHERE {_collection_filter()} AND utterance_id IN ({target})"
+    )
+    return query_cached(sql, os.path.join(cache_dir, "childes_think_know_tokens.parquet"))
+
+
+def load_lemma_counts(cache_dir):
+    """(lemma, count) over every Eng-NA/Eng-UK morpheme on the token_morpheme tier, stems and
+    clitics alike (so "it's" counts toward both it and be)."""
+    sql = f"SELECT LOWER(lemma) AS lemma, COUNT(*) AS count FROM token_morpheme WHERE {_collection_filter()} GROUP BY 1"
+    return query_cached(sql, os.path.join(cache_dir, "childes_eng_lemma_counts.parquet"))
+
+
+def load_gloss_lemmas(cache_dir):
+    """(gloss, lemma, count): how often each token gloss has each lemma on its stem morpheme."""
+    sql = (
+        "SELECT LOWER(t.gloss) AS gloss, LOWER(m.lemma) AS lemma, COUNT(*) AS count FROM token t "
+        "JOIN token_morpheme m ON m.token_id = t.id AND m.type = 'stem' "
+        f"WHERE {_collection_filter().replace('collection_name', 't.collection_name')} GROUP BY 1, 2"
+    )
+    return query_cached(sql, os.path.join(cache_dir, "childes_eng_gloss_lemmas.parquet"))
+
+
 def tokens(gloss):
     """Lowercased whitespace tokens of a CHILDES gloss, without xxx/yyy/www."""
     return [t for t in gloss.lower().split() if t not in PLACEHOLDERS]
@@ -84,6 +112,7 @@ def phrase_counts(glosses, phrases):
     """{phrase: whole-word occurrences across glosses} for multiword phrases (lowercased)."""
     text = pd.Series([" ".join(tokens(g)) for g in glosses])
     return {p: int(text.str.count(rf"(?<!\S){re.escape(p)}(?!\S)").sum()) for p in phrases}
+
 
 
 def word_tags(token_tags):
@@ -162,6 +191,10 @@ def classify_complement(verb):
             return "NP", "pronoun" if child.pos_ == "PRON" else "noun"
         if child.dep_ == "prep":
             return "PP", child.lower_
+        # UD (%gra) attaches the noun as obl, with the preposition as its case dependent
+        case = next((c for c in child.children if c.dep_ == "case"), None) if child.dep_ == "obl" else None
+        if case is not None:
+            return "PP", case.lower_
     left = [c for c in verb.children if c.i < verb.i and c.dep_ in ("ccomp", "parataxis", "advcl")]
     left_wh = next((t for t in verb.subtree if t.i < verb.i and t.lower_ in WH_WORDS), None)
     if left_wh is not None and not any(left_wh in c.subtree for c in left):
@@ -174,7 +207,80 @@ def classify_complement(verb):
 def verb_features(verb):
     """Subject and negation of a verb token: (subject lowercased or '', negated)."""
     subject = next((c.lower_ for c in verb.children if c.dep_ in ("nsubj", "nsubjpass")), "")
-    return subject, any(c.dep_ == "neg" for c in verb.children)
+    # %gra keeps n't on its auxiliary ('don't' is one aux token) and labels not/never advmod
+    return subject, any(c.dep_ == "neg" or c.lower_ in ("not", "never") or c.lower_.endswith("n't") for c in verb.children)
+
+
+class GraToken:
+    """One %gra token, with the attributes of a spaCy token that classify_complement and
+    verb_features read. dep_ is the UD relation lowercased, without its subtype
+    (NSUBJ-PASS -> nsubj); a head that is a clitic with no token row of its own leaves head None."""
+
+    def __init__(self, i, lower_, lemma_, pos_, dep_):
+        self.i, self.lower_, self.lemma_, self.pos_, self.dep_ = i, lower_, lemma_, pos_, dep_
+        self.head, self.children = None, []
+
+    def __repr__(self):
+        return f"GraToken({self.i}, {self.lower_!r}, {self.dep_!r})"
+
+    @property
+    def subtree(self):
+        yield self
+        for child in self.children:
+            yield from child.subtree
+
+    @property
+    def left_edge(self):
+        return min(self.subtree, key=lambda t: t.i)
+
+    @property
+    def ancestors(self):
+        node, seen = self.head, {self.i}
+        while node is not None:
+            if node.i in seen:
+                raise ValueError(f"cycle in %gra parse at {node!r}")
+            seen.add(node.i)
+            yield node
+            node = node.head
+
+
+def gra_tree(rows):
+    """{gra_index: GraToken} for one utterance's token rows (load_target_tokens columns)."""
+    nodes = {int(r.gra_index): GraToken(int(r.gra_index), r.gloss, r.stem, str(r.part_of_speech).upper(), r.gra_relation.lower().split("-")[0])
+             for r in rows.itertuples()}
+    for r in rows.itertuples():
+        node, head = nodes[int(r.gra_index)], nodes.get(int(r.gra_head))
+        if head is not None and head is not node:
+            node.head = head
+            head.children.append(node)
+    for node in nodes.values():
+        node.children.sort(key=lambda t: t.i)
+    return nodes
+
+
+def classify_gra(tokens):
+    """One row per think/know verb (%mor stem, tagged verb) in each parsed utterance of `tokens`
+    (load_target_tokens): utterance id, lemma, form, category, detail, subject, negated.
+    Utterances with any token missing a %gra annotation are skipped."""
+    parsed = tokens.groupby("utterance_id").filter(lambda g: g.gra_index.notna().all() and g.gra_relation.notna().all())
+    rows = []
+    for utterance_id, group in parsed.groupby("utterance_id"):
+        nodes = gra_tree(group)
+        for r in group[group.stem.isin(TARGET_FORMS) & (group.part_of_speech == "verb")].itertuples():
+            verb = nodes[int(r.gra_index)]
+            category, detail = classify_complement(verb)
+            subject, negated = verb_features(verb)
+            rows.append((utterance_id, r.stem, r.gloss, category, detail, subject, negated))
+    return pd.DataFrame(rows, columns=["id", "lemma", "form", "category", "detail", "subject", "negated"])
+
+
+def classify_gra_utterances(tokens, utterances, path):
+    """classify_gra joined with utterance metadata (the gloss as `text`); cached at `path`."""
+    if os.path.exists(path):
+        return pd.read_parquet(path)
+    result = classify_gra(tokens).merge(utterances.assign(text=utterances.gloss), on="id", how="left")
+    result.to_parquet(path)
+    return result
 
 
 def target_verbs(doc):
@@ -274,3 +380,24 @@ def ablation_sweep(table, fractions):
         "share_of_know_removed": moved / know.total,
         "think_decl_per_interrog_cf1": think.declarative / (think.interrogative + moved),
     })
+
+
+def augmentation_sweep(table, multiples):
+    """Add m * (know's interrogative count) think+interrogative uses, know unchanged (counterfactual 2).
+    Rows per m: think's resulting declarative-per-interrogative ratio and the share of all think
+    uses that are added."""
+    know, think = table.loc["know"], table.loc["think"]
+    added = pd.Series(multiples) * know.interrogative
+    return pd.DataFrame({
+        "multiple": multiples,
+        "think_interrog_added": added,
+        "think_decl_per_interrog": think.declarative / (think.interrogative + added),
+        "share_of_think_added": added / (think.total + added),
+    })
+
+
+def augmentation_crossing(table):
+    """The m at which augmented think's declarative-per-interrogative ratio falls to know's observed one:
+    D_t / (I_t + m I_k) = D_k / I_k, so m = (D_t I_k / D_k - I_t) / I_k."""
+    know, think = table.loc["know"], table.loc["think"]
+    return (think.declarative * know.interrogative / know.declarative - think.interrogative) / know.interrogative

@@ -89,6 +89,40 @@ def _(ROOT, ch, pd, utterances):
 @app.cell
 def _(mo):
     mo.md(r"""
+    `vocabulary.csv` keeps two frequency columns, for thresholding its entries later:
+
+    - `childes_count`: $\mathrm{count}(w)$, or the whole-word phrase count for a multiword entry.
+    - `childes_lemma_count`: $\mathrm{count}(\ell)$, the number of CHILDES morphemes (`token_morpheme`,
+      stems and clitics alike) with lemma $\ell$, where a word's $\ell$ is the lemma CHILDES most often
+      gives its stem morpheme (*papers* → *paper*, *hid* → *hide*, *message's* → *message*). A
+      contraction unattested as a gloss (*meeting's*) takes its base word's lemma; any other
+      unattested word counts 0. A multiword entry gets its rarest word's lemma count,
+      $\min_{w \in p} \mathrm{count}(\mathrm{lemma}(w))$. Templates like `<person>'s` stay blank.
+    """)
+    return
+
+
+@app.cell
+def _(CACHE, ROOT, ch, pd, re, vocab_freq):
+    _path = ROOT / "benchmark" / "data" / "vocabulary.csv"
+    _vocab = pd.read_csv(_path, dtype=str, keep_default_na=False)
+    _forms = _vocab.word.str.lower()
+    _entry_counts = dict(zip(vocab_freq.form, vocab_freq["count"]))
+    _gloss_lemmas = ch.load_gloss_lemmas(CACHE).sort_values("count", ascending=False).drop_duplicates("gloss")
+    _lemma_of = dict(zip(_gloss_lemmas.gloss, _gloss_lemmas.lemma))
+    _lemma_counts = ch.load_lemma_counts(CACHE).set_index("lemma")["count"]
+    _vocab["childes_count"] = [str(_entry_counts[f]) if f in _entry_counts else "" for f in _forms]
+    _vocab["childes_lemma_count"] = [
+        str(min(int(_lemma_counts.get(_lemma_of.get(w, _lemma_of.get(re.sub(r"'(s|re|ll|ve|d|m)$|n't$", "", w))), 0)) for w in f.split())) if f in _entry_counts else "" for f in _forms
+    ]
+    _vocab.to_csv(_path, index=False)
+    _vocab[["word", "slot", "childes_count", "childes_lemma_count"]]
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""
     Every word in the benchmark itself (CHILDES-formatted `sentences_with_variants.csv`, so
     contractions stay single tokens as in CHILDES glosses), with the same threshold:
     """)
@@ -207,10 +241,11 @@ def _(mo):
     mo.md(r"""
     ## Complement classification
 
-    spaCy (`en_core_web_md`) parses each utterance containing a think/know form. CHILDES glosses
-    have no punctuation, so the parser input ends in `?` for question-type utterances and `.`
-    otherwise, and `i` is capitalized. For each token with lemma think/know tagged VERB, only
-    dependents whose whole span is right of the verb count as complements, checked in this order:
+    Each think/know token tagged verb on the CHILDES %mor tier is classified from its CHILDES
+    %gra dependency parse (UD relations; utterances with any unparsed token are skipped). UD
+    attaches a PP's noun as `obl` with the preposition as its `case` dependent, and keeps *n't*
+    on its auxiliary (*don't* is one token). Only dependents whose whole span is right of the
+    verb count as complements, checked in this order:
 
     - **interrogative**: a clausal dependent (ccomp/xcomp/advcl) whose first word is *whether*,
       *if*, or a wh-word; or a wh-word object (*you know what?*, `wh_bare`; *I know what you mean*,
@@ -222,9 +257,12 @@ def _(mo):
     - With nothing to the right: **matrix_wh** (*what do you think?*), **left_clause**
       (parentheticals, *it's raining I think*), else **none** (*I don't know*).
 
-    Known-answer check: the benchmark's think/know single sentences carry `embedded_type`
-    labels with the same names. Benchmark `none` includes parentheticals, which this classifier
-    splits into `left_clause` by design.
+    Cross-check: spaCy (`en_core_web_md`) runs the same rules on its own parse of each
+    utterance. CHILDES glosses have no punctuation, so its input ends in `?` for question-type
+    utterances and `.` otherwise, and `i` is capitalized. Its known-answer check uses the
+    benchmark's think/know single sentences, which carry `embedded_type` labels with the same
+    names and have no CHILDES parse. Benchmark `none` includes parentheticals, which the rules
+    split into `left_clause` by design.
     """)
     return
 
@@ -247,9 +285,30 @@ def _(ROOT, ch, nlp, pd, utils):
 
 @app.cell
 def _(CACHE, ch, nlp, utterances):
-    verbs = ch.classify_utterances(utterances, nlp, CACHE / "childes_think_know_verbs.parquet")
+    verbs = ch.classify_gra_utterances(ch.load_target_tokens(CACHE), utterances, CACHE / "childes_think_know_verbs_gra.parquet")
     verbs = verbs.assign(speaker=verbs.speaker_role.eq("Target_Child").map({True: "target child", False: "other speakers"}))
-    return (verbs,)
+    spacy_verbs = ch.classify_utterances(utterances, nlp, CACHE / "childes_think_know_verbs.parquet")
+    return spacy_verbs, verbs
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""
+    Agreement between the %gra and spaCy classifications, matching each utterance's $k$-th
+    think (or know) token across the two; rows are spaCy's category, columns %gra's.
+    """)
+    return
+
+
+@app.cell
+def _(pd, spacy_verbs, verbs):
+    _key = ["id", "lemma", "k"]
+    _matched = verbs.assign(k=verbs.groupby(["id", "lemma"]).cumcount()).merge(
+        spacy_verbs.assign(k=spacy_verbs.groupby(["id", "lemma"]).cumcount()), on=_key, suffixes=("_gra", "_spacy")
+    )
+    print(f"{len(_matched):,} matched verb tokens; categories agree on {(_matched.category_gra == _matched.category_spacy).mean():.1%}")
+    pd.crosstab([_matched.lemma, _matched.category_spacy.rename("spaCy")], _matched.category_gra.rename("%gra"))
+    return
 
 
 @app.cell
@@ -262,7 +321,7 @@ def _(mo):
     - $\text{p\_decl\_of\_clausal} = n_\text{decl} / (n_\text{decl} + n_\text{interrog})$, and $\text{p\_interrog\_of\_clausal} = 1 - \text{p\_decl\_of\_clausal}$
     - $\text{p\_other} = 1 - (n_\text{decl} + n_\text{interrog}) / N$, and $\text{p\_none} = n_\text{none} / N$
 
-    `total` counts spaCy verb tokens. The raw form count (whole-word matches of think/thinks/
+    `total` counts the classified verb tokens. The raw form count (whole-word matches of think/thinks/
     thinking/thought, know/knows/knew/known/knowing) also includes nouns (*a thought*), shown
     for comparison.
     """)
@@ -428,6 +487,12 @@ def _(mo):
     sits well below think's (know takes far more interrogatives), and the two curves cross for
     some $f$. The right panel tests the planning claim that full ablation removes over half of know's uses:
     it holds if the curve ends above 0.5 at $f = 1$.
+
+    **Augmentation (counterfactual 2, bottom row).** Add $m I_k$ think + interrogative uses and leave
+    know as observed. Think's ratio becomes $D_t / (I_t + m I_k)$, and the added uses are a share
+    $m I_k / (N_t + m I_k)$ of all think uses (the confound: synthetic think input). Think's ratio falls
+    to know's observed $D_k / I_k$ at $m^* = (D_t I_k / D_k - I_t) / I_k$. The criterion: the think curve
+    crosses know's line at $m^*$. The right panel shows how much of think's input that takes.
     """)
     return
 
@@ -435,24 +500,49 @@ def _(mo):
 @app.cell
 def _(category_counts, ch, np):
     sweep = ch.ablation_sweep(category_counts, np.linspace(0, 1, 11))
+    augmentation = ch.augmentation_sweep(category_counts, np.linspace(0, 8, 33))
+    augmentation_crossing = ch.augmentation_crossing(category_counts)
     sweep
-    return (sweep,)
+    return augmentation, augmentation_crossing, sweep
 
 
 @app.cell
-def _(CACHE, category_counts, plt, sweep, utils):
+def _(augmentation_crossing, category_counts, mo):
+    _added = augmentation_crossing * category_counts.loc["know", "interrogative"]
+    mo.md(f"""
+    Augmentation crossing: $m^* = {augmentation_crossing:.2f}$, i.e. {_added:,.0f} added think + interrogative
+    uses, {_added / (category_counts.loc["think", "total"] + _added):.0%} of all think uses.
+    """)
+    return
+
+
+@app.cell
+def _(CACHE, augmentation, augmentation_crossing, category_counts, plt, sweep, utils):
     _blue, _orange, _muted = "#2a78d6", "#eb6834", "#52514e"
-    _fig, (_left, _right) = plt.subplots(1, 2, figsize=(10, 3.8))
+    _know, _think = category_counts.loc["know"], category_counts.loc["think"]
+    _fig, ((_left, _right), (_aug_left, _aug_right)) = plt.subplots(2, 2, figsize=(10, 7.4))
     _left.plot(sweep.fraction, sweep.know_decl_per_interrog, color=_blue, lw=2, marker="o", ms=4, label="know, interrogatives removed")
     _left.plot(sweep.fraction, sweep.think_decl_per_interrog_cf1, color=_orange, lw=2, marker="o", ms=4, label="think, removed uses relabeled as think")
-    _left.axhline(category_counts.loc["think", "declarative"] / category_counts.loc["think", "interrogative"], color=_orange, lw=1, ls="--", label="think, observed")
-    _left.set(yscale="log", xlabel="fraction f of know + interrogative uses moved", ylabel="declarative per interrogative")
+    _left.axhline(_think.declarative / _think.interrogative, color=_orange, lw=1, ls="--", label="think, observed")
+    _left.set(yscale="log", xlabel="fraction f of know + interrogative uses moved", ylabel="declarative per interrogative", title="ablation")
     _left.legend(frameon=False, fontsize=8, loc="upper right", bbox_to_anchor=(1, 0.9))
     _right.plot(sweep.fraction, sweep.share_of_know_removed, color=_blue, lw=2, marker="o", ms=4)
     _right.axhline(0.5, color=_muted, lw=1, ls=":")
     _right.set(xlabel="fraction f of know + interrogative uses removed", ylabel="share of all know uses removed", ylim=(0, 1))
-    for _ax in (_left, _right):
+    _aug_left.plot(augmentation.multiple, augmentation.think_decl_per_interrog, color=_orange, lw=2, marker="o", ms=3, label="think, interrogatives added")
+    _aug_left.axhline(_think.declarative / _think.interrogative, color=_orange, lw=1, ls="--", label="think, observed")
+    _aug_left.axhline(_know.declarative / _know.interrogative, color=_blue, lw=1, ls="--", label="know, observed")
+    _aug_left.axvline(augmentation_crossing, color=_muted, lw=1, ls=":")
+    _aug_left.annotate(f"m* = {augmentation_crossing:.1f}", (augmentation_crossing, 30), xytext=(4, 0), textcoords="offset points", color=_muted, fontsize=8)
+    _aug_left.set(yscale="log", xlabel="think + interrogative uses added (multiples m of know's)", ylabel="declarative per interrogative", title="augmentation")
+    _aug_left.legend(frameon=False, fontsize=8, loc="center right")
+    _aug_right.plot(augmentation.multiple, augmentation.share_of_think_added, color=_orange, lw=2, marker="o", ms=3)
+    _aug_right.axvline(augmentation_crossing, color=_muted, lw=1, ls=":")
+    _aug_right.axhline(0.5, color=_muted, lw=1, ls=":")
+    _aug_right.set(xlabel="think + interrogative uses added (multiples m of know's)", ylabel="share of all think uses added", ylim=(0, 1))
+    for _ax in (_left, _right, _aug_left, _aug_right):
         _ax.spines[["top", "right"]].set_visible(False)
+        _ax.title.set_size(10)
     _fig.tight_layout()
     utils.save_figure(_fig, str(CACHE / "figures" / "childes_ablation_sweep.png"))
     return

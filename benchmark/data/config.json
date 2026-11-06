@@ -38,8 +38,15 @@
         "negation",
         "matrix_subj_category"
       ],
-      "bad_substitutions": [
-        "pres_neg_1p"
+      "exclusions": [
+        {
+          "match": {
+            "tense": "present",
+            "negation": "yes",
+            "matrix_subj_category": "first_person"
+          },
+          "reason": "know is factive, so 'I don't know the rumor is false' asserts p while denying knowing it (Moore paradox), which isn't the contrast being tested"
+        }
       ]
     },
     {
@@ -59,8 +66,15 @@
         "negation",
         "matrix_subj_category"
       ],
-      "bad_substitutions": [
-        "pres_neg_1p"
+      "exclusions": [
+        {
+          "match": {
+            "tense": "present",
+            "negation": "yes",
+            "matrix_subj_category": "first_person"
+          },
+          "reason": "know is factive, so 'I don't know the rumor is false' asserts p while denying knowing it (Moore paradox), which isn't the contrast being tested"
+        }
       ]
     },
     {
@@ -97,7 +111,28 @@
         "tense",
         "matrix_subj_category"
       ],
-      "free_embedded_clause": true
+      "free_embedded_clause": true,
+      "exclusions": [
+        {
+          "match": {
+            "tense": "present",
+            "matrix_subj_category": "first_person"
+          },
+          "reason": "asking about your own current knowledge ('Do I know where the keys are?', 'Where do I know the keys are?') is odd for both verbs"
+        },
+        {
+          "match": {
+            "complementizer": "when"
+          },
+          "reason": "'when' can attach to the matrix verb ('When does John know Mary hid the keys?' = when does he know it), so the extraction isn't unambiguously out of the island"
+        },
+        {
+          "match": {
+            "complementizer": "why"
+          },
+          "reason": "'why' can attach to the matrix verb ('Why does John know Mary hid the keys?' = why does he know it), so the extraction isn't unambiguously out of the island"
+        }
+      ]
     },
     {
       "phenomenon": "Ellipsis",

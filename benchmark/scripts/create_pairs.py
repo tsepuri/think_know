@@ -29,7 +29,7 @@ import json
 import pandas as pd
 
 OUTPUT_COLUMNS = [
-    "phenomenon", "subtype", "group_id", "comparison", "condition_type",
+    "phenomenon", "subtype", "group_id", "seed_id", "comparison", "condition_type",
     "comparison_type", "tense", "negation", "matrix_subj_category", "matrix_subj", "matrix_type",
     "verb_target", "verb_reference", "unique_id", "assertion_id", "rank",
     "sentence1", "sentence2"
@@ -264,6 +264,7 @@ def build_pairs(config, sentences_df, phenomena=None, subtypes=None, mode="diffe
                 "phenomenon": condition["phenomenon"],
                 "subtype": condition.get("subtype") or "",
                 "group_id": condition.get("group_id"),
+                "seed_id": set_rows["seed_id"].iloc[0],
                 "comparison": comparison,
                 "tense": set_rows["tense"].iloc[0],
                 "negation": set_rows["negation"].iloc[0],

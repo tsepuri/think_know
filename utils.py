@@ -1,5 +1,5 @@
 """Small lookup-table conjugation helpers for the closed set of matrix verbs
-used across sentences.csv (think, know, wonder, start, guess) and subjects
+used across sentences.csv (think, know, wonder, start, investigate, like, guess) and subjects
 (I, you, John). Not a general grammar engine - each function locates a known
 literal substring (the subject word, a conjugated verb form) in `sentence`
 and splices in the replacement, returning None if that substring isn't found
@@ -19,12 +19,13 @@ VERB_FORMS = {
     "know": {"present": ("know", "knows"), "past": "knew", "bare": "know"},
     "wonder": {"present": ("wonder", "wonders"), "past": "wondered", "bare": "wonder"},
     "start": {"present": ("start", "starts"), "past": "started", "bare": "start"},
-    # not in sentences.csv: swapped in for start by generate_variants.py (vocabulary.csv control_verb)
+    # start (past) and investigate (present) are vocabulary.csv control_verb entries, see fit_control_verbs
     "investigate": {"present": ("investigate", "investigates"), "past": "investigated", "bare": "investigate"},
+    # present-tense control verb for nouns you can't investigate (the song, the game)
+    "like": {"present": ("like", "likes"), "past": "liked", "bare": "like"},
     "guess": {"present": ("guess", "guesses"), "past": "guessed", "bare": "guess"},
 }
 
-COPULA = {"present": "is", "past": "was"}
 COPULA_SWAP = {
     ("present", "past"): {"is": "was", "are": "were"},
     ("past", "present"): {"was": "is", "were": "are"},
@@ -118,15 +119,14 @@ def change_tense(sentence, matrix_subj, matrix_verb, person, from_tense, to_tens
     result = _splice(sentence, old_verb_form, new_verb_form)
     if result is None:
         return None
-    old_cop, new_cop = COPULA[from_tense], COPULA[to_tense]
-    spliced = _splice(result, old_cop, new_cop)
-    if spliced is None and from_tense == "present" and to_tense == "past":
-        # the plain " is "/" was " splice misses a contracted copula
-        # ("It's raining" has no space before "'s"), which would otherwise
-        # leave the embedded clause's tense stuck in present ("It's
+    # is and are alike ('John knew the cookies were gone', not '..are gone')
+    spliced = _swap_embedded_copula(result, from_tense, to_tense)
+    if spliced == result and from_tense == "present" and to_tense == "past":
+        # a contracted copula has no whole-word is ("It's raining"), which would
+        # otherwise leave the embedded clause's tense stuck in present ("It's
         # raining, I thought.") while the matrix verb moves to past
-        spliced = _splice(result, "It's", "It was") or _splice(result, "it's", "it was")
-    return spliced if spliced is not None else result
+        spliced = _splice(result, "It's", "It was") or _splice(result, "it's", "it was") or result
+    return spliced
 
 
 def negate_clause(sentence, matrix_subj, matrix_verb, person, tense, matrix_type):
@@ -214,10 +214,10 @@ def toggle_complementizer(sentence, complementizer):
 
 
 # think/know take about/of grammatically (vocabulary.csv's preposition `requires`); the
-# control verb start takes neither, and is toggled too so the control's 'starts about'
-# row becomes 'starts of' - otherwise the 'of' copy would pit 'starts about' against
-# 'knows of', and the control 2x2 would no longer differ in one thing at a time
-PREPOSITION_VERBS = ("think", "know", "start")
+# control verbs (start, investigate, like) take neither, and are toggled too so the control's
+# 'starts about' row becomes 'starts of' - otherwise the 'of' copy would pit 'starts about'
+# against 'knows of', and the control 2x2 would no longer differ in one thing at a time
+PREPOSITION_VERBS = ("think", "know", "start", "investigate", "like")
 PREPOSITIONS = ("about", "of")
 
 def toggle_preposition(sentence, matrix_verb, person, tense, preposition):

@@ -102,8 +102,12 @@ marimo edit notebooks/childes_think_know.py   # first run opens a Redivis login 
   `generate_variants.py`: every base row gets tense/negation/person/matrix_type
   siblings per its condition's `manipulated_types` in `config.json`, plus a
   complementizer- or preposition-toggled copy where applicable, plus 2
-  lexically-varied copies (see below). Each row's `unique_id` identifies which
-  assertion-forming set it belongs to (e.g. `cpq_pres_aff_3p_decl_that_base`).
+  lexically-varied copies (see below). Person expands to all three of
+  first/second/third. Each row's `unique_id` identifies which
+  assertion-forming set it belongs to (e.g. `cpq_s1_pres_aff_3p_decl_that_base`).
+  A condition's `exclusions` in `config.json` drop every set with a row that
+  matches all the columns in a `match`, and the entry records the `reason`, e.g.
+  factive island's present-tense first person and its `when` questions.
 - **`pairs.csv`** — one row per pair (`sentence1`, `sentence2`), where
   `sentence1` is predicted to outscore `sentence2`, grouped into assertions by
   `assertion_id`. Each row's `rank` orders it by expected contrast size: a
@@ -124,7 +128,10 @@ first gets a different `embedded_clause` - or, in a mini-discourse, a different 
 `max_slots_modified` of the other slots that match text in the set are modified:
 person/pronoun swaps (with reconjugation when needed), weather predicate, rumor
 content, judgment adjectives, objects, hiding verbs, mishap object/verb pairs, the
-control rows' matrix verb (start/investigate, reinflected),
+control rows' matrix verb (reinflected; `fit_control_verbs` first gives each control row
+the earliest of start/investigate/like whose `requires`, and the nouns', it meets: past
+`start` unless the noun can't be started, then `investigate`; present `investigate` for
+investigable nouns, else `like`),
 determiners (a determiner's `number` must match its noun's: `a` needs a singular noun, `all of the`
 a plural one, blank takes either), and the wh-complementizer (where/when/why). Because the clause goes first, those
 slots vary the clause that's actually there, including a swapped-in one. Set the
@@ -156,7 +163,8 @@ several requirements, all must hold) and limits where it can be swapped in.
 A substitution is never allowed to newly break a `requires` of any word in the
 set, so swapping `vase` for `coffee` is refused under `broke`, and `message` is
 refused wherever the set has `start` rows. Requirements that are already unmet in
-the base rows (control rows like `John starts about the rumor`) are left alone.
+the base rows (control rows like `John investigates about the rumor`) are left alone.
+A control verb is matched by its row's `matrix_verb`, since its text is inflected.
 Malformed `requires`, or one naming an unknown column, stops the script; a value
 that occurs in no matching `sentences.csv` column is printed as a warning.
 

@@ -28,14 +28,26 @@ Two independent expansion passes, per condition in config.json:
    for every condition or overridden per condition code.
 
    The control_verb slot (start, investigate) swaps a control row's matrix verb,
-   reinflecting each of its forms and updating matrix_verb. The modal slot
+   reinflecting each of its forms and updating matrix_verb. Right after
+   structural expansion, fit_control_verbs picks each control row's verb by
+   the `requires` of the verbs and nouns (a past copy of 'John investigates the
+   rumor' becomes 'John started the rumor', but 'John investigated the secret'). The modal slot
    (might, may) puts a modal before the matrix verb of every row in the set
    ('John thinks so.' -> 'John might think so.'), where its `requires` allow.
 
    A condition with few structural manipulations has few sets to vary, so
    variant_config.json's min_sets keeps adding variants, round-robin over a
-   condition's sets, past --n-variants until the condition has that many sets
-   in total (base copies included) or none of its sets can be varied further.
+   condition's sets (across all its seeds), past --n-variants until the
+   condition has that many sets in total (base copies included) or none of its
+   sets can be varied further. No variant repeats the sentences of any set in
+   its condition, so a seed's variant never reproduces another seed.
+
+   A group_id holds one condition's seeds (seed_id): authored sets with the
+   same labels and different content, each expanded independently.
+
+   A condition's config.json `exclusions` (each a `match` on column values
+   plus the `reason`) drop every set with a matching row - base copies before
+   variation, variants as they're drawn (see matching_exclusion).
 
    A vocabulary entry's `requires` (<column>:<value>[,<value>..], see
    parse_requires) restricts where it may be swapped in; a substitution is
@@ -52,8 +64,9 @@ import pandas as pd
 
 import utils
 
-# second person conditions are not expanded
-PERSONS = ["first_person", "third_person"]
+PERSONS = ["first_person", "second_person", "third_person"]
+# sentences.csv column values only structural expansion produces, which a `requires` may still name
+GENERATED_VALUES = {"tense": {"past"}, "negation": {"yes"}, "matrix_type": {"polar_question"}, "matrix_subj_category": set(PERSONS)}
 # slots whose words are swapped for one another wherever they appear. person has its own
 # rename/pronoun handling, and embedded_clause/complementizer/determiner their own logic
 SIMPLE_SLOTS = ["weather_predicate", "content_noun", "judgment", "object", "hiding_verb", "mishap_object", "mishap_verb"]
@@ -236,7 +249,7 @@ def duplicate_for_axes(structural_rows, manipulated_types, comparison_types):
 DETERMINER_SLOT = "determiner" 
 NOUN_SLOTS = ("content_noun", "object", "mishap_object")
 NON_WH_COMPLEMENTIZERS = {"that", "whether"}
-NON_FEATURE_COLUMNS = {"word", "slot", "requires", "notes"}
+NON_FEATURE_COLUMNS = {"word", "slot", "requires", "notes", "childes_count", "childes_lemma_count"}
 
 
 def parse_requires(text):
@@ -300,7 +313,7 @@ class Vocabulary:
 
     def _check_requirement(self, entry, column, values, sentences_df):
         if column in self.sentence_columns:
-            known = set(sentences_df[column]) | {e["word"] for e in self.pool(column)}
+            known = set(sentences_df[column]) | {e["word"] for e in self.pool(column)} | GENERATED_VALUES.get(column, set())
             for value in sorted(values - known):
                 self.warnings.append(f"{entry['word']!r} requires {column}:{value}, but no {column} in sentences.csv or vocabulary.csv is {value!r}")
         elif column not in self.feature_columns:
@@ -371,7 +384,9 @@ def requires_violations(rows, vocab):
                 text = present
             else:
                 text = row["sentence"]
-            if not _contains(text, entry["word"]):
+            # a control verb is inflected (starts, started), so it's found by matrix_verb, not its text
+            present_here = row["matrix_verb"] == entry["word"] if entry["slot"] == CONTROL_VERB_SLOT else _contains(text, entry["word"])
+            if not present_here:
                 continue
             for column, values in reqs.items():
                 if not requirement_met(column, values, row, text, vocab):
@@ -461,6 +476,25 @@ def find_control_verb_candidate(rows, vocab):
     before = requires_violations(rows, vocab)
     alternatives = [a for a in pool if a != old and requires_violations(_apply_control_verb(rows, old, a), vocab) <= before]
     return (old, alternatives) if alternatives else None
+
+
+def fit_control_verbs(rows, vocab):
+    """Give each control row the first control_verb-slot verb, in vocabulary.csv
+    order (start, investigate, like), that leaves its row with the fewest unmet
+    `requires` - its own (start needs tense:past, since 'John starts the rumor'
+    is odd as a simple present; investigate an investigable noun) and the
+    nouns' (secret can't be started). So 'John started the rumor', 'John
+    investigated the secret', 'John investigates the rumor', 'John likes the
+    song'. Ties keep the earlier verb; rows whose verb is outside the slot stay."""
+    pool = [e["word"] for e in vocab.pool(CONTROL_VERB_SLOT)]
+    out = []
+    for r in rows:
+        if r["condition"] != "control" or r["matrix_verb"] not in pool:
+            out.append(r)
+            continue
+        options = [_apply_control_verb([r], r["matrix_verb"], verb)[0] for verb in pool]
+        out.append(min(options, key=lambda o: len(requires_violations([o], vocab))))
+    return out
 
 
 def find_modal_candidate(rows, vocab):
@@ -871,32 +905,35 @@ def make_lexical_variant(rows, vocab, condition, settings):
 
 
 # times make_lexical_variant is retried for each variant before giving up on that set
-MAX_VARIANT_ATTEMPTS = 50
+MAX_VARIANT_ATTEMPTS = 500
 
 
-def _new_variant(rows, seen, vocab, condition, settings):
+def _new_variant(rows, seen, vocab, condition, settings, exclusions=()):
     """A lexical variant of `rows` whose sentences aren't in `seen` (and adds
-    them), or None if MAX_VARIANT_ATTEMPTS tries only produced repeats."""
+    them) and that matches none of `exclusions` (e.g. a swapped-in clause
+    bringing a wh-word the condition excludes), or None if
+    MAX_VARIANT_ATTEMPTS tries only produced repeats or excluded sets."""
     for _ in range(MAX_VARIANT_ATTEMPTS):
         variant = make_lexical_variant(rows, vocab, condition, settings)
         key = tuple(r["sentence"] for r in variant)
         if key not in seen:
             seen.add(key)
-            return variant
+            if matching_exclusion(variant, exclusions, vocab) is None:
+                return variant
     return None
 
 
-def make_distinct_variants(sets, vocab, condition, settings, n, kept=None):
+def make_distinct_variants(sets, vocab, condition, settings, n, kept=None, exclusions=()):
     """Lexical variants for each of a condition's assertion `sets`, none
-    identical (same sentences) to its base copy or to each other: `n` per set,
+    identical (same sentences) to any set's base copy or to each other: `n` per set,
     then more, one set at a time round-robin, until the condition has
     settings["min_sets"] sets in total counting the base copies. Only sets
     marked in `kept` (default: all) count toward that and get the extra
-    variants - the others are dropped by bad_substitutions anyway. A set with too
+    variants - the others are dropped by `exclusions` anyway. A set with too
     few slots to vary just gets fewer variants - possibly none - instead of
     duplicates, and stops being drawn from once it can't produce a new one."""
     kept = kept if kept is not None else [True] * len(sets)
-    seen = [{tuple(r["sentence"] for r in rows)} for rows in sets]
+    seen = {tuple(r["sentence"] for r in rows) for rows in sets}
     variants = [[] for _ in sets]
     open_sets = list(range(len(sets)))
     total = sum(kept)
@@ -908,7 +945,7 @@ def make_distinct_variants(sets, vocab, condition, settings, n, kept=None):
                     open_sets.remove(i)
                     continue
                 break
-            variant = _new_variant(sets[i], seen[i], vocab, condition, settings)
+            variant = _new_variant(sets[i], seen, vocab, condition, settings, exclusions)
             if variant is None:
                 open_sets.remove(i)
                 continue
@@ -963,13 +1000,13 @@ DIMENSION_ABBREV = {
 
 def make_unique_id(row, code, partition_dims, axis_tags, variant_id):
     """A human-readable identifier for the assertion-forming set (partition +
-    axis copy + lexical variant) this row belongs to, e.g.
-    "cpq_3p_pres_aff_decl_that_base". Doubles as create_pairs.py's entire
+    axis copy + lexical variant) of a seed this row belongs to, e.g.
+    "cpq_s1_3p_pres_aff_decl_that_base". Doubles as create_pairs.py's entire
     grouping key: it already excludes comparison_types (matrix_verb,
     embedded_type still vary *within* one unique_id's rows, which is exactly
     what pairing needs) and includes everything that must stay aligned
     across a differences assertion's 4/6 sentences."""
-    parts = [code]
+    parts = [code, f"s{row['seed_id']}"]
     for dim in partition_dims:
         abbrev = DIMENSION_ABBREV.get(dim, {})
         parts.append(abbrev.get(row.get(dim), row.get(dim)))
@@ -978,17 +1015,29 @@ def make_unique_id(row, code, partition_dims, axis_tags, variant_id):
     return "_".join(str(p) for p in parts)
 
 
-# unique_id -> rows dropped because it matches a condition's bad_substitutions
+# (condition code, reason) -> base sets dropped by that config.json exclusion
 EXCLUDED = collections.Counter()
 
 
-def is_bad_substitution(unique_id, bad_substitutions):
-    """True if every underscore-separated word of some config.json
-    `bad_substitutions` entry is also a whole underscore-separated word of
-    `unique_id` (in any order) - "pres_neg_1p" excludes
-    "npcop_pres_neg_1p_variant_1" but not "npcop_pres_neg_3p_base"."""
-    id_words = set(unique_id.split("_"))
-    return any(set(bad.split("_")) <= id_words for bad in bad_substitutions)
+def condition_exclusions(condition):
+    """config.json's `exclusions` for a condition: a list of {"match": {column:
+    value, ..}, "reason": ".."}. Raises on an entry without both."""
+    exclusions = condition.get("exclusions", [])
+    for exclusion in exclusions:
+        if not exclusion.get("match") or not exclusion.get("reason"):
+            raise ValueError(f"config.json, {condition.get('code')}: exclusion {exclusion!r} needs a non-empty match and reason")
+    return exclusions
+
+
+def matching_exclusion(rows, exclusions, vocab):
+    """The first of `exclusions` that some row of the set matches - each of its
+    `match` columns equal to the row's value, where a fronted wh-word counts as
+    the row's complementizer (see _row_value) - or None. One matching row drops
+    the whole set, since the set is one assertion."""
+    for exclusion in exclusions:
+        if any(all(_row_value(r, column, vocab) == value for column, value in exclusion["match"].items()) for r in rows):
+            return exclusion
+    return None
 
 
 def build_variants(sentences_df, config, vocab, variant_config, n_lexical_variants=2):
@@ -1006,34 +1055,36 @@ def build_variants(sentences_df, config, vocab, variant_config, n_lexical_varian
         manipulated_types = condition.get("manipulated_types", [])
         comparison_types = condition.get("comparison_types", [])
         settings = variation_settings(variant_config, condition)
-        bad_substitutions = condition.get("bad_substitutions", [])
-        effective_manipulated_types = [
-            d for d in manipulated_types
-            if d not in STRUCTURAL_DIMENSIONS or not already_varies(group_df, d)
-        ]
-        partition_dims = [d for d in effective_manipulated_types if d in STRUCTURAL_DIMENSIONS]
+        exclusions = condition_exclusions(condition)
 
-        structural_rows = []
-        for row in group_rows:
-            structural_rows.extend(expand_structural(row, effective_manipulated_types, comparison_types))
-
-        sets = [
-            (axis_tags, part_rows)
-            for axis_tags, axis_rows in duplicate_for_axes(structural_rows, manipulated_types, comparison_types)
-            for part_rows in partition_by_dimensions(axis_rows, partition_dims)
-        ]
-        # variants are still generated for excluded sets so the random draws,
-        # and so every other set's output, match a run without bad_substitutions
-        kept = [not is_bad_substitution(make_unique_id(rows[0], code, partition_dims, axis_tags, "base"), bad_substitutions) for axis_tags, rows in sets]
-        all_variants = make_distinct_variants([rows for _, rows in sets], vocab, condition, settings, n_lexical_variants, kept)
-        for (axis_tags, part_rows), variants in zip(sets, all_variants):
+        sets = []  # (partition_dims, axis_tags, rows), over every seed of the condition
+        for _, seed_df in group_df.groupby("seed_id", sort=False):
+            effective_manipulated_types = [
+                d for d in manipulated_types
+                if d not in STRUCTURAL_DIMENSIONS or not already_varies(seed_df, d)
+            ]
+            partition_dims = [d for d in effective_manipulated_types if d in STRUCTURAL_DIMENSIONS]
+            structural_rows = []
+            for row in seed_df.to_dict("records"):
+                structural_rows.extend(expand_structural(row, effective_manipulated_types, comparison_types))
+            structural_rows = fit_control_verbs(structural_rows, vocab)
+            sets.extend(
+                (partition_dims, axis_tags, part_rows)
+                for axis_tags, axis_rows in duplicate_for_axes(structural_rows, manipulated_types, comparison_types)
+                for part_rows in partition_by_dimensions(axis_rows, partition_dims)
+            )
+        excluded = [matching_exclusion(rows, exclusions, vocab) for *_, rows in sets]
+        for exclusion in filter(None, excluded):
+            EXCLUDED[(code, exclusion["reason"])] += 1
+        kept = [e is None for e in excluded]
+        all_variants = make_distinct_variants([rows for *_, rows in sets], vocab, condition, settings, n_lexical_variants, kept, exclusions)
+        for (partition_dims, axis_tags, part_rows), variants, keep in zip(sets, all_variants, kept):
+            if not keep:
+                continue
             variant_sets = [("base", part_rows)] + [(f"variant_{i}", v) for i, v in enumerate(variants, start=1)]
             for variant_id, variant_rows in variant_sets:
                 for r in variant_rows:
                     uid = make_unique_id(r, code, partition_dims, axis_tags, variant_id)
-                    if is_bad_substitution(uid, bad_substitutions):
-                        EXCLUDED[uid] += 1
-                        continue
                     out_rows.append({**r, "unique_id": uid, "variant_id": variant_id})
 
     for i, row in enumerate(out_rows, start=1):
@@ -1042,7 +1093,7 @@ def build_variants(sentences_df, config, vocab, variant_config, n_lexical_varian
 
 
 OUTPUT_COLUMNS = [
-    "sent_id", "group_id", "item_in_set", "category", "phenomenon", "subtype", "paradigm",
+    "sent_id", "group_id", "seed_id", "item_in_set", "category", "phenomenon", "subtype", "paradigm",
     "condition", "tense", "negation", "matrix_subj_category", "matrix_subj", "matrix_type",
     "matrix_verb", "embedded_type", "complementizer", "preposition", "grammaticality",
     "sentence", "unique_id", "variant_id", "notes",
@@ -1070,8 +1121,8 @@ def main():
     rows = build_variants(sentences_df, config, vocab, variant_config, n_lexical_variants=args.n_variants)
     for (group_id, dimension, matrix_type), n in sorted(SKIPPED.items()):
         print(f"warning: {group_id}: couldn't apply {dimension} to {matrix_type} rows ({n}x), left unchanged", file=sys.stderr)
-    if EXCLUDED:
-        print(f"Excluded {sum(EXCLUDED.values())} rows in {len(EXCLUDED)} sets matching bad_substitutions: {', '.join(sorted(EXCLUDED))}", file=sys.stderr)
+    for (code, reason), n in sorted(EXCLUDED.items()):
+        print(f"{code}: excluded {n} base sets - {reason}", file=sys.stderr)
     pd.DataFrame(rows).reindex(columns=OUTPUT_COLUMNS).to_csv(args.output, index=False)
     n_ids = len({row["variant_id"] for row in rows}) if rows else 0
     print(f"Wrote {len(rows)} rows ({n_ids} distinct variant_id labels) to {args.output}")

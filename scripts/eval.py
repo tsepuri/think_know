@@ -36,7 +36,7 @@ from utils import normative_to_childes_formatting
 
 # fields to include in results file and for grouping
 METADATA_FIELDS = [
-    "phenomenon", "subtype", "comparison_type", "condition_type",
+    "phenomenon", "subtype", "seed_id", "comparison_type", "condition_type",
     "tense", "negation", "matrix_subj_category", "matrix_subj", "matrix_type",
     "unique_id",
 ]
