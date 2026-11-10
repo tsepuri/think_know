@@ -28,39 +28,46 @@ def _(mo):
     # eval results across models
 
     Plots every model scored by `scripts/eval.py` (and `eval_slor_manual.py`) in `eval_output/`.
-    CHILDES-formatted runs (`--childes-format`) are drawn as triangles beside each model's circle;
-    dark mean dots and the hardest-assertion ranking use normative results only. Results scored on
-    an older `pairs.csv` are skipped with a warning (re-run `eval.py`). Figures go to `figures/`.
+    Pick the benchmark version below. Each model's results on its baby version (CHILDES
+    formatting, rare words dropped) are drawn as triangles beside its circle, matched by
+    assertion; dark mean dots and the hardest-assertion ranking use the regular results only.
+    Results scored on an older pairs file are skipped with a warning (re-run `eval.py`). Figures go
+    to `figures/`, prefixed like `plot_eval.py`'s (`pairwise_` for the pairwise version).
     """)
     return
 
 
 @app.cell
 def _(mo):
+    version = mo.ui.dropdown(
+        {"differences": ("pairs.csv", "baby_pairs.csv"), "pairwise": ("pairs_pairwise.csv", "baby_pairs_pairwise.csv")},
+        value="differences", label="benchmark version",
+    )
     condition = mo.ui.dropdown(
         ["critical", "control", "all"], value="critical", label="hardest-assertions condition"
     )
     top_n = mo.ui.slider(5, 30, value=10, label="hardest assertions shown")
-    mo.hstack([condition, top_n], justify="start")
-    return condition, top_n
+    mo.hstack([version, condition, top_n], justify="start")
+    return condition, top_n, version
 
 
 @app.cell
-def _(ROOT, pe, sns):
+def _(ROOT, pe, sns, version):
     EVAL_DIR = ROOT / "eval_output"
-    PAIRS = ROOT / "benchmark" / "data" / "pairs.csv"
+    PAIRS, BABY = (ROOT / "benchmark" / "data" / f for f in version.value)
     FIGURES = ROOT / "figures"
-    all_results = pe.add_group_labels(pe.load_results(str(EVAL_DIR), str(PAIRS)), str(PAIRS))
+    TAG = pe.output_prefix(str(PAIRS), False)
+    all_results = pe.add_group_labels(pe.load_results(str(EVAL_DIR), str(PAIRS), str(BABY)), str(PAIRS))
     labels = pe.assertion_labels(str(PAIRS))
     models = sorted(all_results["model"].unique())
     palette = dict(zip(models, pe.MODEL_COLORS))
     sns.set_theme(style="whitegrid", rc={"axes.edgecolor": pe.MUTED, "grid.color": "#e4e3df"})
-    return EVAL_DIR, FIGURES, all_results, labels, models, palette
+    return EVAL_DIR, FIGURES, TAG, all_results, labels, models, palette
 
 
 @app.cell
 def _(all_results):
-    all_results.groupby(["model", "childes", "condition_type"])["correct"].mean().unstack()
+    all_results.groupby(["model", "source", "condition_type"])["correct"].mean().unstack()
     return
 
 
@@ -91,7 +98,7 @@ def _(models, palette, pe, plt):
             _ax.set_title(f"{_condition} assertions", loc="left", color=pe.INK)
         _axes[1].set_ylabel("")
         pe.add_legend(_axes[1], models, palette, "mean across models (95% CI)",
-                      childes=results["childes"].any(), loc="upper left", bbox_to_anchor=(1.02, 1.0))
+                      overlay_label=pe.overlay_label(results), loc="upper left", bbox_to_anchor=(1.02, 1.0))
         _fig.tight_layout()
         return _fig
 
@@ -99,23 +106,23 @@ def _(models, palette, pe, plt):
 
 
 @app.cell
-def _(FIGURES, accuracy_by_condition, all_results, utils):
+def _(FIGURES, TAG, accuracy_by_condition, all_results, utils):
     # order phenomena by mean critical accuracy, shared by the critical and control panels
-    _critical = all_results[(all_results["condition_type"] == "critical") & ~all_results["childes"]]
+    _critical = all_results[(all_results["condition_type"] == "critical") & ~all_results["overlay"]]
     _order = (
         _critical.groupby(["phenomenon", "assertion_id"])["correct"].mean()
         .groupby("phenomenon").mean().sort_values(ascending=False).index
     )
     _fig = accuracy_by_condition(all_results, "phenomenon", (15, 5.5), _order)
-    utils.save_figure(_fig, str(FIGURES / "plot_accuracy_by_phenomenon.png"))
+    utils.save_figure(_fig, str(FIGURES / f"{TAG}plot_accuracy_by_phenomenon.png"))
     return
 
 
 @app.cell
-def _(FIGURES, accuracy_by_condition, all_results, utils):
+def _(FIGURES, TAG, accuracy_by_condition, all_results, utils):
     _order = all_results.sort_values("group")["group"].unique()
     _fig = accuracy_by_condition(all_results, "group", (24, 6.5), _order)
-    utils.save_figure(_fig, str(FIGURES / "plot_accuracy_by_group.png"))
+    utils.save_figure(_fig, str(FIGURES / f"{TAG}plot_accuracy_by_group.png"))
     return
 
 
@@ -135,6 +142,7 @@ def _(mo):
 @app.cell
 def _(
     FIGURES,
+    TAG,
     all_results,
     condition,
     labels,
@@ -147,10 +155,10 @@ def _(
     utils,
 ):
     _results = all_results if condition.value == "all" else all_results[all_results["condition_type"] == condition.value]
-    _ranking = _results[~_results["childes"]].groupby("assertion_id")["margin"].mean().sort_values()
+    _ranking = _results[~_results["overlay"]].groupby("assertion_id")["margin"].mean().sort_values()
     hardest_ranking = _ranking.rename("mean_margin").reset_index()
     hardest_ranking.insert(1, "label", hardest_ranking["assertion_id"].map(labels).str.replace("\n", " "))
-    hardest_ranking.to_csv(FIGURES / "plot_hardest_assertions.csv", index=False)
+    hardest_ranking.to_csv(FIGURES / f"{TAG}plot_hardest_assertions.csv", index=False)
 
     # at most MAX_PER_GROUP per group, so one hard condition doesn't fill the whole plot
     MAX_PER_GROUP = 2
@@ -166,7 +174,7 @@ def _(
     _ax.axvline(0, color=pe.INK, lw=1)
     pe.draw_models(_ax, _data, models, palette, x="margin", y="label", order=_order, orient="h")
     sns.pointplot(
-        data=_data[~_data["childes"]], x="margin", y="label", order=_order, linestyle="none", color=pe.INK,
+        data=_data[~_data["overlay"]], x="margin", y="label", order=_order, linestyle="none", color=pe.INK,
         markersize=9, errorbar=("ci", 95), n_boot=pe.N_BOOT, seed=pe.SEED, capsize=0.12,
         err_kws={"linewidth": 1.6}, orient="h", ax=_ax,
     )
@@ -177,11 +185,11 @@ def _(
     _ax.tick_params(axis="y", labelsize=8)
     _ax.set_title(f"{top_n.value} hardest assertions (lowest mean margin)", loc="left", color=pe.INK, pad=34)
     pe.style_axes(_ax)
-    _childes = _data["childes"].any()
-    pe.add_legend(_ax, models, palette, "mean across models (95% CI)", childes=_childes,
-                  loc="lower right", bbox_to_anchor=(1.0, 1.0), ncol=len(models) + 1 + _childes)
+    _label = pe.overlay_label(_data)
+    pe.add_legend(_ax, models, palette, "mean across models (95% CI)", overlay_label=_label,
+                  loc="lower right", bbox_to_anchor=(1.0, 1.0), ncol=len(models) + 1 + bool(_label))
     _fig.tight_layout()
-    utils.save_figure(_fig, str(FIGURES / "plot_hardest_assertions.png"))
+    utils.save_figure(_fig, str(FIGURES / f"{TAG}plot_hardest_assertions.png"))
     return (hardest_ranking,)
 
 

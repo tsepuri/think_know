@@ -1,129 +1,129 @@
-word,slot,number,gender,animate,countable,liquid,breakable,investigable,requires,notes,childes_count,childes_lemma_count
-John,person,sg,M,1,,,,,,proper name,2533,3400
-Christopher,person,sg,M,1,,,,,,proper name,813,902
-Bob,person,sg,M,1,,,,,,proper name,2113,2400
-Theresa,person,sg,F,1,,,,,,proper name,58,67
-Mary,person,sg,F,1,,,,,,proper name,1586,1324
-Olivia,person,sg,F,1,,,,,,proper name,436,461
-Sarah,person,sg,F,1,,,,,,proper name,3428,3535
-Jane,person,sg,F,1,,,,,,proper name,708,725
-the man,person,sg,M,1,,,,,,role noun,2718,18752
-the woman,person,sg,F,1,,,,,,role noun,163,1413
-the teacher,person,sg,any,1,,,,,,role noun,702,2768
-the student,person,sg,any,1,,,,,,role noun,8,293
-the doctor,person,sg,any,1,,,,,,role noun,1656,4532
-the cashier,person,sg,any,1,,,,,,role noun,28,37
-he,pronoun,sg,M,1,,,,,,matches a sg animate person,208671,310320
-she,pronoun,sg,F,1,,,,,,matches a sg animate person,121076,153252
-they,pronoun,sg,any,1,,,,,,singular they - matches a sg animate person of any gender,110471,234053
-they,pronoun,pl,any,1,,,,,,plural - matches a pl noun (e.g. keys),110471,234053
-it,pronoun,sg,N,0,,,,,,"inanimate singular - matches a sg inanimate noun (e.g. the rumor), never a person",598665,749894
-raining,weather_predicate,,,,,,,,,,2020,5094
-snowing,weather_predicate,,,,,,,,,,398,3912
-sunny,weather_predicate,,,,,,,,,,877,857
-rumor,content_noun,sg,N,0,,,,1,,a rumor is startable,5,6
-message,content_noun,sg,N,0,,,,1,"matrix_verb:think,know;phenomenon:CP + Q,Ellipsis,NP complement,Factive island","a message isn't startable - ""John starts the message"" is bad; no contraction (""the message's"")",289,339
-story,content_noun,sg,N,0,,,,1,,a story is startable,11329,12447
-news,content_noun,sg,N,0,,,,1,"matrix_verb:think,know;phenomenon:CP + Q,Ellipsis,NP complement,Factive island","news isn't startable - ""John starts the news"" is bad; no contraction (""the news's"")",580,546
-secret,content_noun,sg,N,0,,,,1,"matrix_verb:think,know,investigate,like","not startable - ""John started the secret"" is bad",623,672
-excuse,content_noun,sg,N,0,,,,1,"matrix_verb:think,know,investigate,like;phenomenon:CP + Q,Ellipsis,NP complement,Factive island","not startable - ""John started the excuse"" is bad; no contraction (""the excuse's"")",3682,3973
-idea,content_noun,sg,N,0,,,,1,"matrix_verb:think,know,investigate,like","not startable - ""John started the idea"" is bad",5095,5361
-false,judgment,,,,,,,,,,57,48
-true,judgment,,,,,,,,,,1777,1599
-good,judgment,,,,,,,,,,93020,105531
-bad,judgment,,,,,,,,,,7824,7497
-silly,judgment,,,,,,,,,,10859,10459
-wrong,judgment,,,,,,,,,,5862,5599
-keys,object,pl,N,0,,,,,,,3586,5601
-documents,object,pl,N,0,,,,,,,5,12
-files,object,pl,N,0,,,,,,,31,107
-papers,object,pl,N,0,,,,,,,451,9317
-hid,hiding_verb,,,,,,,,,,259,8546
-stashed,hiding_verb,,,,,,,,,,5,8
-buried,hiding_verb,,,,,,,,,,145,277
-put,hiding_verb,,,,,,,,,,135025,137359
-start,control_verb,,,,,,,,tense:past,control rows' matrix verb: takes neither a clause nor about/of; past only - simple-present 'John starts the rumor' is odd,7701,13977
-investigate,control_verb,,,,,,,,investigable:1,"control rows' matrix verb: takes neither a clause nor about/of; only for nouns you can investigate (the rumor, not the song), and the past-tense fallback for nouns you can't start",29,43
-like,control_verb,,,,,,,,tense:present,"control rows' matrix verb: takes neither a clause nor about/of; present tense, stative so fine in simple present",176534,190311
-vase,mishap_object,sg,N,0,,0,1,,,,243,254
-glass,mishap_object,sg,N,0,,0,1,,,,2245,2139
-coffee,mishap_object,sg,N,0,,1,0,,,mass noun - stays sg,4863,4722
-juice,mishap_object,sg,N,0,,1,0,,,mass noun - stays sg,14594,14089
-water,mishap_object,sg,N,0,,1,0,,,mass noun - stays sg,22703,22825
-broke,mishap_verb,,,,,,,,breakable:1,requires a breakable=1 object,3946,15435
-shattered,mishap_verb,,,,,,,,breakable:1,requires a breakable=1 object,24,24
-spilled,mishap_verb,,,,,,,,liquid:1,requires a liquid=1 object,801,2364
-it is raining,embedded_clause,,,,,,,,"phenomenon:CP + Q,Ellipsis,NP complement",CP+Q only - free declarative complement,38,5094
-it is snowing,embedded_clause,,,,,,,,"phenomenon:CP + Q,Ellipsis,NP complement",CP+Q only - free declarative complement,11,3912
-the rumor is true,embedded_clause,,,,,,,,"phenomenon:CP + Q,Ellipsis,NP complement",CP+Q only - free declarative complement,0,6
-the rumor is false,embedded_clause,,,,,,,,"phenomenon:CP + Q,Ellipsis,NP complement",CP+Q only - free declarative complement,0,6
-it's raining,embedded_clause,,,,,,,,phenomenon:Parenthetical,,805,5094
-it's snowing,embedded_clause,,,,,,,,phenomenon:Parenthetical,,153,3912
-the rumor's true,embedded_clause,,,,,,,,phenomenon:Parenthetical,,0,6
-the rumor's false,embedded_clause,,,,,,,,phenomenon:Parenthetical,,0,6
-the vase broke,embedded_clause,,,,,,,,,CP+Q only - free declarative complement,0,254
-the glass shattered,embedded_clause,,,,,,,,,CP+Q only - free declarative complement,0,24
-the keys are,embedded_clause,,,,,,,,complementizer:where,factive island base clause - only where can ask about it,32,5601
-the dog is,embedded_clause,,,,,,,,complementizer:where,factive island base clause - only where can ask about it,264,18756
-the ball is,embedded_clause,,,,,,,,complementizer:where,factive island base clause - only where can ask about it,78,19946
-the cat is,embedded_clause,,,,,,,,complementizer:where,factive island base clause - only where can ask about it,148,17034
-Mary hid the keys,embedded_clause,,,,,,,,"complementizer:where,when,why",CP+Q only - free declarative complement,0,1324
-Mary ate the cookies,embedded_clause,,,,,,,,"complementizer:when,why",CP+Q only - free declarative complement,0,1324
-that,complementizer,,,,,,,,,"declarative CP - optional, see toggle_complementizer",453558,679410
-whether,complementizer,,,,,,,,,"interrogative CP - obligatory, never varied",1249,1191
-when,complementizer,,,,,,,,,,56848,53667
-where,complementizer,,,,,,,,,,79334,122791
-why,complementizer,,,,,,,,,,55659,54256
-about,preposition,,,,,,,,"matrix_verb:think,know",attested with think and know,48794,46487
-of,preposition,,,,,,,,"matrix_verb:think,know",attested with think and know,160043,156853
-where did Mary hide the keys,wh_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,1324
-when did Mary eat the cookies,wh_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,1324
-where are my keys,wh_question,,,,,,,,,for mini-discourses,3,5601
-my,determiner,pl,,,,,,,,,118790,123099
-the,determiner,pl,,,,,,,,,892671,855865
-<person>'s,determiner,pl,,,,,,,,,,
-some of the,determiner,pl,,,,,,,countable:1,,1738,92501
-all of the,determiner,pl,,,,,,,,,640,105064
-Mary parked the car,embedded_clause,,,,,,,,"complementizer:where,when,why",factive island clause,0,1324
-the store is open,embedded_clause,,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement,0,3408
-Mary is coming to the party,embedded_clause,,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement,0,1324
-the meeting is today,embedded_clause,,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement,1,223
-dinner is ready,embedded_clause,,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement,9,6746
-the store's open,embedded_clause,,,,,,,,phenomenon:Parenthetical,,1,3408
-Mary's coming,embedded_clause,,,,,,,,phenomenon:Parenthetical,,2,1324
-dinner's ready,embedded_clause,,,,,,,,phenomenon:Parenthetical,,35,6746
-the meeting's today,embedded_clause,,,,,,,,phenomenon:Parenthetical,,0,223
-where is Mary,wh_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,1,1324
-when is the party,wh_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,5952
-why did Mary leave,wh_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,1324
-who broke the vase,wh_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,254
-who ate the cookies,wh_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,1,9511
-what time is it,wh_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,308,37190
-where is the store,wh_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,3408
-is it raining outside,polar_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,5,5094
-is the store open,polar_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,3,3408
-is Mary coming to the party,polar_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,1324
-is Mary at home,polar_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,1324
-did Mary hide the keys,polar_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,1324
-is the rumor true,polar_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,6
-is the meeting today,polar_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,223
-will it rain tomorrow,polar_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,4852
-is dinner ready,polar_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,2,6746
-is the dog hungry,polar_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,9604
-is it snowing outside,polar_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,3912
-is the cat hungry,polar_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,9604
-did Mary eat the cookies,polar_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,1324
-is the baby sleeping,polar_question,,,,,,,,paradigm:mini-discourse,for mini-discourses,14,15399
-might,modal,,,,,,,,subtype:Standalone;matrix_subj_category:third_person;tense:present,"'I might think so' isn't a standalone ellipsis, so third person only",14622,14382
-may,modal,,,,,,,,subtype:Standalone;matrix_subj_category:third_person;tense:present,"'I may think so' isn't a standalone ellipsis, so third person only",4510,4257
-Mary broke the vase,embedded_clause,,,,,,,,"phenomenon:CP + Q,Ellipsis,Parenthetical",free declarative complement; also slifting,0,254
-Mary spilled the coffee,embedded_clause,,,,,,,,"phenomenon:CP + Q,Ellipsis,Parenthetical",free declarative complement; also slifting,0,1324
-the cookies are gone,embedded_clause,,,,,,,,"phenomenon:CP + Q,Ellipsis,Parenthetical",free declarative complement; also slifting,1,9511
-Mary is sick,embedded_clause,,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement,0,1324
-Mary is late,embedded_clause,,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement,0,1324
-Mary is at home,embedded_clause,,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement,0,1324
-Mary's sick,embedded_clause,,,,,,,,phenomenon:Parenthetical,,0,1324
-Mary's late,embedded_clause,,,,,,,,phenomenon:Parenthetical,,0,1324
-Mary's at home,embedded_clause,,,,,,,,phenomenon:Parenthetical,,0,1324
-my shoes are,embedded_clause,,,,,,,,complementizer:where,factive island base clause - only where can ask about it,29,14924
-Mary put the cookies,embedded_clause,,,,,,,,complementizer:where,factive island base clause - only where can ask about it,0,1324
+word,slot,number,gender,animate,countable,liquid,breakable,investigable,truth_apt,evaluable,buriable,requires,notes,childes_count,childes_lemma_count
+John,person,sg,M,1,,,,,,,,,proper name,2533,3400
+Christopher,person,sg,M,1,,,,,,,,,proper name,813,902
+Bob,person,sg,M,1,,,,,,,,,proper name,2113,2400
+Theresa,person,sg,F,1,,,,,,,,,proper name,58,67
+Mary,person,sg,F,1,,,,,,,,,proper name,1586,1324
+Olivia,person,sg,F,1,,,,,,,,,proper name,436,461
+Sarah,person,sg,F,1,,,,,,,,,proper name,3428,3535
+Jane,person,sg,F,1,,,,,,,,,proper name,708,725
+the man,person,sg,M,1,,,,,,,,,role noun,2718,18752
+the woman,person,sg,F,1,,,,,,,,,role noun,163,1413
+the teacher,person,sg,any,1,,,,,,,,,role noun,702,2768
+the student,person,sg,any,1,,,,,,,,,role noun,8,293
+the doctor,person,sg,any,1,,,,,,,,,role noun,1656,4532
+the cashier,person,sg,any,1,,,,,,,,,role noun,28,37
+he,pronoun,sg,M,1,,,,,,,,,matches a sg animate person,208671,310320
+she,pronoun,sg,F,1,,,,,,,,,matches a sg animate person,121076,153252
+they,pronoun,sg,any,1,,,,,,,,,singular they - matches a sg animate person of any gender,110471,234053
+they,pronoun,pl,any,1,,,,,,,,,plural - matches a pl noun (e.g. keys),110471,234053
+it,pronoun,sg,N,0,,,,,,,,,"inanimate singular - matches a sg inanimate noun (e.g. the rumor), never a person",598665,749894
+raining,weather_predicate,,,,,,,,,,,,,2020,5094
+snowing,weather_predicate,,,,,,,,,,,,,398,3912
+sunny,weather_predicate,,,,,,,,,,,,,877,857
+rumor,content_noun,sg,N,0,,,,1,1,0,,,a rumor is startable,5,6
+message,content_noun,sg,N,0,,,,1,0,0,,"matrix_verb:think,know,investigate;phenomenon:CP + Q,Ellipsis,NP complement,Factive island","a message isn't startable - ""John starts the message"" is bad; no contraction (""the message's"")",289,339
+story,content_noun,sg,N,0,,,,1,1,1,,,a story is startable,11329,12447
+news,content_noun,sg,N,0,,,,1,1,1,,"matrix_verb:think,know,investigate;phenomenon:CP + Q,Ellipsis,NP complement,Factive island","news isn't startable - ""John starts the news"" is bad; no contraction (""the news's"")",580,546
+secret,content_noun,sg,N,0,,,,1,0,0,,"matrix_verb:think,know,investigate,like","not startable - ""John started the secret"" is bad",653,672
+excuse,content_noun,sg,N,0,,,,1,0,1,,"matrix_verb:think,know,investigate,like;phenomenon:CP + Q,Ellipsis,Factive island","not startable - ""John started the excuse"" is bad; no contraction (""the excuse's"")",3804,3973
+idea,content_noun,sg,N,0,,,,1,0,1,,"matrix_verb:think,know,investigate,like;phenomenon:CP + Q,Ellipsis,Factive island,Parenthetical","not startable - ""John started the idea"" is bad",5279,5361
+false,judgment,,,,,,,,,,,truth_apt:1,,57,48
+true,judgment,,,,,,,,,,,truth_apt:1,,1777,1599
+good,judgment,,,,,,,,,,,evaluable:1,,93020,105531
+bad,judgment,,,,,,,,,,,evaluable:1,,7824,7497
+silly,judgment,,,,,,,,,,,evaluable:1,,10826,10459
+wrong,judgment,,,,,,,,,,,truth_apt:1,,5862,5599
+keys,object,pl,N,0,,,,,,,1,,,3586,5601
+documents,object,pl,N,0,,,,,,,1,,,5,12
+files,object,pl,N,0,,,,,,,1,,,31,107
+papers,object,pl,N,0,,,,,,,1,,,451,9317
+hid,hiding_verb,,,,,,,,,,,,,259,8546
+stashed,hiding_verb,,,,,,,,,,,,,5,8
+buried,hiding_verb,,,,,,,,,,,buriable:1,needs something you can bury in the sentence (not the cookies),145,277
+put,hiding_verb,,,,,,,,,,,,,135025,137359
+start,control_verb,,,,,,,,,,,tense:past,control rows' matrix verb: takes neither a clause nor about/of; past only - simple-present 'John starts the rumor' is odd,7701,13977
+investigate,control_verb,,,,,,,,,,,investigable:1,"control rows' matrix verb: takes neither a clause nor about/of; only for nouns you can investigate (the rumor, not the song), and the past-tense fallback for nouns you can't start",29,43
+like,control_verb,,,,,,,,,,,tense:present,"control rows' matrix verb: takes neither a clause nor about/of; present tense, stative so fine in simple present",183874,190311
+vase,mishap_object,sg,N,0,,0,1,,,,,,,243,254
+glass,mishap_object,sg,N,0,,0,1,,,,,,,2245,2139
+coffee,mishap_object,sg,N,0,,1,0,,,,,,mass noun - stays sg,4863,4722
+juice,mishap_object,sg,N,0,,1,0,,,,,,mass noun - stays sg,14594,14089
+water,mishap_object,sg,N,0,,1,0,,,,,,mass noun - stays sg,22703,22825
+broke,mishap_verb,,,,,,,,,,,breakable:1,requires a breakable=1 object,3946,15435
+shattered,mishap_verb,,,,,,,,,,,breakable:1,requires a breakable=1 object,24,24
+spilled,mishap_verb,,,,,,,,,,,liquid:1,requires a liquid=1 object,801,2364
+it is raining,embedded_clause,,,,,,,,,,,"phenomenon:CP + Q,Ellipsis,NP complement",CP+Q only - free declarative complement,38,5094
+it is snowing,embedded_clause,,,,,,,,,,,"phenomenon:CP + Q,Ellipsis,NP complement",CP+Q only - free declarative complement,11,3912
+the rumor is true,embedded_clause,,,,,,,,,,,"phenomenon:CP + Q,Ellipsis,NP complement",CP+Q only - free declarative complement,0,6
+the rumor is false,embedded_clause,,,,,,,,,,,"phenomenon:CP + Q,Ellipsis,NP complement",CP+Q only - free declarative complement,0,6
+it's raining,embedded_clause,,,,,,,,,,,phenomenon:Parenthetical,,805,5094
+it's snowing,embedded_clause,,,,,,,,,,,phenomenon:Parenthetical,,153,3912
+the rumor's true,embedded_clause,,,,,,,,,,,phenomenon:Parenthetical,,0,6
+the rumor's false,embedded_clause,,,,,,,,,,,phenomenon:Parenthetical,,0,6
+the vase broke,embedded_clause,,,,,,,,,,,,CP+Q only - free declarative complement,0,254
+the glass shattered,embedded_clause,,,,,,,,,,,,CP+Q only - free declarative complement,0,24
+the keys are,embedded_clause,,,,,,,,,,,complementizer:where,factive island base clause - only where can ask about it,32,5601
+the dog is,embedded_clause,,,,,,,,,,,complementizer:where,factive island base clause - only where can ask about it,264,18756
+the ball is,embedded_clause,,,,,,,,,,,complementizer:where,factive island base clause - only where can ask about it,78,19946
+the cat is,embedded_clause,,,,,,,,,,,complementizer:where,factive island base clause - only where can ask about it,148,17034
+Mary hid the keys,embedded_clause,,,,,,,,,,,"complementizer:that,whether,none,where,when,why;phenomenon:CP + Q,Factive island",CP+Q only - free declarative complement,0,1324
+Mary ate the cookies,embedded_clause,,,,,,,,,,,"complementizer:that,whether,none,when,why;phenomenon:CP + Q,Factive island",CP+Q only - free declarative complement,0,1324
+that,complementizer,,,,,,,,,,,,"declarative CP - optional, see toggle_complementizer",453558,679410
+whether,complementizer,,,,,,,,,,,,"interrogative CP - obligatory, never varied",1249,1191
+when,complementizer,,,,,,,,,,,,,56848,53667
+where,complementizer,,,,,,,,,,,,,79334,122791
+why,complementizer,,,,,,,,,,,,,55659,54256
+about,preposition,,,,,,,,,,,"matrix_verb:think,know",attested with think and know,48794,46487
+of,preposition,,,,,,,,,,,"matrix_verb:think,know",attested with think and know,160043,156853
+where did Mary hide the keys,wh_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,1324
+when did Mary eat the cookies,wh_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,1324
+where are my keys,wh_question,,,,,,,,,,,,for mini-discourses,3,5601
+my,determiner,pl,,,,,,,,,,,,118790,123099
+the,determiner,pl,,,,,,,,,,,,892671,855865
+<person>'s,determiner,pl,,,,,,,,,,,,,
+some of the,determiner,pl,,,,,,,,,,countable:1,,1738,92501
+all of the,determiner,pl,,,,,,,,,,,,640,105064
+Mary parked the car,embedded_clause,,,,,,,,,,,"complementizer:that,whether,none,where,when,why;phenomenon:CP + Q,Factive island",factive island clause,0,1324
+the store is open,embedded_clause,,,,,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement,0,3408
+Mary is coming to the party,embedded_clause,,,,,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement,0,1324
+the meeting is today,embedded_clause,,,,,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement,1,223
+dinner is ready,embedded_clause,,,,,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement,9,6746
+the store's open,embedded_clause,,,,,,,,,,,phenomenon:Parenthetical,,1,3408
+Mary's coming,embedded_clause,,,,,,,,,,,phenomenon:Parenthetical,,2,1324
+dinner's ready,embedded_clause,,,,,,,,,,,phenomenon:Parenthetical,,35,6746
+the meeting's today,embedded_clause,,,,,,,,,,,phenomenon:Parenthetical,,0,223
+where is Mary,wh_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,1,1324
+when is the party,wh_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,5952
+why did Mary leave,wh_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,1324
+who broke the vase,wh_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,254
+who ate the cookies,wh_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,1,9511
+what time is it,wh_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,308,37190
+where is the store,wh_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,3408
+is it raining outside,polar_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,5,5094
+is the store open,polar_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,3,3408
+is Mary coming to the party,polar_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,1324
+is Mary at home,polar_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,1324
+did Mary hide the keys,polar_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,1324
+is the rumor true,polar_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,6
+is the meeting today,polar_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,223
+will it rain tomorrow,polar_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,4852
+is dinner ready,polar_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,2,6746
+is the dog hungry,polar_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,9604
+is it snowing outside,polar_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,3912
+is the cat hungry,polar_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,9604
+did Mary eat the cookies,polar_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,0,1324
+is the baby sleeping,polar_question,,,,,,,,,,,paradigm:mini-discourse,for mini-discourses,14,15399
+might,modal,,,,,,,,,,,subtype:Standalone;matrix_subj_category:third_person;tense:present,"'I might think so' isn't a standalone ellipsis, so third person only",14622,14382
+may,modal,,,,,,,,,,,subtype:Standalone;matrix_subj_category:third_person;tense:present,"'I may think so' isn't a standalone ellipsis, so third person only",4510,4257
+Mary broke the vase,embedded_clause,,,,,,,,,,,"phenomenon:CP + Q,Ellipsis,Parenthetical",free declarative complement; also slifting,0,254
+Mary spilled the coffee,embedded_clause,,,,,,,,,,,"phenomenon:CP + Q,Ellipsis,Parenthetical",free declarative complement; also slifting,0,1324
+the cookies are gone,embedded_clause,,,,,,,,,,,"phenomenon:CP + Q,Ellipsis,Parenthetical",free declarative complement; also slifting,1,9511
+Mary is sick,embedded_clause,,,,,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement,0,1324
+Mary is late,embedded_clause,,,,,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement,0,1324
+Mary is at home,embedded_clause,,,,,,,,,,,"phenomenon:CP + Q,Ellipsis",free declarative complement,0,1324
+Mary's sick,embedded_clause,,,,,,,,,,,phenomenon:Parenthetical,,0,1324
+Mary's late,embedded_clause,,,,,,,,,,,phenomenon:Parenthetical,,0,1324
+Mary's at home,embedded_clause,,,,,,,,,,,phenomenon:Parenthetical,,0,1324
+my shoes are,embedded_clause,,,,,,,,,,,complementizer:where,factive island base clause - only where can ask about it,29,14924
+Mary put the cookies,embedded_clause,,,,,,,,,,,complementizer:where,factive island base clause - only where can ask about it,0,1324

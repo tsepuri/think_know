@@ -1,5 +1,7 @@
 config_old.json
 .env
+.claude
+notebooks/__marimo__/*
 .DS_Store
 __pycache__/
 sentences_with_variants.csv

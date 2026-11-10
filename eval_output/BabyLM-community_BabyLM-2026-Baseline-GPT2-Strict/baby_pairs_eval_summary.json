@@ -1,41 +1,41 @@
 {
   "model": "BabyLM-community/BabyLM-2026-Baseline-GPT2-Strict",
-  "n_assertions": 2689,
-  "overall_accuracy": 0.729,
-  "overall_control_accuracy": 0.945,
+  "n_assertions": 2510,
+  "overall_accuracy": 0.722,
+  "overall_control_accuracy": 0.923,
   "by_phenomenon": [
     {
       "phenomenon": "CP + Q",
-      "n": 99,
-      "accuracy": 1.0,
-      "control_n": 99,
-      "control_accuracy": 0.889
+      "n": 96,
+      "accuracy": 0.969,
+      "control_n": 96,
+      "control_accuracy": 0.833
     },
     {
       "phenomenon": "Ellipsis",
-      "n": 1055,
-      "accuracy": 0.588,
+      "n": 1002,
+      "accuracy": 0.583,
       "control_n": 0,
       "control_accuracy": null
     },
     {
       "phenomenon": "Factive island",
-      "n": 380,
-      "accuracy": 0.863,
+      "n": 364,
+      "accuracy": 0.865,
       "control_n": 0,
       "control_accuracy": null
     },
     {
       "phenomenon": "NP complement",
-      "n": 338,
-      "accuracy": 0.885,
-      "control_n": 338,
-      "control_accuracy": 0.962
+      "n": 282,
+      "accuracy": 0.862,
+      "control_n": 282,
+      "control_accuracy": 0.954
     },
     {
       "phenomenon": "Parenthetical",
-      "n": 380,
-      "accuracy": 0.776,
+      "n": 388,
+      "accuracy": 0.786,
       "control_n": 0,
       "control_accuracy": null
     }
@@ -45,25 +45,25 @@
       "phenomenon": "CP + Q",
       "subtype": "",
       "matrix_type": "declarative",
-      "n": 75,
-      "accuracy": 1.0,
-      "control_n": 75,
-      "control_accuracy": 0.853
+      "n": 76,
+      "accuracy": 0.974,
+      "control_n": 76,
+      "control_accuracy": 0.789
     },
     {
       "phenomenon": "CP + Q",
       "subtype": "",
       "matrix_type": "polar_question",
-      "n": 24,
-      "accuracy": 1.0,
-      "control_n": 24,
+      "n": 20,
+      "accuracy": 0.95,
+      "control_n": 20,
       "control_accuracy": 1.0
     },
     {
       "phenomenon": "Ellipsis",
       "subtype": "Response to declarative",
       "matrix_type": "declarative",
-      "n": 380,
+      "n": 388,
       "accuracy": 0.5,
       "control_n": 0,
       "control_accuracy": null
@@ -72,8 +72,8 @@
       "phenomenon": "Ellipsis",
       "subtype": "Response to polar Q",
       "matrix_type": "declarative",
-      "n": 95,
-      "accuracy": 0.326,
+      "n": 98,
+      "accuracy": 0.357,
       "control_n": 0,
       "control_accuracy": null
     },
@@ -82,7 +82,7 @@
       "subtype": "Response to wh Q",
       "matrix_type": "declarative",
       "n": 100,
-      "accuracy": 0.51,
+      "accuracy": 0.48,
       "control_n": 0,
       "control_accuracy": null
     },
@@ -90,8 +90,8 @@
       "phenomenon": "Ellipsis",
       "subtype": "Standalone",
       "matrix_type": "declarative",
-      "n": 480,
-      "accuracy": 0.725,
+      "n": 416,
+      "accuracy": 0.738,
       "control_n": 0,
       "control_accuracy": null
     },
@@ -99,8 +99,8 @@
       "phenomenon": "Factive island",
       "subtype": "",
       "matrix_type": "wh_question",
-      "n": 380,
-      "accuracy": 0.863,
+      "n": 364,
+      "accuracy": 0.865,
       "control_n": 0,
       "control_accuracy": null
     },
@@ -111,32 +111,32 @@
       "n": 88,
       "accuracy": 1.0,
       "control_n": 88,
-      "control_accuracy": 0.875
+      "control_accuracy": 0.898
     },
     {
       "phenomenon": "NP complement",
       "subtype": "NP vs. PP",
       "matrix_type": "declarative",
-      "n": 216,
-      "accuracy": 0.819,
-      "control_n": 216,
-      "control_accuracy": 0.991
+      "n": 154,
+      "accuracy": 0.747,
+      "control_n": 154,
+      "control_accuracy": 0.981
     },
     {
       "phenomenon": "NP complement",
       "subtype": "NP vs. new sentence",
       "matrix_type": "declarative",
-      "n": 34,
+      "n": 40,
       "accuracy": 1.0,
-      "control_n": 34,
-      "control_accuracy": 1.0
+      "control_n": 40,
+      "control_accuracy": 0.975
     },
     {
       "phenomenon": "Parenthetical",
       "subtype": "Slifting",
       "matrix_type": "declarative",
-      "n": 380,
-      "accuracy": 0.776,
+      "n": 388,
+      "accuracy": 0.786,
       "control_n": 0,
       "control_accuracy": null
     }

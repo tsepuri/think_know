@@ -1,41 +1,41 @@
 {
   "model": "BabyLM-community/BabyLM-2026-Baseline-GPT2-Strict",
-  "n_assertions": 4280,
-  "overall_accuracy": 0.916,
-  "overall_control_accuracy": 0.926,
+  "n_assertions": 3928,
+  "overall_accuracy": 0.908,
+  "overall_control_accuracy": 0.94,
   "by_phenomenon": [
     {
       "phenomenon": "CP + Q",
       "n": 200,
-      "accuracy": 1.0,
+      "accuracy": 0.94,
       "control_n": 200,
-      "control_accuracy": 0.745
+      "control_accuracy": 0.84
     },
     {
       "phenomenon": "Ellipsis",
-      "n": 1280,
-      "accuracy": 0.823,
+      "n": 1216,
+      "accuracy": 0.819,
       "control_n": 0,
       "control_accuracy": null
     },
     {
       "phenomenon": "Factive island",
       "n": 400,
-      "accuracy": 0.948,
+      "accuracy": 0.922,
       "control_n": 0,
       "control_accuracy": null
     },
     {
       "phenomenon": "NP complement",
-      "n": 900,
-      "accuracy": 0.986,
-      "control_n": 900,
+      "n": 756,
+      "accuracy": 0.991,
+      "control_n": 756,
       "control_accuracy": 0.967
     },
     {
       "phenomenon": "Parenthetical",
       "n": 400,
-      "accuracy": 0.983,
+      "accuracy": 0.995,
       "control_n": 0,
       "control_accuracy": null
     }
@@ -45,19 +45,19 @@
       "phenomenon": "CP + Q",
       "subtype": "",
       "matrix_type": "declarative",
-      "n": 152,
-      "accuracy": 1.0,
-      "control_n": 152,
-      "control_accuracy": 0.737
+      "n": 158,
+      "accuracy": 0.943,
+      "control_n": 158,
+      "control_accuracy": 0.854
     },
     {
       "phenomenon": "CP + Q",
       "subtype": "",
       "matrix_type": "polar_question",
-      "n": 48,
-      "accuracy": 1.0,
-      "control_n": 48,
-      "control_accuracy": 0.771
+      "n": 42,
+      "accuracy": 0.929,
+      "control_n": 42,
+      "control_accuracy": 0.786
     },
     {
       "phenomenon": "Ellipsis",
@@ -90,8 +90,8 @@
       "phenomenon": "Ellipsis",
       "subtype": "Standalone",
       "matrix_type": "declarative",
-      "n": 480,
-      "accuracy": 0.952,
+      "n": 416,
+      "accuracy": 0.962,
       "control_n": 0,
       "control_accuracy": null
     },
@@ -100,7 +100,7 @@
       "subtype": "",
       "matrix_type": "wh_question",
       "n": 400,
-      "accuracy": 0.948,
+      "accuracy": 0.922,
       "control_n": 0,
       "control_accuracy": null
     },
@@ -109,17 +109,17 @@
       "subtype": "NP vs CP copula deletion",
       "matrix_type": "declarative",
       "n": 220,
-      "accuracy": 0.968,
+      "accuracy": 0.986,
       "control_n": 220,
-      "control_accuracy": 0.932
+      "control_accuracy": 0.959
     },
     {
       "phenomenon": "NP complement",
       "subtype": "NP vs. PP",
       "matrix_type": "declarative",
-      "n": 480,
+      "n": 336,
       "accuracy": 1.0,
-      "control_n": 480,
+      "control_n": 336,
       "control_accuracy": 0.973
     },
     {
@@ -127,16 +127,16 @@
       "subtype": "NP vs. new sentence",
       "matrix_type": "declarative",
       "n": 200,
-      "accuracy": 0.97,
+      "accuracy": 0.98,
       "control_n": 200,
-      "control_accuracy": 0.99
+      "control_accuracy": 0.965
     },
     {
       "phenomenon": "Parenthetical",
       "subtype": "Slifting",
       "matrix_type": "declarative",
       "n": 400,
-      "accuracy": 0.983,
+      "accuracy": 0.995,
       "control_n": 0,
       "control_accuracy": null
     }

@@ -11,9 +11,44 @@ import pandas as pd
 
 REDIVIS_OWNER, REDIVIS_DATASET = "datapages", "childes_db:b6q6:v1_4"  # childes-db 2026.1
 COLLECTIONS = ("Eng-NA", "Eng-UK")
+# mental-state verbs, each with the complements it is usually described as taking: responsive (declarative and interrogative), rogative (interrogative only),
+# anti-rogative (declarative only); `mean` is left unclassed
+VERB_CLASSES = {
+    "know": "responsive", "remember": "responsive", "forget": "responsive", "guess": "responsive",
+    "understand": "responsive", "learn": "responsive", "notice": "responsive", "figure": "responsive",
+    "decide": "responsive", "realize": "responsive",
+    "wonder": "rogative",
+    "think": "anti-rogative", "believe": "anti-rogative", "suppose": "anti-rogative", "hope": "anti-rogative",
+    "wish": "anti-rogative", "imagine": "anti-rogative", "pretend": "anti-rogative", "bet": "anti-rogative",
+    "expect": "anti-rogative", "dream": "anti-rogative", "reckon": "anti-rogative", "doubt": "anti-rogative",
+    "mean": "other",
+}
+# %mor stem -> surface forms, for matching glosses
 TARGET_FORMS = {
-    "think": ("think", "thinks", "thinking", "thought"),
     "know": ("know", "knows", "knew", "known", "knowing"),
+    "remember": ("remember", "remembers", "remembered", "remembering"),
+    "forget": ("forget", "forgets", "forgot", "forgotten", "forgetting"),
+    "guess": ("guess", "guesses", "guessed", "guessing"),
+    "understand": ("understand", "understands", "understood", "understanding"),
+    "learn": ("learn", "learns", "learned", "learnt", "learning"),
+    "notice": ("notice", "notices", "noticed", "noticing"),
+    "figure": ("figure", "figures", "figured", "figuring"),
+    "decide": ("decide", "decides", "decided", "deciding"),
+    "realize": ("realize", "realizes", "realized", "realizing"),
+    "wonder": ("wonder", "wonders", "wondered", "wondering"),
+    "think": ("think", "thinks", "thinking", "thought"),
+    "believe": ("believe", "believes", "believed", "believing"),
+    "suppose": ("suppose", "supposes", "supposed", "supposing"),
+    "hope": ("hope", "hopes", "hoped", "hoping"),
+    "wish": ("wish", "wishes", "wished", "wishing"),
+    "imagine": ("imagine", "imagines", "imagined", "imagining"),
+    "pretend": ("pretend", "pretends", "pretended", "pretending"),
+    "bet": ("bet", "bets", "betting"),
+    "expect": ("expect", "expects", "expected", "expecting"),
+    "dream": ("dream", "dreams", "dreamed", "dreamt", "dreaming"),
+    "reckon": ("reckon", "reckons", "reckoned", "reckoning"),
+    "doubt": ("doubt", "doubts", "doubted", "doubting"),
+    "mean": ("mean", "means", "meant", "meaning"),
 }
 WH_WORDS = frozenset({"who", "whom", "whose", "what", "which", "where", "when", "why", "how"})
 WHETHER_WORDS = frozenset({"whether", "if"})
@@ -21,6 +56,7 @@ WHETHER_WORDS = frozenset({"whether", "if"})
 PLACEHOLDERS = frozenset({"xxx", "yyy", "www"})
 # benchmark embedded_type names, plus CHILDES-only categories
 # %mor features that depend on the utterance rather than the word: case, subject agreement, mood
+# TODO: add explanation here of what each of these mean
 CONTEXT_FEATURES = frozenset({"Nom", "Acc", "Gen", "Dat", "S", "S1", "S2", "S3", "P", "P1", "P2", "P3", "Ind", "irr"})
 CATEGORIES = ("declarative", "interrogative", "NP", "PP", "so", "infinitival", "matrix_wh", "left_clause", "none")
 
@@ -72,13 +108,14 @@ def load_verb_stems(cache_dir):
 
 def load_target_tokens(cache_dir):
     """Every token, with its %gra index, head and relation, of the Eng-NA/Eng-UK utterances
-    that have a think/know token tagged verb on the %mor tier."""
-    target = f"SELECT utterance_id FROM token WHERE stem IN ('think', 'know') AND part_of_speech = 'verb' AND {_collection_filter()}"
+    that have a TARGET_FORMS stem tagged verb on the %mor tier."""
+    stems = ", ".join(f"'{s}'" for s in TARGET_FORMS)
+    target = f"SELECT utterance_id FROM token WHERE LOWER(stem) IN ({stems}) AND part_of_speech = 'verb' AND {_collection_filter()}"
     sql = (
         "SELECT utterance_id, token_order, LOWER(gloss) AS gloss, LOWER(stem) AS stem, part_of_speech, "
         f"gra_index, gra_head, gra_relation FROM token WHERE {_collection_filter()} AND utterance_id IN ({target})"
     )
-    return query_cached(sql, os.path.join(cache_dir, "childes_think_know_tokens.parquet"))
+    return query_cached(sql, os.path.join(cache_dir, "childes_mental_verb_tokens.parquet"))
 
 
 def load_lemma_counts(cache_dir):
@@ -109,9 +146,18 @@ def word_counts(glosses):
 
 
 def phrase_counts(glosses, phrases):
-    """{phrase: whole-word occurrences across glosses} for multiword phrases (lowercased)."""
-    text = pd.Series([" ".join(tokens(g)) for g in glosses])
-    return {p: int(text.str.count(rf"(?<!\S){re.escape(p)}(?!\S)").sum()) for p in phrases}
+    """{phrase: whole-word occurrences across glosses} for multiword phrases (lowercased), from one
+    pass over each gloss's n-grams of the phrases' lengths."""
+    wanted = {tuple(p.split()) for p in phrases}
+    sizes = {len(p) for p in wanted}
+    found = collections.Counter()
+    for gloss in glosses:
+        words = tokens(gloss)
+        for n in sizes:
+            for i in range(len(words) - n + 1):
+                if tuple(words[i:i + n]) in wanted:
+                    found[" ".join(words[i:i + n])] += 1
+    return {p: found[p] for p in phrases}
 
 
 
@@ -163,44 +209,94 @@ def _in_inner_clause(token, clause):
     raise ValueError(f"{token!r} is not inside {clause!r}")
 
 
+# dependents passed over when finding the word that opens a clause: fillers, conjunctions,
+# vocatives, and the clause head's own non-wh adverbs (know [exactly what...], think [maybe you...])
+_OPENER_SKIP = frozenset({"discourse", "intj", "reparandum", "cc", "punct", "vocative"})
+
+
+def _word(token):
+    """`token` lowercased, without a clitic: %gra keeps what's and that's whole."""
+    return re.sub(r"'(s|re|ll|ve|d|m)$", "", token.lower_)
+
+
+def _opener(clause):
+    """The word that opens `clause`: its first word, past any _OPENER_SKIP dependent."""
+    words = sorted(clause.subtree, key=lambda t: t.i)
+    skip = lambda t: t.dep_ in _OPENER_SKIP or (t.dep_ == "advmod" and t.head == clause and t.lower_ not in WH_WORDS)
+    return next((t for t in words if not skip(t)), words[0])
+
+
+def _matrix_wh(verb):
+    """The first wh-word left of `verb` in its subtree, unless it sits in a clause attached
+    leftward (where is it [I don't know]); None if there is none."""
+    left = [c for c in verb.children if c.i < verb.i and c.dep_ in ("ccomp", "parataxis", "advcl")]
+    wh = next((t for t in verb.subtree if t.i < verb.i and _word(t) in WH_WORDS), None)
+    return None if wh is None or any(wh in c.subtree for c in left) else wh
+
+
+def is_matrix_polar(verb):
+    """True if `verb` heads a polar (yes/no) question: an auxiliary precedes its subject
+    (do you know, can't you think) and no matrix wh-word precedes it (what do you know)."""
+    subjects = [c.i for c in verb.children if c.dep_.startswith("nsubj")]
+    inverted = bool(subjects) and any(c.dep_.startswith("aux") and c.i < min(subjects) for c in verb.children)
+    return inverted and _matrix_wh(verb) is None
+
+
 def classify_complement(verb):
-    """(category, detail) for a think/know verb token's complement; category is in CATEGORIES.
-    Only dependents whose span lies right of the verb count as complements. Without one, a
-    wh-word left of the verb in its subtree marks a matrix wh-question (what do you think?),
-    or a left_clause if it sits in a clause attached leftward (where is it I don't know)."""
+    """(category, detail) for a mental verb token's complement; category is in CATEGORIES.
+    Only dependents whose span lies right of the verb count as complements. A clause is
+    interrogative only if a wh-word or whether/if opens it: a wh-word deeper inside (think
+    [you know what this is]) or inside an object's relative clause (know [a lady who...])
+    doesn't count, and an if-clause that is an adverbial, or is followed by the clause it
+    conditions (think [if you said it] [would he know]), is a conditional."""
     right = [c for c in verb.children if c.i > verb.i and c.left_edge.i > verb.i]
     for dep in ("ccomp", "xcomp", "advcl"):
         for clause in (c for c in right if c.dep_ == dep):
-            edge = clause.left_edge
-            if edge.lower_ in WHETHER_WORDS | WH_WORDS and _in_inner_clause(edge, clause):
+            opener = _opener(clause)
+            word = _word(opener)
+            if word in WHETHER_WORDS | WH_WORDS and _in_inner_clause(opener, clause):
                 return "declarative", "adjunct_first"
-            if edge.lower_ in WHETHER_WORDS:
-                return "interrogative", edge.lower_
-            if edge.lower_ in WH_WORDS:
+            if word == "if" and dep == "advcl":
+                continue
+            if word == "if" and any(c.i > clause.i and c.dep_ in ("ccomp", "parataxis", "conj") for c in right):
+                return "declarative", "adjunct_first"
+            if word in WHETHER_WORDS:
+                return "interrogative", word
+            # a wh-word opens the clause, or is %gra's object of the verb just before it (know [what] [is])
+            if word in WH_WORDS or any(c.dep_ in ("dobj", "obj", "dep") and _word(c) in WH_WORDS and c.i < clause.i for c in right):
                 return "interrogative", "wh_infinitive" if dep == "xcomp" else "wh_clause"
             if dep == "ccomp":
-                return "declarative", "that" if edge.lower_ == "that" and edge.dep_ == "mark" else "zero"
+                return "declarative", "that" if word == "that" and opener.dep_ == "mark" else "zero"
             if dep == "xcomp":
                 return "infinitival", "to"
     for child in right:
         if child.lower_ == "so" and child.dep_ in ("advmod", "dobj", "obj", "ccomp"):
             return "so", "so"
         if child.dep_ in ("dobj", "obj"):
-            if child.lower_ in WH_WORDS:
+            if _word(child) in WH_WORDS:
                 return "interrogative", "wh_object" if any(True for _ in child.children) else "wh_bare"
+            # a wh-determiner opening the object (know [which one], [how many cars]), not an
+            # exclamative (think [what a pretty girl])
+            edge = child.left_edge
+            if _word(edge) in WH_WORDS and child in list(edge.ancestors)[:2] and not any(c.lower_ in ("a", "an") for c in child.children):
+                return "interrogative", "wh_noun_phrase"
             return "NP", "pronoun" if child.pos_ == "PRON" else "noun"
+        # %gra attaches a sluiced wh-adverb as advmod (I don't know [why])
+        if child.dep_ == "advmod" and _word(child) in WH_WORDS and not child.children:
+            return "interrogative", "wh_bare"
         if child.dep_ == "prep":
             return "PP", child.lower_
         # UD (%gra) attaches the noun as obl, with the preposition as its case dependent
         case = next((c for c in child.children if c.dep_ == "case"), None) if child.dep_ == "obl" else None
         if case is not None:
             return "PP", case.lower_
+    wh = _matrix_wh(verb)
+    if wh is not None:
+        return "matrix_wh", _word(wh)
     left = [c for c in verb.children if c.i < verb.i and c.dep_ in ("ccomp", "parataxis", "advcl")]
-    left_wh = next((t for t in verb.subtree if t.i < verb.i and t.lower_ in WH_WORDS), None)
-    if left_wh is not None and not any(left_wh in c.subtree for c in left):
-        return "matrix_wh", left_wh.lower_
     if left:
-        return "left_clause", "wh" if left_wh is not None else "clause"
+        left_wh = any(t.i < verb.i and _word(t) in WH_WORDS for t in verb.subtree)
+        return "left_clause", "wh" if left_wh else "clause"
     return "none", verb.dep_
 
 
@@ -244,83 +340,190 @@ class GraToken:
             node = node.head
 
 
-def gra_tree(rows):
-    """{gra_index: GraToken} for one utterance's token rows (load_target_tokens columns)."""
-    nodes = {int(r.gra_index): GraToken(int(r.gra_index), r.gloss, r.stem, str(r.part_of_speech).upper(), r.gra_relation.lower().split("-")[0])
-             for r in rows.itertuples()}
-    for r in rows.itertuples():
-        node, head = nodes[int(r.gra_index)], nodes.get(int(r.gra_head))
+def _gra_nodes(indices, glosses, stems, tags, relations, heads):
+    """{gra_index: GraToken} from one utterance's parallel %gra columns. CHILDES gives a clitic
+    (the 's of there's) a %gra index of its own but no token row, so a dependent whose head is a
+    clitic would be cut off with it ('think [there's something]' would lose its complement).
+    Each such clitic becomes a GraToken (relation 'clitic') attached as ccomp to the nearest
+    verb before its host, when every word in between belongs to the clitic's subtree (so a
+    relative clause stays put: 'know the guy [that's here]'); advcl instead if a subordinator
+    other than that/if/whether marks it ('think [because it's raining]')."""
+    nodes = {i: GraToken(i, g, s, str(t).upper(), r.lower().split("-")[0]) for i, g, s, t, r in zip(indices, glosses, stems, tags, relations)}
+    for i, h in zip(indices, heads):
+        if h != 0 and h not in nodes:
+            nodes[h] = GraToken(h, "'" + nodes[h - 1].lower_.rsplit("'", 1)[-1] if h - 1 in nodes else "", "", "AUX", "clitic")
+    for i, h in zip(indices, heads):
+        node, head = nodes[i], nodes.get(h)
         if head is not None and head is not node:
             node.head = head
             head.children.append(node)
     for node in nodes.values():
         node.children.sort(key=lambda t: t.i)
+    for clitic in [n for n in nodes.values() if n.dep_ == "clitic"]:
+        host = nodes.get(clitic.i - 1)
+        verb = next((nodes[j] for j in range(clitic.i - 2, 0, -1) if j in nodes and nodes[j].pos_ == "VERB"), None)
+        if host is None or verb is None:
+            continue
+        span = {t.i for t in clitic.subtree}
+        if verb.i not in span and all(j in span or j not in nodes for j in range(verb.i + 1, host.i)):
+            marks = {c.lower_ for c in clitic.children if c.dep_ == "mark"}
+            clitic.dep_ = "advcl" if marks - {"that", "if", "whether"} else "ccomp"
+            clitic.head = verb
+            verb.children = sorted(verb.children + [clitic], key=lambda t: t.i)
     return nodes
 
 
+def gra_tree(rows):
+    """{gra_index: GraToken} for one utterance's token rows (load_target_tokens columns)."""
+    return _gra_nodes(rows.gra_index.astype(int).tolist(), rows.gloss.tolist(), rows.stem.tolist(),
+                      rows.part_of_speech.tolist(), rows.gra_relation.tolist(), rows.gra_head.astype(int).tolist())
+
+
+COLUMNS = ["id", "lemma", "form", "category", "detail", "subject", "negated", "polar"]
+
+
+def _verb_row(verb):
+    """category, detail, subject, negated, polar for one verb token."""
+    return (*classify_complement(verb), *verb_features(verb), is_matrix_polar(verb))
+
+
 def classify_gra(tokens):
-    """One row per think/know verb (%mor stem, tagged verb) in each parsed utterance of `tokens`
-    (load_target_tokens): utterance id, lemma, form, category, detail, subject, negated.
-    Utterances with any token missing a %gra annotation are skipped."""
-    parsed = tokens.groupby("utterance_id").filter(lambda g: g.gra_index.notna().all() and g.gra_relation.notna().all())
+    """One row per mental verb (a TARGET_FORMS stem on the %mor tier, i.e. the dictionary form
+    CHILDES lemmatizes the token to, tagged verb) in each parsed utterance of `tokens`
+    (load_target_tokens): COLUMNS. xxx/yyy/www tokens carry no %gra and are dropped; utterances
+    with any other token missing a %gra annotation are skipped."""
+    tokens = tokens[~(tokens.gloss.isin(PLACEHOLDERS) & tokens.gra_index.isna())]
+    unparsed = tokens.loc[tokens.gra_index.isna() | tokens.gra_relation.isna(), "utterance_id"].unique()
+    parsed = tokens[~tokens.utterance_id.isin(unparsed)].sort_values(["utterance_id", "gra_index"])
+    ids = parsed.utterance_id.to_numpy()
+    columns = [parsed.gra_index.astype(int).tolist(), parsed.gloss.tolist(), parsed.stem.tolist(),
+               parsed.part_of_speech.tolist(), parsed.gra_relation.tolist(), parsed.gra_head.astype(int).tolist()]
+    is_target = (parsed.stem.isin(TARGET_FORMS) & (parsed.part_of_speech == "verb")).to_numpy()
+    starts = np.flatnonzero(np.r_[True, ids[1:] != ids[:-1]])
     rows = []
-    for utterance_id, group in parsed.groupby("utterance_id"):
-        nodes = gra_tree(group)
-        for r in group[group.stem.isin(TARGET_FORMS) & (group.part_of_speech == "verb")].itertuples():
-            verb = nodes[int(r.gra_index)]
-            category, detail = classify_complement(verb)
-            subject, negated = verb_features(verb)
-            rows.append((utterance_id, r.stem, r.gloss, category, detail, subject, negated))
-    return pd.DataFrame(rows, columns=["id", "lemma", "form", "category", "detail", "subject", "negated"])
+    for start, end in zip(starts, np.r_[starts[1:], len(ids)]):
+        targets = np.flatnonzero(is_target[start:end])
+        if not len(targets):
+            continue
+        nodes = _gra_nodes(*(c[start:end] for c in columns))
+        for k in targets + start:
+            rows.append((ids[k], columns[2][k], columns[1][k], *_verb_row(nodes[columns[0][k]])))
+    return pd.DataFrame(rows, columns=COLUMNS)
 
 
-def classify_gra_utterances(tokens, utterances, path):
-    """classify_gra joined with utterance metadata (the gloss as `text`); cached at `path`."""
-    if os.path.exists(path):
-        return pd.read_parquet(path)
-    result = classify_gra(tokens).merge(utterances.assign(text=utterances.gloss), on="id", how="left")
-    result.to_parquet(path)
-    return result
+def classify_gra_utterances(tokens, utterances):
+    """classify_gra joined with utterance metadata (the gloss as `text`)."""
+    return classify_gra(tokens).merge(utterances.assign(text=utterances.gloss), on="id", how="left")
 
 
 def target_verbs(doc):
-    """think/know tokens tagged as verbs in a spaCy doc."""
+    """TARGET_FORMS tokens tagged as verbs in a spaCy doc."""
     return [t for t in doc if t.lemma_ in TARGET_FORMS and t.pos_ == "VERB"]
 
 
-def classify_texts(texts, nlp, batch_size=2000):
-    """One row per think/know verb in each text: text index, lemma, form, category, detail,
-    subject, negated. Also returns the count of target forms spaCy did not tag as verbs."""
+def classify_docs(docs):
+    """One row per mental verb in each spaCy doc: COLUMNS, with the doc's position in place of
+    `id`. Also returns the count of target forms spaCy did not tag as verbs."""
     rows, non_verbs = [], collections.Counter()
-    forms = {f: lemma for lemma, fs in TARGET_FORMS.items() for f in fs}
-    for index, doc in enumerate(nlp.pipe(texts, batch_size=batch_size)):
+    forms = {f for fs in TARGET_FORMS.values() for f in fs}
+    for index, doc in enumerate(docs):
         for t in doc:
             if t.lower_ in forms and not (t.lemma_ in TARGET_FORMS and t.pos_ == "VERB"):
                 non_verbs[(t.lower_, t.pos_)] += 1
         for verb in target_verbs(doc):
-            category, detail = classify_complement(verb)
-            subject, negated = verb_features(verb)
-            rows.append((index, verb.lemma_, verb.lower_, category, detail, subject, negated))
-    columns = ["text_index", "lemma", "form", "category", "detail", "subject", "negated"]
-    return pd.DataFrame(rows, columns=columns), non_verbs
+            rows.append((index, verb.lemma_, verb.lower_, *_verb_row(verb)))
+    return pd.DataFrame(rows, columns=["text_index", *COLUMNS[1:]]), non_verbs
+
+
+def classify_texts(texts, nlp, batch_size=2000):
+    """classify_docs over spaCy parses of `texts`."""
+    return classify_docs(nlp.pipe(texts, batch_size=batch_size))
 
 
 def target_utterances(utterances):
-    """Utterances containing any think/know form as a whole word."""
+    """Utterances containing any TARGET_FORMS form as a whole word."""
     forms = "|".join(f for fs in TARGET_FORMS.values() for f in fs)
     return utterances[utterances.gloss.str.lower().str.contains(rf"(?<!\S)(?:{forms})(?!\S)", regex=True)]
 
 
-def classify_utterances(utterances, nlp, path):
-    """classify_texts over the think/know utterances, joined with utterance metadata; cached at `path`."""
-    if os.path.exists(path):
-        return pd.read_parquet(path)
+def parse_cached(texts, nlp, path, batch_size=2000, n_process=1):
+    """spaCy docs for `texts`, parsed once and cached as a DocBin at `path`, so changes to
+    classify_complement apply without reparsing. n_process > 1 needs an `if __name__ == "__main__"` guard."""
+    from spacy.tokens import DocBin
+
+    if not os.path.exists(path):
+        docs = DocBin(attrs=["ORTH", "LEMMA", "POS", "TAG", "DEP", "HEAD"])
+        for doc in nlp.pipe(texts, batch_size=batch_size, n_process=n_process):
+            docs.add(doc)
+        docs.to_disk(path)
+    docs = list(DocBin().from_disk(path).get_docs(nlp.vocab))
+    if len(docs) != len(texts) or any(d.text != t for d, t in zip(docs, texts)):
+        raise ValueError(f"{path} was parsed from other texts (TARGET_FORMS changed?); delete it to reparse")
+    return docs
+
+
+def classify_utterances(utterances, nlp, path, n_process=1):
+    """classify_docs over the target utterances (spaCy parses cached at `path`), joined with
+    utterance metadata."""
     hits = target_utterances(utterances).reset_index(drop=True)
     texts = [parser_input(g, t) for g, t in zip(hits.gloss, hits.type)]
-    verbs, _ = classify_texts(texts, nlp)
-    result = verbs.join(hits.assign(text=texts), on="text_index").drop(columns="text_index")
-    result.to_parquet(path)
-    return result
+    verbs, _ = classify_docs(parse_cached(texts, nlp, path, n_process=n_process))
+    return verbs.join(hits.assign(text=texts), on="text_index").drop(columns="text_index")
+
+
+def read_conllu(path):
+    """[(comments, words)] for each sentence of a CoNLL-U file: comments as {key: value}
+    (`# key = value` lines), words as (index, form, lemma, upos, relation, head), lowercased,
+    with the relation's subtype dropped (acl:relcl -> acl). Multiword-token and empty-node lines are skipped."""
+    sentences, comments, words = [], {}, []
+    with open(path) as f:
+        for line in itertools.chain(f, [""]):
+            line = line.rstrip("\n")
+            if line.startswith("#"):
+                key, _, value = line[2:].partition(" = ")
+                comments[key] = value
+            elif not line:
+                if words:
+                    sentences.append((comments, words))
+                comments, words = {}, []
+            elif not re.match(r"\d+[-.]", line):
+                f_ = line.split("\t")
+                words.append((int(f_[0]), f_[1].lower(), f_[2].lower(), f_[3], f_[7].split(":")[0], int(f_[6]) if f_[6] != "_" else 0))
+    return sentences
+
+
+def classify_conllu(sentences, reference=None):
+    """One row per mental verb in each CoNLL-U sentence: sentence position, lemma, k (its
+    occurrence among the sentence's verbs of that lemma), then COLUMNS[3:]. Verbs and lemmas come
+    from `reference` (the gold sentences), so a parser's predicted trees of the same words are
+    classified at the same verbs."""
+    rows = []
+    for n, ((_, words), (_, ref)) in enumerate(zip(sentences, reference or sentences)):
+        nodes = _gra_nodes([w[0] for w in words], [w[1] for w in words], [r[2] for r in ref], [r[3] for r in ref], [w[4] for w in words], [w[5] for w in words])
+        rows += [(n, r[2], *_verb_row(nodes[r[0]])) for r in ref if r[2] in TARGET_FORMS and r[3] == "VERB"]
+    result = pd.DataFrame(rows, columns=["sentence", "lemma", *COLUMNS[3:]])
+    return result.assign(k=result.groupby(["sentence", "lemma"]).cumcount())
+
+
+def gold_utterance_ids(sentences, utterances):
+    """sentence position -> childes-db utterance id for UD_English-CHILDES sentences whose corpus
+    and CHILDES gloss (`childes_toks`) match an utterance's (the first, when several do)."""
+    meta = pd.DataFrame([(n, c.get("corpus_name"), c.get("childes_toks", "").lower()) for n, (c, _) in enumerate(sentences)],
+                        columns=["sentence", "corpus_name", "gloss"])
+    keys = utterances[["id", "corpus_name"]].assign(gloss=utterances.gloss.str.lower()).drop_duplicates(["corpus_name", "gloss"])
+    return meta.merge(keys, on=["corpus_name", "gloss"]).set_index("sentence").id
+
+
+def gold_accuracy(gold, predicted, by="lemma"):
+    """Accuracy of `predicted` categories (rows with `sentence`, `lemma`, `k`, `category`) against
+    classify_conllu of the gold trees, overall and on verbs whose gold category is declarative or
+    interrogative."""
+    m = gold.merge(predicted[["sentence", "lemma", "k", "category"]], on=["sentence", "lemma", "k"], suffixes=("", "_pred"))
+    clausal = m.category.isin(["declarative", "interrogative"])
+    return pd.Series({
+        "n": len(m), "accuracy": (m.category == m.category_pred).mean(),
+        "n_clausal": clausal.sum(), "accuracy_clausal": (m.category == m.category_pred)[clausal].mean(),
+    })
 
 
 def with_context(rows, utterances, window=1):
@@ -349,6 +552,14 @@ def category_table(verbs, by=()):
     counts["p_other"] = 1 - (counts.declarative + counts.interrogative) / counts.total
     counts["p_none"] = counts.none / counts.total
     return counts
+
+
+def polar_table(verbs):
+    """Per lemma, for declarative and interrogative complements: count and the share whose
+    matrix clause is a polar question (is_matrix_polar: do you know where it is?)."""
+    clausal = verbs[verbs.category.isin(["declarative", "interrogative"])]
+    table = clausal.groupby(["lemma", "category"]).polar.agg(n="size", polar="sum", p_polar="mean").unstack("category")
+    return table.swaplevel(axis=1).sort_index(axis=1)
 
 
 def bootstrap_p_interrog(verbs, n_boot=2000, seed=0):

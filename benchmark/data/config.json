@@ -19,7 +19,17 @@
         "matrix_type",
         "complementizer"
       ],
-      "free_embedded_clause": true
+      "free_embedded_clause": true,
+      "exclusions": [
+        {
+          "match": {
+            "tense": "present",
+            "matrix_subj_category": "first_person",
+            "matrix_type": "polar_question"
+          },
+          "reason": "asking about your own current mental state ('Do I think that it is raining?', 'Do I know whether...?') is odd for every verb"
+        }
+      ]
     },
     {
       "phenomenon": "NP complement",
@@ -148,6 +158,46 @@
         "tense",
         "negation",
         "matrix_subj_category"
+      ],
+      "exclusions": [
+        {
+          "match": {
+            "seed_id": [
+              "6",
+              "8",
+              "9",
+              "10"
+            ],
+            "matrix_subj_category": "first_person"
+          },
+          "reason": "'P, and I think so' after asserting P yourself is redundant, and its negation ('The store is open, and I don't think so.') is a paradox"
+        }
+      ],
+      "row_exclusions": [
+        {
+          "match": {
+            "condition": "control",
+            "tense": "past"
+          },
+          "reason": "the guess control is only clean as 'I guess (so)': 'I guessed so' is marginal and 'I guessed' means made a guess"
+        },
+        {
+          "match": {
+            "condition": "control",
+            "negation": "yes"
+          },
+          "reason": "'I don't guess.' and 'I didn't guess so.' are bad?"
+        },
+        {
+          "match": {
+            "condition": "control",
+            "matrix_subj_category": [
+              "second_person",
+              "third_person"
+            ]
+          },
+          "reason": "parenthetical guess is first person only: 'You guess.' and 'John guesses so.' are bad"
+        }
       ]
     },
     {

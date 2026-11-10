@@ -39,15 +39,16 @@ Two independent expansion passes, per condition in config.json:
    variant_config.json's min_sets keeps adding variants, round-robin over a
    condition's sets (across all its seeds), past --n-variants until the
    condition has that many sets in total (base copies included) or none of its
-   sets can be varied further. No variant repeats the sentences of any set in
-   its condition, so a seed's variant never reproduces another seed.
+   sets can be varied further. No sentence is written twice (see
+   build_variants), and no variant names one person twice in a sentence.
 
    A group_id holds one condition's seeds (seed_id): authored sets with the
    same labels and different content, each expanded independently.
 
    A condition's config.json `exclusions` (each a `match` on column values
    plus the `reason`) drop every set with a matching row - base copies before
-   variation, variants as they're drawn (see matching_exclusion).
+   variation, variants as they're drawn (see matching_exclusion). Its
+   `row_exclusions` drop just the matching rows, before variation.
 
    A vocabulary entry's `requires` (<column>:<value>[,<value>..], see
    parse_requires) restricts where it may be swapped in; a substitution is
@@ -160,6 +161,8 @@ def expand_negation(row, manipulated_types, comparison_types):
     if new_sentence is None:
         _skip(row, "negation")
         return [row]
+    # a negative answer takes "No," ('No, I don't think so.', not 'Yes, I don't think so.')
+    new_sentence = re.sub(r"^Yes,", "No,", new_sentence)
     return [row, {**row, "sentence": new_sentence, "negation": "yes"}]
 
 
@@ -908,49 +911,58 @@ def make_lexical_variant(rows, vocab, condition, settings):
 MAX_VARIANT_ATTEMPTS = 500
 
 
-def _new_variant(rows, seen, vocab, condition, settings, exclusions=()):
-    """A lexical variant of `rows` whose sentences aren't in `seen` (and adds
-    them) and that matches none of `exclusions` (e.g. a swapped-in clause
-    bringing a wh-word the condition excludes), or None if
-    MAX_VARIANT_ATTEMPTS tries only produced repeats or excluded sets."""
+def _repeats_person(rows, vocab):
+    """True if some row names the same person twice ('Did Olivia hide Olivia's keys?',
+    'Where does Mary think Mary hid the keys?')."""
+    return any(
+        len(re.findall(r"\b" + re.escape(e["word"]) + r"\b", r["sentence"], re.IGNORECASE)) > 1
+        for r in rows for e in vocab.pool("person")
+    )
+
+
+def _fresh(rows, used):
+    """True if none of `rows`' sentences is in `used` or repeated among them."""
+    sentences = [r["sentence"] for r in rows]
+    return len(set(sentences)) == len(sentences) and used.isdisjoint(sentences)
+
+
+def _new_variant(rows, used, vocab, condition, settings, exclusions=()):
+    """A lexical variant of `rows` with no sentence already in `used` (and adds
+    them), no person named twice in a sentence, and matching none of `exclusions`
+    (e.g. a swapped-in clause bringing a wh-word the condition excludes), or None
+    if MAX_VARIANT_ATTEMPTS tries produced none."""
     for _ in range(MAX_VARIANT_ATTEMPTS):
         variant = make_lexical_variant(rows, vocab, condition, settings)
-        key = tuple(r["sentence"] for r in variant)
-        if key not in seen:
-            seen.add(key)
-            if matching_exclusion(variant, exclusions, vocab) is None:
-                return variant
+        if _fresh(variant, used) and not _repeats_person(variant, vocab) and matching_exclusion(variant, exclusions, vocab) is None:
+            used.update(r["sentence"] for r in variant)
+            return variant
     return None
 
 
-def make_distinct_variants(sets, vocab, condition, settings, n, kept=None, exclusions=()):
-    """Lexical variants for each of a condition's assertion `sets`, none
-    identical (same sentences) to any set's base copy or to each other: `n` per set,
-    then more, one set at a time round-robin, until the condition has
-    settings["min_sets"] sets in total counting the base copies. Only sets
-    marked in `kept` (default: all) count toward that and get the extra
-    variants - the others are dropped by `exclusions` anyway. A set with too
-    few slots to vary just gets fewer variants - possibly none - instead of
-    duplicates, and stops being drawn from once it can't produce a new one."""
-    kept = kept if kept is not None else [True] * len(sets)
-    seen = {tuple(r["sentence"] for r in rows) for rows in sets}
+def make_distinct_variants(sets, vocab, condition, settings, n, used, kept, base_kept, exclusions=()):
+    """Lexical variants for each of a condition's assertion `sets`, none sharing a
+    sentence with anything in `used` (every sentence already written, which each
+    new variant's join): `n` per set (at least 1 for a set whose base copy isn't in
+    `base_kept`, standing in for it), then more, one set at a time round-robin,
+    until the condition has settings["min_sets"] sets in total counting the base
+    copies. Only sets marked in `kept` get variants - the others are dropped by
+    `exclusions` anyway. A set with too few slots to vary just gets fewer variants
+    - possibly none - and stops being drawn from once it can't produce a new one."""
     variants = [[] for _ in sets]
-    open_sets = list(range(len(sets)))
-    total = sum(kept)
+    quota = [n if b else max(n, 1) for b in base_kept]
+    open_sets = [i for i in range(len(sets)) if kept[i]]
+    total = sum(k and b for k, b in zip(kept, base_kept))
     round_ = 0
-    while open_sets and (round_ < n or total < settings["min_sets"]):
+    while open_sets and (round_ < max(quota[i] for i in open_sets) or total < settings["min_sets"]):
         for i in list(open_sets):
-            if round_ >= n and (total >= settings["min_sets"] or not kept[i]):
-                if not kept[i]:
-                    open_sets.remove(i)
-                    continue
-                break
-            variant = _new_variant(sets[i], seen, vocab, condition, settings, exclusions)
+            if round_ >= quota[i] and total >= settings["min_sets"]:
+                continue
+            variant = _new_variant(sets[i], used, vocab, condition, settings, exclusions)
             if variant is None:
                 open_sets.remove(i)
                 continue
             variants[i].append(variant)
-            total += kept[i]
+            total += 1
         round_ += 1
     return variants
 
@@ -1019,32 +1031,45 @@ def make_unique_id(row, code, partition_dims, axis_tags, variant_id):
 EXCLUDED = collections.Counter()
 
 
-def condition_exclusions(condition):
-    """config.json's `exclusions` for a condition: a list of {"match": {column:
-    value, ..}, "reason": ".."}. Raises on an entry without both."""
-    exclusions = condition.get("exclusions", [])
+def condition_exclusions(condition, key="exclusions"):
+    """config.json's `exclusions` (or `row_exclusions`) for a condition: a list of
+    {"match": {column: value or [values], ..}, "reason": ".."}. Raises on an entry
+    without both."""
+    exclusions = condition.get(key, [])
     for exclusion in exclusions:
         if not exclusion.get("match") or not exclusion.get("reason"):
-            raise ValueError(f"config.json, {condition.get('code')}: exclusion {exclusion!r} needs a non-empty match and reason")
+            raise ValueError(f"config.json, {condition.get('code')}: {key} entry {exclusion!r} needs a non-empty match and reason")
     return exclusions
 
 
+def _matches(row, match, vocab):
+    """Each of `match`'s columns equals the row's value (or lists it), where a fronted
+    wh-word counts as the row's complementizer (see _row_value)."""
+    return all(
+        _row_value(row, column, vocab) in (value if isinstance(value, list) else [value])
+        for column, value in match.items()
+    )
+
+
 def matching_exclusion(rows, exclusions, vocab):
-    """The first of `exclusions` that some row of the set matches - each of its
-    `match` columns equal to the row's value, where a fronted wh-word counts as
-    the row's complementizer (see _row_value) - or None. One matching row drops
-    the whole set, since the set is one assertion."""
+    """The first of `exclusions` that some row of the set matches, or None. One
+    matching row drops the whole set, since the set is one assertion."""
     for exclusion in exclusions:
-        if any(all(_row_value(r, column, vocab) == value for column, value in exclusion["match"].items()) for r in rows):
+        if any(_matches(r, exclusion["match"], vocab) for r in rows):
             return exclusion
     return None
 
 
 def build_variants(sentences_df, config, vocab, variant_config, n_lexical_variants=2):
+    """Every condition's sets (base copies, then lexical variants) as output rows. No
+    sentence is written twice: a base copy sharing a sentence with an earlier one (an
+    axis copy's untoggled rows, e.g. the 'whether' rows of a that-deleted CP + Q set)
+    is dropped, though its lexical variants, which must be all-new, are kept."""
     conditions = config["conditions"]
     SKIPPED.clear()
     EXCLUDED.clear()
     out_rows = []
+    used = set()
     for group_id, group_df in sentences_df.groupby("group_id", sort=False):
         group_rows = group_df.to_dict("records")
         condition = None
@@ -1056,6 +1081,7 @@ def build_variants(sentences_df, config, vocab, variant_config, n_lexical_varian
         comparison_types = condition.get("comparison_types", [])
         settings = variation_settings(variant_config, condition)
         exclusions = condition_exclusions(condition)
+        row_exclusions = condition_exclusions(condition, "row_exclusions")
 
         sets = []  # (partition_dims, axis_tags, rows), over every seed of the condition
         for _, seed_df in group_df.groupby("seed_id", sort=False):
@@ -1068,6 +1094,8 @@ def build_variants(sentences_df, config, vocab, variant_config, n_lexical_varian
             for row in seed_df.to_dict("records"):
                 structural_rows.extend(expand_structural(row, effective_manipulated_types, comparison_types))
             structural_rows = fit_control_verbs(structural_rows, vocab)
+            # row_exclusions drop single rows (e.g. a control row) rather than whole sets
+            structural_rows = [r for r in structural_rows if not any(_matches(r, e["match"], vocab) for e in row_exclusions)]
             sets.extend(
                 (partition_dims, axis_tags, part_rows)
                 for axis_tags, axis_rows in duplicate_for_axes(structural_rows, manipulated_types, comparison_types)
@@ -1077,11 +1105,16 @@ def build_variants(sentences_df, config, vocab, variant_config, n_lexical_varian
         for exclusion in filter(None, excluded):
             EXCLUDED[(code, exclusion["reason"])] += 1
         kept = [e is None for e in excluded]
-        all_variants = make_distinct_variants([rows for *_, rows in sets], vocab, condition, settings, n_lexical_variants, kept, exclusions)
-        for (partition_dims, axis_tags, part_rows), variants, keep in zip(sets, all_variants, kept):
+        base_kept = []
+        for keep, (*_, rows) in zip(kept, sets):
+            base_kept.append(keep and _fresh(rows, used))
+            if base_kept[-1]:
+                used.update(r["sentence"] for r in rows)
+        all_variants = make_distinct_variants([rows for *_, rows in sets], vocab, condition, settings, n_lexical_variants, used, kept, base_kept, exclusions)
+        for (partition_dims, axis_tags, part_rows), variants, keep, keep_base in zip(sets, all_variants, kept, base_kept):
             if not keep:
                 continue
-            variant_sets = [("base", part_rows)] + [(f"variant_{i}", v) for i, v in enumerate(variants, start=1)]
+            variant_sets = ([("base", part_rows)] if keep_base else []) + [(f"variant_{i}", v) for i, v in enumerate(variants, start=1)]
             for variant_id, variant_rows in variant_sets:
                 for r in variant_rows:
                     uid = make_unique_id(r, code, partition_dims, axis_tags, variant_id)

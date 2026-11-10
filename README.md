@@ -12,9 +12,9 @@ pip install -r requirements.txt
 
 ```bash
 # expand sentences.csv into sentences_with_variants.csv (tense/person/negation/
-# matrix_type/complementizer/preposition siblings, plus 2 lexically-varied
-# copies per assertion set)
-python -m benchmark.scripts.generate_variants
+# matrix_type/complementizer/preposition siblings, plus lexically-varied copies
+# until each condition has variant_config.json's min_sets)
+python -m benchmark.scripts.generate_variants --n-variants 0
 
 # expand config.json + sentences_with_variants.csv into benchmark/data/pairs.csv
 python -m benchmark.scripts.create_pairs
@@ -106,8 +106,26 @@ marimo edit notebooks/childes_think_know.py   # first run opens a Redivis login 
   first/second/third. Each row's `unique_id` identifies which
   assertion-forming set it belongs to (e.g. `cpq_s1_pres_aff_3p_decl_that_base`).
   A condition's `exclusions` in `config.json` drop every set with a row that
-  matches all the columns in a `match`, and the entry records the `reason`, e.g.
-  factive island's present-tense first person and its `when` questions.
+  matches all the columns in a `match` (a list matches any of its values), and
+  the entry records the `reason`, e.g. factive island's present-tense first
+  person and its `when` questions. `row_exclusions` drop only the matching rows.
+  No sentence appears twice in the file: an axis copy whose untoggled rows would
+  repeat another set's (the `whether` rows of a that-deleted CP + Q set, the NP
+  rows of an NP vs. PP `of` set) loses its base copy and keeps only all-new
+  lexical variants, so a set that can't be varied (e.g. `I know the song.`, with
+  no name or vocabulary noun to swap) has no `of`/that-deleted copy at all.
+
+### known limitations
+
+- **Ellipsis controls aren't scored.** The `guess` rows in Standalone and Response
+  to polar Q are in `sentences_with_variants.csv` but none of the Ellipsis
+  conditions set `"control": "true"`, so they never reach `pairs.csv`. Standalone
+  keeps them only for first person, present, affirmative (`I guess.`, `I guess
+  so.`), since `You guess.`, `John doesn't guess.`, `I didn't guess so.` are bad.
+  `believe` isn't a cleaner control: `John doesn't believe.` means lacking faith.
+- **Control verb varies with tense.** NP-complement control rows use `start` in
+  the past and `investigate`/`like` in the present (see `fit_control_verbs`), so
+  a control's accuracy by tense mixes a tense effect with a verb effect.
 - **`pairs.csv`** — one row per pair (`sentence1`, `sentence2`), where
   `sentence1` is predicted to outscore `sentence2`, grouped into assertions by
   `assertion_id`. Each row's `rank` orders it by expected contrast size: a
@@ -157,7 +175,10 @@ several requirements, all must hold) and limits where it can be swapped in.
   `matrix_verb:think,know` (message), `paradigm:mini-discourse` (wh_question),
   `complementizer:where,when,why` (an embedded_clause), or
 - a `vocabulary.csv` feature column - a word with one of the values must be in
-  the sentence: `breakable:1` (a mishap_verb needs a breakable object present).
+  the sentence: `breakable:1` (a mishap_verb needs a breakable object present),
+  `truth_apt:1` (true/false/wrong need a noun that can be true: the rumor, not the
+  secret), `evaluable:1` (good/bad/silly: the idea, not the rumor), `buriable:1`
+  (buried: the keys, not the cookies).
   For a determiner it's checked against its own noun: `countable:1`.
 
 A substitution is never allowed to newly break a `requires` of any word in the
@@ -172,5 +193,6 @@ The complementizer is only varied for an embedded_clause that lists several in
 its `requires`, and is changed together with every sentence it appears in,
 fronted ("Where does John know Mary hid the keys?") or embedded ("Does John know
 where Mary hid the keys?"). A clause that lists no complementizers is only used
-with that/whether/none, never a wh-word. See `vocabulary.csv` for the full word
+with that/whether/none, never a wh-word. CP + Q's seed 2 (`John knows where Mary
+hid the keys.`) is what brings where/when/why into CP + Q. See `vocabulary.csv` for the full word
 lists and `generate_variants.py`'s `gather_candidates` for how they're combined.

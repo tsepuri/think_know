@@ -38,3 +38,21 @@ def test_matching_exclusion_counts_fronted_wh_word():
     vocab = _vocab(rows)
     assert gv.matching_exclusion(rows[:1], [exclusion], vocab) is exclusion
     assert gv.matching_exclusion([_row("Where does John know Mary hid the keys?", matrix_type="wh_question")], [exclusion], vocab) is None
+
+
+def test_list_match_drops_any_listed_value():
+    """A list in a match takes any of its values: 2p and 3p control rows match, 1p doesn't."""
+    match = {"condition": "control", "matrix_subj_category": ["second_person", "third_person"]}
+    rows = [_row("You guess.", matrix_subj_category="second_person"), _row("I guess.", matrix_subj_category="first_person")]
+    vocab = _vocab(rows)
+    assert [gv._matches(r, match, vocab) for r in rows] == [True, False]
+
+
+def test_generated_sentences_are_unique():
+    """sentences_with_variants.csv never repeats a sentence or names one person twice in a sentence."""
+    sentences = pd.read_csv("benchmark/data/sentences_with_variants.csv", dtype=str, keep_default_na=False)
+    vocab = pd.read_csv("benchmark/data/vocabulary.csv", dtype=str, keep_default_na=False)
+    assert not sentences.sentence.duplicated().any()
+    persons = gv.Vocabulary(vocab, sentences)
+    assert gv._repeats_person([{"sentence": "A: Did Olivia hide Olivia's keys?"}], persons)
+    assert not gv._repeats_person(sentences.to_dict("records"), persons)
